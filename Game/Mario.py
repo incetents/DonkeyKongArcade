@@ -83,8 +83,8 @@ class Mario(Entity_2D):
         # Update State
         self._state.update()
         # Force dead state if below vertical area
-        if self.transform.get_position().y < DEAD_HEIGHT and self._state.ID is not MarioState_Enum.DEAD:
-            self.set_state(MarioState_Enum.DEAD)
+        # if self.transform.get_position().y < DEAD_HEIGHT and self._state.ID is not MarioState_Enum.DEAD:
+        #     self.set_state(MarioState_Enum.DEAD)
 
         pass
 

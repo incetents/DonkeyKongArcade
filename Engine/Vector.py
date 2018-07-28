@@ -14,6 +14,7 @@ class Vector2:
     # Convert to another Vector
     def get_vec3(self) -> Vector3:
         return Vector3(self.x, self.y, 0)
+
     def get_vec4(self) -> Vector4:
         return Vector4(self.x, self.y, 0, 0)
 
@@ -150,6 +151,9 @@ class Vector3:
     # Convert to Vectors
     def get_vec2(self) -> Vector2:
         return Vector2(self.x, self.y)
+
+    def get_vec4(self) -> Vector4:
+        return Vector4(self.x, self.y, self.z, 0)
 
     # Magnitude
     def magnitude(self) -> float:
@@ -289,6 +293,13 @@ class Vector4:
         self.y: float = _y
         self.z: float = _z
         self.w: float = _w
+
+    # Convert to another Vector
+    def get_vec2(self) -> Vector2:
+        return Vector2(self.x, self.y)
+
+    def get_vec3(self) -> Vector3:
+        return Vector3(self.x, self.y, self.z)
 
 
 

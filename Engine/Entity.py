@@ -3,6 +3,7 @@
 
 # Base Entity Class for appearance and movement
 
+from __future__ import annotations
 from Engine.Texture import Texture
 from Engine.Graphics import Mesh
 from Engine.Transform import Transform
@@ -61,7 +62,7 @@ class Entity_2D:
             else:
                 self.col_collider_exit(i)
 
-    def process_collision_list(self, entities: List):
+    def process_collision_list(self, entities: List[Entity_2D]):
         # Requires collision box and rigidbody to process collision
         if self.collision is None or self.rigidbody is None:
             return

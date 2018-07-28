@@ -34,7 +34,16 @@ class Debug:
         pass
 
     @staticmethod
-    def draw_line(_pos1: Vector3, _pos2: Vector3, _color: Vector3):
+    def draw_line_2d(_pos1: Vector2, _pos2: Vector2, _color: Vector3, _depth: float=0):
+        glDisable(GL_BLEND)
+        glBegin(GL_LINES)
+        glColor(_color.x, _color.y, _color.z, 1)
+        glVertex3f(_pos1.x, _pos1.y, _depth)
+        glVertex3f(_pos2.x, _pos2.y, _depth)
+        glEnd()
+
+    @staticmethod
+    def draw_line_3d(_pos1: Vector3, _pos2: Vector3, _color: Vector3):
         glDisable(GL_BLEND)
         glBegin(GL_LINES)
         glColor(_color.x, _color.y, _color.z, 1)
@@ -92,18 +101,18 @@ class Mesh:
         Engine.Storage.add(Engine.Storage.Type.MESH, mesh_name, self)
 
     # Setters
-    def set_vertices(self, vertices: Vector3 = []):
+    def set_vertices(self, vertices: Vector3 = List[Vector3]):
         self._vertices = vertices
         self._drawCount = len(vertices)
 
-    def set_uvs(self, uvs: Vector2 = []):
+    def set_uvs(self, uvs: Vector2 = List[Vector2]):
         if len(uvs) is self._drawCount:
             self._uvs = uvs
             self._mode = MeshMode.TEXTURED
         else:
             print('Cannot assign uvs without matching amount of vertices')
 
-    def set_colors(self, colors: Vector3 = []):
+    def set_colors(self, colors: Vector3 = List[Vector3]):
         if len(colors) is self._drawCount:
             self._colors = colors
             self._mode = MeshMode.COLORED
@@ -111,7 +120,6 @@ class Mesh:
             print('Cannot assign colors without matching amount of vertices')
 
     def draw(self, _model: Transform):
-
          # Set Blend Mode
          if self._mode is MeshMode.TEXTURED:
              glEnable(GL_BLEND)

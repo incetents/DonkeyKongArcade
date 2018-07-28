@@ -28,6 +28,7 @@ import Engine.Input
 from Engine.Text import *
 import Engine.Config
 
+ray: Raycast_2D = None
 
 class GameState:
     def __init__(self):
@@ -99,7 +100,7 @@ class GameState_Game(GameState):
         GameState.__init__(self)
 
         self._mario: Mario = Mario('mario')
-        self._mario.transform.set_position(Vector3(0, 20, 0))
+        self._mario.transform.set_position(Vector3(-5.3, 13, 0))
         self._mario.transform.set_flip_x(True)
 
         self._gametiles = GameTiles('spr_floor1', 'spr_ladder1')
@@ -112,6 +113,7 @@ class GameState_Game(GameState):
     def enter(self):
         # FLOORS
         ################
+        self._gametiles.add_pos_offset = Vector3(4, 4, 0)
         # First Line
         for i in range(14):
             self._gametiles.add_tile_floor(Vector3(8 * i, 0, 0))
@@ -161,14 +163,19 @@ class GameState_Game(GameState):
         self._gametiles.update(delta_time)
         self._enemy1.update(delta_time)
 
-        _c = ColliderManager_2D.get_singleton()
-        _chunks = _c.get_chunks_from_collider_aabb_2d(self._mario.collision)
-
         # COLLISION
         # -------------------------------------
+
+        # Find all chunks that mario is touching
+        _chunks = ColliderManager_2D.get_singleton().get_chunks_from_collider_aabb_2d(self._mario.collision)
+
         self._mario.process_collision_start()
 
-        self._mario.process_collision_list(self._gametiles._tiles)
+        # Collision with environment
+        for c in _chunks:
+            self._mario.process_collision_list(c.get_entities())
+
+        # Enemy collision is manual
         self._mario.process_collision(self._enemy1)
 
         self._mario.process_collision_end()
@@ -178,18 +185,22 @@ class GameState_Game(GameState):
         if Engine.Input.get_key(pygame.K_q):
             self._mario.set_state(MarioState_Enum.DEAD)
 
-        _ray = Raycast_2D(self._mario.transform.get_position().get_vec2(), Vector2(0, -1), 10)
+        global ray
+        ray = Raycast_2D(self._mario.transform.get_position().get_vec2(), Vector2(0, -1), 40)
 
     def draw(self):
         self._gametiles.draw()
         self._mario.draw()
         self._enemy1.draw()
 
-        # Debug.draw_line(
-        #     self._mario.transform.get_position(),
-        #     self._mario.transform.get_position() + Vector2(0, -10),
-        #     Vector3(1,0,0)
-        # )
+        Debug.draw_line_2d(
+            self._mario.transform.get_position().get_vec2(),
+            self._mario.transform.get_position().get_vec2() + Vector2(0, -1).normalize() * 40,
+            Vector3(1,0,0)
+        )
+        global ray
+        if ray.hit_flag is True:
+            Debug.draw_circle_2d(ray.hit, 2.0, Vector3(0, 1, 0))
 
         _c = ColliderManager_2D.get_singleton()
         _c.draw_chunks()

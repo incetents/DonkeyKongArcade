@@ -93,7 +93,6 @@ class Game:
 
         Texture('fire1', 'assets/enemies/fire1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('fire2', 'assets/enemies/fire2.png', FilterMode.POINT, WrapMode.CLAMP)
-        Texture('fire3', 'assets/enemies/fire3.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('fire_blue1', 'assets/enemies/fire_blue1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('fire_blue2', 'assets/enemies/fire_blue2.png', FilterMode.POINT, WrapMode.CLAMP)
 
@@ -186,7 +185,7 @@ class Game:
         if Engine.Input.get_key(pygame.K_z):
             Engine.Camera.zoom_in()
         elif Engine.Input.get_key(pygame.K_x):
-            Engine.Camera.zoom_out()
+            Engine.Camera.zoom_out()#
 
         # Mode Switcher
         if Engine.Input.get_key(pygame.K_1):
@@ -202,9 +201,9 @@ class Game:
         # State Draw
         self._state.draw()
 
-        Debug.draw_line(Vector3(-120, -120, 0), Vector3(320, 320, 0), Vector3(1, 0, 0))
-        Debug.draw_line(Vector3(0, -200, 0), Vector3(0, 200, 0), Vector3(1, 1, 0))
-        Debug.draw_line(Vector3(-200, 0, 0), Vector3(200, 0, 0), Vector3(0, 0, 1))
+        # Debug.draw_line_3d(Vector3(-120, -120, 0), Vector3(320, 320, 0), Vector3(0.2, 0, 0))
+        # Debug.draw_line_3d(Vector3(0, -200, 0), Vector3(0, 200, 0), Vector3(0.2, 0.2, 0))
+        # Debug.draw_line_3d(Vector3(-200, 0, 0), Vector3(200, 0, 0), Vector3(0, 0, 0.2))
 
         Engine.Camera.pop()
         glFlush()

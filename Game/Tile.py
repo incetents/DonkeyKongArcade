@@ -10,6 +10,7 @@ from Engine.Vector import *
 # Physics
 from Engine.Collision import *
 import Engine.Collision
+from Engine.CollisionManager import *
 # Misc
 from typing import List
 from Engine.Sprite import *
@@ -28,6 +29,8 @@ class Tile(Entity_2D):
         # Collision
         self.collision = Collider_AABB_2D(self.transform.get_position())
         self.collision.update_size_from_sprite(self.transform, self.sprite)
+        # Add to collision manager
+        ColliderManager_2D.get_singleton().add_static_collider(self)
 
     def update(self, delta_time):
         pass
@@ -47,6 +50,8 @@ class GameTiles:
         self._floorBatch: SpriteBatch = SpriteBatch(floor_sprname)
         self._ladderBatch: SpriteBatch = SpriteBatch(ladder_sprname)
 
+        self.add_pos_offset: Vector3 = Vector3()
+
     def clear(self):
         self._tiles.clear()
         self._floorBatch.clear()
@@ -54,7 +59,7 @@ class GameTiles:
 
     def add_tile_floor(self, _position: Vector3):
         # Add Tile
-        _tile = Tile('tile' + str(len(self._tiles)+1), self._floor_spr, _position)
+        _tile = Tile('tile' + str(len(self._tiles)+1), self._floor_spr, _position + self.add_pos_offset)
         _tile.collision.type = Collision_Type.PLATFORM
         self._tiles.append(_tile)
         # Add to batch
@@ -62,7 +67,7 @@ class GameTiles:
 
     def add_tile_ladder(self, _position: Vector3):
         # Add Tile
-        _tile = Tile('tile' + str(len(self._tiles)+1), self._ladder_spr, _position)
+        _tile = Tile('tile' + str(len(self._tiles)+1), self._ladder_spr, _position + self.add_pos_offset)
         _tile.collision.type = Collision_Type.TRIGGER
         _tile.collision.id = Engine.Config.TRIGGER_ID_LADDER
         self._tiles.append(_tile)

@@ -3,6 +3,7 @@
 
 # [Colliders]
 
+from __future__ import annotations
 import math
 from functools import singledispatch
 from typing import *
@@ -15,11 +16,14 @@ from Engine.Sprite import *
 
 # 1D Collision General Use
 #
+
+# Assumes p1 is smaller than p2 for both lines
 def collision_1D_safe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
     # Check intersection
     return line1_p2 >= line2_p1 and line2_p2 >= line1_p1
 
 
+# Assumes that lines could be backwards
 def collision_1D_unsafe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
     # Check End points of lines
     _min_line1 = min(line1_p1, line1_p2)
@@ -29,6 +33,29 @@ def collision_1D_unsafe(line1_p1: float, line1_p2: float, line2_p1: float, line2
     # Check intersection
     return collision_1D_safe(_min_line1, _max_line1, _min_line2, _max_line2)
 
+
+def fart():
+    pass
+# Checks if two lines intersect and return the resulting point if they do
+def line_to_line_collision(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) -> Tuple[Vector2, bool]:
+    b: Vector2 = a2 - a1
+    d: Vector2 = b2 - b1
+    bDotDPerp = b.x * d.y - b.y * d.x
+    if bDotDPerp == 0:
+        return Vector2(), False
+
+    c = b1 - a1
+
+    t: float = (c.x * d.y - c.y * d.x) / bDotDPerp
+    if t < 0 or t > 1:
+        return Vector2(), False
+
+    u: float = (c.x * b.y - c.y * b.x) / bDotDPerp
+    if u < 0 or u > 1:
+        return Vector2(), False
+
+    out_result = a1 + b * t
+    return out_result, True
 
 # Collision Checking Classes
 #
@@ -40,13 +67,28 @@ class Collision_Type(Enum):
 
 class Collider:
     def __init__(self, position: Vector3):
-        self.position: Vector3 = position
+        self._position: Vector3 = position
+        self.offset: Vector2 = Vector2()
         self.enabled: bool = True
         self.id: int = 0
+        self.type: Collision_Type = Collision_Type.SOLID
         self.contact_list_prev: Set[Collider] = set()
         self.contact_list: Set[Collider] = set()
         pass
 
+    def get_position(self) -> Vector3:
+        return self._position + self.offset.get_vec3()
+
+    def get_hit_point(self, point: Vector2, direction: Vector2, distance: float):
+        print("""Err, get_hit_point doesn't work on simple collider""")
+
+    def check_if_point_inside(self, point: Vector2):
+        print("""Err, check_if_point_inside doesn't work on simple collider""")
+
+    def check_if_line_inside(self, p1: Vector2, p2: Vector2):
+        print("""Err, check_if_line_inside doesn't work on simple collider""")
+
+    # Virtual
     def draw(self):
         pass
 
@@ -85,15 +127,26 @@ class Collider_Circle_2D(Collider):
         Collider.__init__(self, pos)
         self.radius: float = radius
 
+    def get_hit_point(self, point: Vector2, direction: Vector2, distance: float):
+        print('not implemented')
+        pass
+
+    def check_if_point_inside(self, point: Vector2):
+        _pos = self.get_position().get_vec2()
+        return (_pos - point).magnitude() <= self.radius
+
+    def check_if_line_inside(self, p1: Vector2, p2: Vector2):
+        print('not implemented')
+        pass
+
     def draw(self, _color: Vector3 = Vector3(0, 1, 0), _vertices:int = 40):
-        Debug.draw_circle_2d(self.position, self.radius, _color, _vertices)
+        Debug.draw_circle_2d(self.get_position(), self.radius, _color, _vertices)
 
 
 class Collider_AABB_2D(Collider):
     def __init__(self, pos: Vector3, size: Vector3=Vector3()):
         Collider.__init__(self, pos)
         self.size: Vector2 = size
-        self.type: Collision_Type = Collision_Type.SOLID
 
     def update_size_from_sprite(self, model: Transform, spr: Sprite):
         self.size = Vector2(
@@ -101,20 +154,93 @@ class Collider_AABB_2D(Collider):
             model.get_scale().y * spr.get_height()
         )
 
+    def get_hit_point(self, point: Vector2, direction: Vector2, distance: float) -> Tuple[Vector2, bool]:
+        # Make sure point is outside box
+        if self.check_if_point_inside(point):
+            return Vector2(), False
+
+        # Intersection
+        # Line to line with all 4 sides#
+        _topleft = Vector2(self.get_left(), self.get_up())
+        _topright = Vector2(self.get_right(), self.get_up())
+        _botleft = Vector2(self.get_left(), self.get_down())
+        _botright = Vector2(self.get_right(), self.get_down())
+
+        _p2 = point + direction * 50
+
+        _mem: Tuple[Vector2, bool] = line_to_line_collision(point, _p2, _topleft, _topright)
+        if _mem[1]:
+            return _mem[0], True
+
+        _mem: Tuple[Vector2, bool] = line_to_line_collision(point, _p2, _topleft, _botleft)
+        if _mem[1]:
+            return _mem[0], True
+
+        _mem: Tuple[Vector2, bool] = line_to_line_collision(point, _p2, _botright, _topright)
+        if _mem[1]:
+            return _mem[0], True
+
+        _mem: Tuple[Vector2, bool] = line_to_line_collision(point, _p2, _botright, _botleft)
+        if _mem[1]:
+            return _mem[0], True
+
+        return Vector2(), False
+
+    def check_if_point_inside(self, point: Vector2):
+        # Check if point is inside the aabb collider
+        return self.get_left() < point.x < self.get_right() and self.get_down() < point.y < self.get_up()
+
+    def check_if_line_inside(self, p1: Vector2, p2: Vector2):
+        # Check if either end points are located inside
+        if self.check_if_point_inside(p1) or self.check_if_point_inside(p2):
+            # print('inside box, simple collision')
+            return True
+
+
+        # Solve y = mx + b  for straight line (m = slope, b = vertical offset)
+        _direction = p2 - p1
+        _m = 0.0
+        if _direction.x != 0:
+            _m = _direction.y / _direction.x
+
+        # Vertical Slope possibility
+        else:
+            print('check')
+            return collision_1D_safe(
+                self.get_down(), self.get_up(),
+                min(p1.y, p2.y), max(p1.y, p2.y))
+
+        _b = p1.y - _m * p1.x # (y - mx = b)
+        # Check for y values when x is at left or right of square
+        _y1 = _m * self.get_left() + _b
+        _y2 = _m * self.get_right() + _b
+        # Check for x values when y is top or down (x = (y-b)/m)
+        _x1 = (self.get_up() - _b) / _m
+        _x2 = (self.get_down() - _b) / _m
+
+        # Check if y values are between y values
+        if self.get_down() < _y1 < self.get_up() or self.get_down() < _y2 < self.get_up():
+            return True
+
+        if self.get_left() < _x1 < self.get_right() or self.get_left() < _x2 < self.get_right():
+            return True
+
+        return False
+
     def get_left(self) -> float:
-        return self.position.x - self.size.x * 0.5
+        return self._position.x - (self.size.x * 0.5) + self.offset.x
 
     def get_right(self) -> float:
-        return self.position.x + self.size.x * 0.5
+        return self._position.x + (self.size.x * 0.5) + self.offset.x
 
     def get_up(self) -> float:
-        return self.position.y + self.size.y * 0.5
+        return self._position.y + (self.size.y * 0.5) + self.offset.y
 
     def get_down(self) -> float:
-        return self.position.y - self.size.y * 0.5
+        return self._position.y - (self.size.y * 0.5) + self.offset.y
 
     def draw(self, _color: Vector3 = Vector3(0, 1, 0)):
-        Debug.draw_square_2d(self.position, self.size, _color)
+        Debug.draw_square_2d(self.get_position(), self.size, _color)
 
 
 
@@ -145,7 +271,7 @@ def _check2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D) -> bool:
 
 def _check2d_circle_circle(c1: Collider_Circle_2D, c2: Collider_Circle_2D) -> bool:
     _radius_total = c1.radius + c2.radius
-    _distance = (c1.position - c2.position).magnitude()
+    _distance = (c1.get_position() - c2.get_position()).magnitude()
     return _distance <= _radius_total
 
 
@@ -173,15 +299,21 @@ def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rig
     if rigid1 is None and rigid2 is None:
         return
 
-    # Make sure both colliders and rigidbodies have same positions
+    # Correct Positions
     a1.position = rigid1.get_position()
+
+    # Ref Positions
+    _a1x = a1.get_position().x
+    _a1y = a1.get_position().y
+    _a2x = a2.get_position().x
+    _a2y = a2.get_position().y
 
     # Fix only first collider
     if rigid2 is None:
 
         # Platform Collision
         if a2.type is Collision_Type.PLATFORM:
-            if a1.get_down() >= a2.position.y and rigid1.get_velocity().y <= 0:
+            if a1.get_down() >= _a2y and rigid1.get_velocity().y <= 0:
                 a1.position.y += a2.get_up() - a1.get_down()
                 rigid1.set_vel_y(0)
             pass
@@ -195,7 +327,7 @@ def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rig
             _up: bool
 
             # Check X position
-            if a1.position.x < a2.position.x:
+            if _a1x < _a2x:
                 # Depth
                 _left = True
                 _xdepth = a1.get_right() - a2.get_left()
@@ -205,7 +337,7 @@ def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rig
                 _xdepth = a2.get_right() - a1.get_left()
 
             # Check Y position
-            if a1.position.y < a2.position.y:
+            if _a1y < _a2y:
                 # Depth
                 _up = False
                 _ydepth = a1.get_up() - a2.get_down()
@@ -229,13 +361,15 @@ def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rig
                     a1.position.y -= _ydepth
                 rigid1.set_vel_y(0)
 
-            # Final Fix
-            rigid1.set_position(a1.position)
+        # Final Fix
+        rigid1.set_position(a1.position)
 
     # Fix both colliders
     else:
         # Currently do nothing
         pass
+
+
 
 
 def _resolve2d_circle_circle(a1: Collider_Circle_2D, a2: Collider_Circle_2D, rigid1: Rigidbody, rigid2: Rigidbody):
