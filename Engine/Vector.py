@@ -11,6 +11,12 @@ class Vector2:
         self.x: float = _x
         self.y: float = _y
 
+    # Convert to another Vector
+    def get_vec3(self) -> Vector3:
+        return Vector3(self.x, self.y, 0)
+    def get_vec4(self) -> Vector4:
+        return Vector4(self.x, self.y, 0, 0)
+
     # Magnitude / Length
     def magnitude(self) -> float:
         return math.sqrt(self.x*self.x + self.y*self.y)
@@ -54,37 +60,37 @@ class Vector2:
             self.y = value
 
     # [ + ] overload
-    def __add__(self, other):
-        return Vector3(self.x + other.x, self.y + other.y)
+    def __add__(self, other: Vector2) -> Vector2:
+        return Vector2(self.x + other.x, self.y + other.y)
 
     # [ += ] overload
-    def __iadd__(self, other):
+    def __iadd__(self, other: Vector2) -> Vector2:
         self.x += other.x
         self.y += other.y
         return self
 
     # [ - ] overload
-    def __sub__(self, other):
-        return Vector3(self.x - other.x, self.y - other.y)
+    def __sub__(self, other: Vector2) -> Vector2:
+        return Vector2(self.x - other.x, self.y - other.y)
 
     # [ -= ] overload
-    def __isub__(self, other):
+    def __isub__(self, other: Vector2) -> Vector2:
         self.x -= other.x
         self.y -= other.y
         return self
 
     # [ -(vector) ] overload
-    def __neg__(self):
+    def __neg__(self) -> Vector2:
         self.x = -self.x
         self.y = -self.y
         return self
 
     # [ * float ] overload
-    def __mul__(self, other: float):
+    def __mul__(self, other: float) -> Vector2:
         return Vector2(self.x * other, self.y * other)
 
     # [ *= float ] overload
-    def __imul__(self, other: float):
+    def __imul__(self, other: float) -> Vector2:
         self.x *= other
         self.y *= other
         return self
@@ -94,40 +100,41 @@ class Vector2:
         return Vector2(self.x / other, self.y / other)
 
     # [ /= float ] overload/*
-    def __itruediv__(self, other: float):
+    def __itruediv__(self, other: float) -> Vector2:
         self.x /= other
         self.y /= other
         return self
 
     # [ % ] mod overload
-    def __mod__(self, other: float):
+    def __mod__(self, other: float) -> Vector2:
         return Vector2(self.x % other, self.y % other)
 
     # [ %= ] mod overload
-    def __imod__(self, other: float):
+    def __imod__(self, other: float) -> Vector2:
         self.x %= other
         self.y %= other
+        return self
 
     # [ abs() ] overload
-    def __abs__(self):
+    def __abs__(self) -> Vector2:
         self.x = abs(self.x)
         self.y = abs(self.y)
         return self
 
     # [ round() ] overload
-    def __round__(self):
+    def __round__(self) -> Vector2:
         self.x = round(self.x)
         self.y = round(self.y)
         return self
 
     # [ floor() ] overload
-    def __floor__(self):
+    def __floor__(self) -> Vector2:
         self.x = math.floor(self.x)
         self.y = math.floor(self.y)
         return self
 
     # [ ceil() ] overload
-    def __ceil__(self):
+    def __ceil__(self) -> Vector2:
         self.x = math.ceil(self.x)
         self.y = math.ceil(self.y)
         return self
@@ -139,11 +146,6 @@ class Vector3:
         self.x: float = _x
         self.y: float = _y
         self.z: float = _z
-
-    # Create from Vector2
-    @classmethod
-    def convert(self, _vec2: Vector2):
-        return Vector3(_vec2.x, _vec2.y, 0)
 
     # Convert to Vectors
     def get_vec2(self) -> Vector2:
@@ -194,84 +196,86 @@ class Vector3:
         return Vector3(self.x + other.x, self.y + other.y, self.z + other.z)
 
     # [ += ] overload
-    def __iadd__(self, other):
+    def __iadd__(self, other: Vector3) -> Vector3:
         self.x += other.x
         self.y += other.y
         self.z += other.z
         return self
 
     # [ - ] overload
-    def __sub__(self, other):
+    def __sub__(self, other: Vector3) -> Vector3:
         return Vector3(self.x - other.x, self.y - other.y, self.z - other.z)
 
     # [ -= ] overload
-    def __isub__(self, other):
+    def __isub__(self, other: Vector3) -> Vector3:
         self.x -= other.x
         self.y -= other.y
         self.z -= other.z
         return self
 
     # [ -(vector) ] overload
-    def __neg__(self):
+    def __neg__(self) -> Vector3:
         self.x = -self.x
         self.y = -self.y
         self.z = -self.z
         return self
 
     # [ * float ] overload
-    def __mul__(self, other: float):
+    def __mul__(self, other: float) -> Vector3:
         return Vector3(self.x * other, self.y * other, self.z * other)
 
     # [ *= float ] overload
-    def __imul__(self, other: float):
+    def __imul__(self, other: float) -> Vector3:
         self.x *= other
         self.y *= other
         self.z *= other
         return self
 
     # [ / float ] overload
-    def __truediv__(self, other: float):
+    def __truediv__(self, other: float) -> Vector3:
         return Vector3(self.x / other, self.y / other, self.z / other)
 
     # [ /= float ] overload/*
-    def __itruediv__(self, other: float):
+    def __itruediv__(self, other: float) -> Vector3:
         self.x /= other
         self.y /= other
         self.z /= other
         return self
 
     # [ % ] mod overload
-    def __mod__(self, other: float):
+    def __mod__(self, other: float) -> Vector3:
         return Vector3(self.x % other, self.y % other, self.z % other)
 
     # [ %= ] mod overload
-    def __imod__(self, other: float):
+    def __imod__(self, other: float) -> Vector3:
         self.x %= other
         self.y %= other
+        self.z %= other
+        return self
 
     # [ abs() ] overload
-    def __abs__(self):
+    def __abs__(self) -> Vector3:
         self.x = abs(self.x)
         self.y = abs(self.y)
         self.z = abs(self.z)
         return self
 
     # [ round() ] overload
-    def __round__(self):
+    def __round__(self) -> Vector3:
         self.x = round(self.x)
         self.y = round(self.y)
         self.z = round(self.z)
         return self
 
     # [ floor() ] overload
-    def __floor__(self):
+    def __floor__(self) -> Vector3:
         self.x = math.floor(self.x)
         self.y = math.floor(self.y)
         self.z = math.floor(self.z)
         return self
 
     # [ ceil() ] overload
-    def __ceil__(self):
+    def __ceil__(self) -> Vector3:
         self.x = math.ceil(self.x)
         self.y = math.ceil(self.y)
         self.z = math.ceil(self.z)
