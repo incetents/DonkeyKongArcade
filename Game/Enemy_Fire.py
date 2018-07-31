@@ -22,20 +22,21 @@ class Enemy_Fire(Entity_2D):
         Entity_2D.__init__(self, entity_name)
         # Physics
         self.rigidbody = Rigidbody(self.transform.get_position())
+        self.rigidbody.set_terminal_velocity_y(250)
+        self.rigidbody.set_gravity(Vector3(0, -100, 0))
         self.collision = Collider_AABB_2D(self.transform.get_position())
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_DEATH
-        self.collision.enabled = False
         # Animations
         self.animations = SpriteAnimation('anim_enemy1')
-        self.animations.set_speed(8.0)
+        self.animations.set_speed(10.0)
 
     def update(self, delta_time):
         self.animations.update(delta_time)
         _sprite = self.animations.get_current_frame()
 
         # Update Physics
-        self.collision.update_size_from_sprite(self.transform, _sprite)
+        self.collision.set_size_from_sprite(self.transform, _sprite)
         self.rigidbody.update(delta_time)
 
     def draw(self):

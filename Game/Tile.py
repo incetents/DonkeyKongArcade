@@ -28,7 +28,7 @@ class Tile(Entity_2D):
         self.transform.set_position(new_position)
         # Collision
         self.collision = Collider_AABB_2D(self.transform.get_position())
-        self.collision.update_size_from_sprite(self.transform, self.sprite)
+        self.collision.set_size_from_sprite(self.transform, self.sprite)
         # Add to collision manager
         ColliderManager_2D.get_singleton().add_static_collider(self)
 

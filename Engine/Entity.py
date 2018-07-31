@@ -72,7 +72,7 @@ class Entity_2D:
             return
 
         # Rigidbody must be active
-        if self.rigidbody.get_enabled() is False:
+        if self.rigidbody.enabled is False:
             return
 
         # Collision Simple

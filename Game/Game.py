@@ -143,7 +143,7 @@ class Game:
                         )
 
         SpriteSequence('anim_enemy1',
-                       'spr_enemy_fire2',
+                       'spr_enemy_fire1',
                        'spr_enemy_fire2'
                        )
 

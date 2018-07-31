@@ -1,4 +1,5 @@
 
+
 # Emmanuel Lajeunesse ©2018 - Using PyGame and PyOpenGL
 
 # [Colliders]
@@ -148,7 +149,7 @@ class Collider_AABB_2D(Collider):
         Collider.__init__(self, pos)
         self.size: Vector2 = size
 
-    def update_size_from_sprite(self, model: Transform, spr: Sprite):
+    def set_size_from_sprite(self, model: Transform, spr: Sprite):
         self.size = Vector2(
             model.get_scale().x * spr.get_width(),
             model.get_scale().y * spr.get_height()
@@ -166,7 +167,7 @@ class Collider_AABB_2D(Collider):
         _botleft = Vector2(self.get_left(), self.get_down())
         _botright = Vector2(self.get_right(), self.get_down())
 
-        _p2 = point + direction * 50
+        _p2 = point + direction * distance
 
         _mem: Tuple[Vector2, bool] = line_to_line_collision(point, _p2, _topleft, _topright)
         if _mem[1]:
@@ -196,7 +197,6 @@ class Collider_AABB_2D(Collider):
             # print('inside box, simple collision')
             return True
 
-
         # Solve y = mx + b  for straight line (m = slope, b = vertical offset)
         _direction = p2 - p1
         _m = 0.0
@@ -205,10 +205,10 @@ class Collider_AABB_2D(Collider):
 
         # Vertical Slope possibility
         else:
-            print('check')
             return collision_1D_safe(
                 self.get_down(), self.get_up(),
                 min(p1.y, p2.y), max(p1.y, p2.y))
+
 
         _b = p1.y - _m * p1.x # (y - mx = b)
         # Check for y values when x is at left or right of square

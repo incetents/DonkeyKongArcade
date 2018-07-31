@@ -53,6 +53,20 @@ class ColliderManager_2D:
     def clear(self):
         self._chunks.clear()
 
+
+    def process_collision_aabb(self, _entity: Entity_2D, *_other: Entity_2D):
+        _chunks = self.get_chunks_from_collider_aabb_2d(_entity.collision)
+
+        _entity.process_collision_start()
+
+        for c in _chunks:
+            _entity.process_collision_list(c.get_entities())
+
+        _entity.process_collision_list(list(_other))
+
+        _entity.process_collision_end()
+        pass
+
     def get_chunks_from_square_region(self, pos: Vector2, size: Vector2):
         _chunks: List[ColliderChunk] = []
         # Minimum Size of size vector for safety
@@ -89,7 +103,7 @@ class ColliderManager_2D:
 
     def get_chunk(self, world_pos: Vector2) -> ColliderChunk:
         _index_val = (world_pos / CHUNK_SIZE).__floor__()
-        _index: Tuple[float,float] = (_index_val.x,_index_val.y)
+        _index: Tuple[float,float] = (_index_val.x, _index_val.y)
         # Create Chunk if doesn't exist
         if _index not in self._chunks:
             # print('new chunk', _index)

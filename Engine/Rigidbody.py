@@ -14,7 +14,7 @@ def clamp(_val, _min, _max):
 
 class Rigidbody:
     def __init__(self, position_ref: Vector3):
-        self._enabled: bool = True
+        self.enabled: bool = True
         self._position: Vector3 = position_ref
         self._velocity: Vector3 = Vector3()
         self._gravity: Vector3 = Vector3()
@@ -30,9 +30,6 @@ class Rigidbody:
         self._velocity += increase
 
     # Setters
-    def set_enabled(self, _enabled: bool):
-        self._enabled = _enabled
-
     def set_position(self, _position: Vector3):
         self._position = _position
 
@@ -61,9 +58,6 @@ class Rigidbody:
         self._terminal_velocity_switch[2] = True
 
     # Getters
-    def get_enabled(self) -> bool:
-        return self._enabled
-
     def get_position(self) -> Vector3:
         return self._position
 
@@ -75,7 +69,7 @@ class Rigidbody:
 
     # Update
     def update(self, delta_time: float):
-        if self._enabled is False:
+        if self.enabled is False:
             return
 
         self._velocity += (self._gravity * delta_time)

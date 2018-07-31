@@ -49,6 +49,38 @@ class Sprite:
     def get_height_half(self) -> float:
         return self._tex_h_half
 
+    def get_anchor_bottom(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() + Vector2(0, -0.5) * self._tex_height * _model.get_scale().y
+
+    def get_anchor_top(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() + Vector2(0, +0.5) * self._tex_height * _model.get_scale().y
+
+    def get_anchor_left(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() + Vector2(-0.5, 0) * self._tex_width * _model.get_scale().x
+
+    def get_anchor_right(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() + Vector2(+0.5, 0) * self._tex_width * _model.get_scale().x
+
+    def get_anchor_bottom_left(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() +\
+               Vector2(0, -0.5) * self._tex_height * _model.get_scale().y +\
+               Vector2(-0.5, 0) * self._tex_width * _model.get_scale().x
+
+    def get_anchor_bottom_right(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() + \
+               Vector2(0, -0.5) * self._tex_height * _model.get_scale().y + \
+               Vector2(+0.5, 0) * self._tex_width * _model.get_scale().x
+
+    def get_anchor_top_left(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() +\
+               Vector2(0, +0.5) * self._tex_height * _model.get_scale().y +\
+               Vector2(-0.5, 0) * self._tex_width * _model.get_scale().x
+
+    def get_anchor_top_right(self, _model: Transform) -> Vector2:
+        return _model.get_position().get_vec2() + \
+               Vector2(0, +0.5) * self._tex_height * _model.get_scale().y + \
+               Vector2(+0.5, 0) * self._tex_width * _model.get_scale().x
+
     def draw(self, _model: Transform):
         # Texture
         self._texture.bind()

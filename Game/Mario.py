@@ -14,6 +14,8 @@ from Engine.Vector import *
 # Physics
 from Engine.Rigidbody import *
 from Engine.Collision import *
+from Engine.CollisionManager import *
+from Engine.Raycast import *
 import Engine.Config
 
 DEAD_HEIGHT = -10
@@ -29,6 +31,8 @@ class Mario(Entity_2D):
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
         self.collision = Collider_AABB_2D(self.transform.get_position())
+        self._ray_left: Raycast_2D = None
+        self._ray_right: Raycast_2D = None
         # Inputs
         self.input_left: bool = False
         self.input_right: bool = False
@@ -41,6 +45,9 @@ class Mario(Entity_2D):
         self.alive = True
         self.speed = 35
         self.jumpspeed = 50
+        self.touching_ground: bool = False
+        self._bottom_left_anchor: Vector2 = Vector2()
+        self._bottom_right_anchor: Vector2 = Vector2()
 
     def set_state(self, _new_state: MarioState_Enum):
         self._state.exit()
@@ -77,14 +84,27 @@ class Mario(Entity_2D):
         _sprite = self.animations.get_current_frame()
 
         # Update Physics
-        self.collision.update_size_from_sprite(self.transform, _sprite)
+        self.collision.set_size_from_sprite(self.transform, _sprite)
         self.rigidbody.update(delta_time)
+
+        self._bottom_left_anchor = _sprite.get_anchor_bottom_left(self.transform) + Vector2(0, 0.2)
+        self._bottom_right_anchor = _sprite.get_anchor_bottom_right(self.transform) + Vector2(0, 0.2)
+
+        # Update Raycast Data
+        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 20)
+        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 20)
+
+        # Update Ground Data
+        self.touching_ground =\
+            (self._ray_left.hit_distance < 0.2 and self._ray_left.hit_flag is True) or\
+            (self._ray_right.hit_distance < 0.2 and self._ray_right.hit_flag is True)
 
         # Update State
         self._state.update()
+
         # Force dead state if below vertical area
-        # if self.transform.get_position().y < DEAD_HEIGHT and self._state.ID is not MarioState_Enum.DEAD:
-        #     self.set_state(MarioState_Enum.DEAD)
+        if self.transform.get_position().y < DEAD_HEIGHT and self._state.ID is not MarioState_Enum.DEAD:
+            self.set_state(MarioState_Enum.DEAD)
 
         pass
 
@@ -92,6 +112,26 @@ class Mario(Entity_2D):
         # Base Draw
         self.animations.draw(self.transform)
         self.collision.draw(Vector3(0, 0, 1))
+
+        # Draw Raycast Stuff
+        Debug.draw_circle_2d( self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
+        Debug.draw_circle_2d(self._bottom_right_anchor, 1.0, Vector3(0, 1, 0))
+
+        Debug.draw_line_2d(
+            self._bottom_left_anchor,
+            self._ray_left.ray_end,
+            Vector3(1, 0, 0)
+        )
+        Debug.draw_line_2d(
+            self._bottom_right_anchor,
+            self._ray_right.ray_end,
+            Vector3(1, 0, 0)
+        )
+
+        if self._ray_left.hit_flag is not False:
+            Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0,1,0))
+        if self._ray_right.hit_flag is not False:
+            Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
 
     def col_collider_stay(self, collider: Collider):
         pass

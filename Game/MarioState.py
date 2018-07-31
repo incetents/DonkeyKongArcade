@@ -60,7 +60,7 @@ class MarioState_Dead(MarioState):
 
     def enter(self):
         self._mario.set_animation('anim_mario_dying')
-        self._mario.rigidbody.set_enabled(False)
+        self._mario.rigidbody.enabled = False
         self._mario.alive = False
         pass
 
@@ -81,7 +81,7 @@ class MarioState_Idle(MarioState):
 
     def enter(self):
         self._mario.set_animation('anim_mario_idle')
-        self._mario.rigidbody.set_enabled(True)
+        self._mario.rigidbody.enabled = False
         pass
 
     def exit(self):
@@ -95,7 +95,7 @@ class MarioState_Idle(MarioState):
         if self._mario.input_left or self._mario.input_right:
             self._mario.set_state(MarioState_Enum.WALK)
 
-        elif self._mario.input_jump:
+        elif self._mario.input_jump and self._mario.touching_ground is True:
             self._mario.set_state(MarioState_Enum.JUMP)
         #
         pass
@@ -125,7 +125,7 @@ class MarioState_Walk(MarioState):
         if not self._mario.input_left and not self._mario.input_right:
             self._mario.set_state(MarioState_Enum.IDLE)
 
-        elif self._mario.input_jump:
+        elif self._mario.input_jump and self._mario.touching_ground is True:
             self._mario.set_state(MarioState_Enum.JUMP)
         pass
 
@@ -156,7 +156,7 @@ class MarioState_Jump(MarioState):
         else:
             self._mario.rigidbody.set_vel_x(0)
 
-        if not self._mario.input_jump:
+        if self._mario.touching_ground is True:
             self._mario.set_state(MarioState_Enum.IDLE)
         pass
 
