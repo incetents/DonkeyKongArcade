@@ -13,7 +13,10 @@ CLEAR_COLOR = Vector4(0, 0, 0, 1)
 
 TILE_SIZE = 8
 
+GRAV = 100
+
 # Different types of ids for collisions
+TRIGGER_ID_NONE = 0
 TRIGGER_ID_LADDER = 1
 TRIGGER_ID_DEATH = 2
 TRIGGER_ID_WIN = 3

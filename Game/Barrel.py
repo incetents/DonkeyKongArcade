@@ -31,6 +31,7 @@ class Barrel(Entity_2D):
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
         # self.rigidbody.enabled = False
         self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision.offset = Vector2(0, 5)
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_DEATH
         self._ray_left: Raycast_2D = None

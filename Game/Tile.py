@@ -41,8 +41,11 @@ class Tile(Entity_2D):
         self.collision.draw(Vector3(1,0,0))
 
 
-class GameTiles:
-    def __init__(self, floor_sprname: str, ladder_sprname: str):
+class GameTiles(Entity_2D):
+    def __init__(self, entity_name: str, floor_sprname: str, ladder_sprname: str):
+        # Base Constructor
+        Entity_2D.__init__(self, entity_name)
+
         self._tiles: List[Tile] = []
 
         self._floor_spr: str = floor_sprname

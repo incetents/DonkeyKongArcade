@@ -26,12 +26,12 @@ class EntityManager_2D:
 
     def update(self, delta_time: float):
         e: Entity_2D
-        for e in self._entities.items():
-            if e.enabled is True:
-                e.update(delta_time)
+        for key, value in self._entities.items():
+            if value.enabled is True:
+                value.update(delta_time)
 
     def draw(self):
         e: Entity_2D
-        for e in self._entities.items():
-            if e.enabled is True:
-                e.draw()
+        for key, value in self._entities.items():
+            if value.enabled is True:
+                value.draw()

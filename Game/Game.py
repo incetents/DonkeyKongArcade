@@ -81,7 +81,12 @@ class Game:
         Texture('pixel_green', 'assets/pixels/pixel_green.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_blue', 'assets/pixels/pixel_blue.png', FilterMode.POINT, WrapMode.CLAMP)
 
-        Texture('dk1', 'assets/dk/dk1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_center', 'assets/dk/dk1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_left', 'assets/dk/dk2.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_drop', 'assets/dk/dk3.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_pound', 'assets/dk/dk4.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_climb1', 'assets/dk/dk5.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_climb2', 'assets/dk/dk6.png', FilterMode.POINT, WrapMode.CLAMP)
 
         Texture('mario1',     'assets/mario/mario1.png',     FilterMode.POINT, WrapMode.CLAMP)
         Texture('mario2',     'assets/mario/mario2.png',     FilterMode.POINT, WrapMode.CLAMP)
@@ -119,7 +124,10 @@ class Game:
         Sprite('spr_pixel_green', 'pixel_green')
         Sprite('spr_pixel_blue', 'pixel_blue')
 
-        Sprite('spr_dk1', 'dk1')
+        Sprite('spr_dk_center', 'dk_center', Anchor.BOT)
+        Sprite('spr_dk_left', 'dk_left', Anchor.BOT)
+        Sprite('spr_dk_right', 'dk_left', Anchor.BOT).set_flip_x(True)
+        Sprite('spr_dk_drop', 'dk_drop', Anchor.BOT)
 
         Sprite('spr_mario1', 'mario1', Anchor.BOT)
         Sprite('spr_mario2', 'mario2', Anchor.BOT)
@@ -140,14 +148,14 @@ class Game:
         Sprite('spr_fire_barrel4', 'fire_barrel4', Anchor.BOT)
         Sprite('spr_fire_barrel5', 'fire_barrel5', Anchor.BOT)
 
-        Sprite('spr_barrel_side1', 'barrel_side1')
-        Sprite('spr_barrel_side2', 'barrel_side2')
-        Sprite('spr_barrel_1', 'barrel')
-        Sprite('spr_barrel_2', 'barrel').set_flip_x(True)
-        Sprite('spr_barrel_3', 'barrel').set_flip_x(True).set_flip_y(True)
-        Sprite('spr_barrel_4', 'barrel').set_flip_y(True)
+        Sprite('spr_barrel_side1', 'barrel_side1', Anchor.BOT)
+        Sprite('spr_barrel_side2', 'barrel_side2', Anchor.BOT)
+        Sprite('spr_barrel_1', 'barrel', Anchor.BOT)
+        Sprite('spr_barrel_2', 'barrel', Anchor.BOT).set_flip_x(True)
+        Sprite('spr_barrel_3', 'barrel', Anchor.BOT).set_flip_x(True).set_flip_y(True)
+        Sprite('spr_barrel_4', 'barrel', Anchor.BOT).set_flip_y(True)
         Sprite('spr_barrel_vertical', 'barrel_vertical')
-        Sprite('spr_barrel_stack1', 'barrel_stack', Anchor.BOT)
+        Sprite('spr_barrel_stack1', 'barrel_stack', Anchor.BOTLEFT)
 
         Sprite('spr_enemy_fire1', 'fire1')
         Sprite('spr_enemy_fire2', 'fire2')
@@ -248,15 +256,10 @@ class Game:
 
 
     def draw(self):
-
         Engine.Camera.push()
 
         # State Draw
         self._state.draw()
-
-        # Debug.draw_line_3d(Vector3(-120, -120, 0), Vector3(320, 320, 0), Vector3(0.2, 0, 0))
-        # Debug.draw_line_3d(Vector3(0, -200, 0), Vector3(0, 200, 0), Vector3(0.2, 0.2, 0))
-        # Debug.draw_line_3d(Vector3(-200, 0, 0), Vector3(200, 0, 0), Vector3(0, 0, 0.2))
 
         Engine.Camera.pop()
         glFlush()

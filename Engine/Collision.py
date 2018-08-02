@@ -14,6 +14,7 @@ from Engine.Graphics import Debug
 from Engine.Rigidbody import Rigidbody
 from Engine.Transform import *
 from Engine.Sprite import *
+from Engine.Config import *
 
 # 1D Collision General Use
 #
@@ -71,7 +72,7 @@ class Collider:
         self._position: Vector3 = position
         self.offset: Vector2 = Vector2()
         self.enabled: bool = True
-        self.id: int = 0
+        self.id: int = Engine.Config.TRIGGER_ID_NONE
         self.type: Collision_Type = Collision_Type.SOLID
         self.contact_list_prev: Set[Collider] = set()
         self.contact_list: Set[Collider] = set()

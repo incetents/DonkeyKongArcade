@@ -8,6 +8,8 @@ import math
 import Engine.Camera
 import Engine.Collision
 import Engine.Storage
+import Engine.Input
+import Engine.Config
 from Engine.Storage import *
 from Engine.Collision import *
 from Engine.CollisionManager import *
@@ -16,6 +18,7 @@ from Engine.Vector import *
 # Entities / Sprites
 from Engine.Sprite import *
 from Engine.Entity import *
+from Engine.EntityManager import *
 # Misc
 from typing import List
 import Engine.Graphics
@@ -29,9 +32,10 @@ from Game.Enemy_Fire import *
 from Game.Barrel import *
 from Game.Oilbarrel import *
 from Game.InvisBlock import *
-import Engine.Input
+from Game.DK_Barrel import *
+# Text
 from Engine.Text import *
-import Engine.Config
+
 
 ray: Raycast_2D = None
 
@@ -39,6 +43,8 @@ class GameState:
     def __init__(self):
         # Reset Collision System
         ColliderManager_2D.get_singleton().clear()
+        # Reset Current List of Entities
+        EntityManager_2D.get_singleton().clear()
         pass
 
     def enter(self):
@@ -48,9 +54,13 @@ class GameState:
         pass
 
     def update(self, delta_time: float):
+        # Update Entities
+        EntityManager_2D.get_singleton().update(delta_time)
         pass
 
     def draw(self):
+        # Draw Entities
+        EntityManager_2D.get_singleton().draw()
         pass
 
     def draw_ui(self, delta_time: float):
@@ -60,7 +70,7 @@ class GameState:
 class GameState_Menu(GameState):
     def __init__(self):
         GameState.__init__(self)
-        self.test = Tile('dk', 'spr_dk1', Vector3())
+        self.test = Tile('dk', 'spr_dk_center', Vector3())
 
         pass
 
@@ -106,21 +116,37 @@ class GameState_Game(GameState):
     def __init__(self):
         GameState.__init__(self)
 
+        # Special Entities
+        self._gametiles = GameTiles('game_tiles', 'spr_floor1', 'spr_ladder1')
+
+        # Entities
         self._mario: Mario = Mario('mario')
         self._mario.transform.set_position(Vector3(50, 20, 0))
         self._mario.transform.set_flip_x(True)
 
-        self._gametiles = GameTiles('spr_floor1', 'spr_ladder1')
-
         self._enemy1 = Enemy_Fire('enemy1')
-        self._enemy1.transform.set_position(Vector3(50, 20, 0))
+        self._enemy1.transform.set_position(Vector3(120, 20, 0))
 
-        self._barrel_1 = Barrel('barrel1', Vector3(50, 176, 0))
+        self._barrel_1 = Barrel('barrel1', Vector3(50, 172, 0))
 
         self._invis_box1 = InvisBlock('invis1', Vector3(-4, 92, 0), Vector3(8, 216, 1))
-        self._invis_box2 = InvisBlock('invis1', Vector3(228, 92, 0), Vector3(8, 216, 1))
+        self._invis_box2 = InvisBlock('invis2', Vector3(228, 92, 0), Vector3(8, 216, 1))
 
         self._oil1 = Oilbarrel('oil1', Vector3(24, 8, 0))
+
+        self._stack_barrels = Tile('stack_o_barrels', 'spr_barrel_stack1', Vector3(0, 172, 0))
+        self._stack_barrels.collision.offset = Vector2(10, 16)
+        self._stack_barrels.collision.type = Collision_Type.TRIGGER
+        self._stack_barrels.collision.id = Engine.Config.TRIGGER_ID_DEATH
+
+        EntityManager_2D.get_singleton().add_entity(self._gametiles)
+        EntityManager_2D.get_singleton().add_entity(self._mario)
+        EntityManager_2D.get_singleton().add_entity(self._enemy1)
+        EntityManager_2D.get_singleton().add_entity(self._barrel_1)
+        EntityManager_2D.get_singleton().add_entity(self._invis_box1)
+        EntityManager_2D.get_singleton().add_entity(self._invis_box2)
+        EntityManager_2D.get_singleton().add_entity(self._oil1)
+        EntityManager_2D.get_singleton().add_entity(self._stack_barrels)
 
         pass
 
@@ -166,10 +192,7 @@ class GameState_Game(GameState):
         self._gametiles.add_tile_ladder(Vector3(8 * 11, Engine.Config.TILE_SIZE * 2, 0))
         self._gametiles.add_tile_ladder(Vector3(8 * 11, Engine.Config.TILE_SIZE * 3, 0))
 
-        # Extra Blocks
-        ColliderManager_2D.get_singleton().add_static_collider(self._invis_box1)
-        ColliderManager_2D.get_singleton().add_static_collider(self._invis_box2)
-        # ColliderManager_2D.get_singleton().add_static_collider(self._oil1)
+        # Extra Blocks#
 
         pass
 
@@ -177,28 +200,23 @@ class GameState_Game(GameState):
         pass
 
     def update(self, delta_time: float):
+        # Base
+        super().update(delta_time)
 
-        self._gametiles.update(delta_time)
-
-        if self._mario.enabled is True:
-            self._mario.update(delta_time)
-
-        if self._enemy1.enabled is True:
-            self._enemy1.update(delta_time)
-
-        if self._barrel_1.enabled is True:
-            self._barrel_1.update(delta_time)
-
-        if self._oil1.enabled is True:
-            self._oil1.update(delta_time)
+        # Debug Mode
+        if Engine.Input.get_key(pygame.K_n):
+            self._mario.debug = True
+        if Engine.Input.get_key(pygame.K_m):
+            self._mario.debug = False
 
         # COLLISION
         # -------------------------------------
 
         # Mario
-        ColliderManager_2D.get_singleton().process_collision_aabb(self._mario,
-        self._enemy1, self._barrel_1
-        )
+        if self._mario.debug is False:
+            ColliderManager_2D.get_singleton().process_collision_aabb(self._mario,
+            self._enemy1, self._barrel_1
+            )
 
         # Others
         ColliderManager_2D.get_singleton().process_collision_aabb(self._enemy1)
@@ -213,23 +231,8 @@ class GameState_Game(GameState):
         # ------------------------------------------
 
     def draw(self):
-        self._gametiles.draw()
-
-        if self._mario.enabled is True:
-            self._mario.draw()
-
-        if self._enemy1.enabled is True:
-            self._enemy1.draw()
-
-        if self._barrel_1.enabled is True:
-            self._barrel_1.draw()
-
-        if self._oil1.enabled is True:
-            self._oil1.draw()
-
-        self._invis_box1.draw()
-        self._invis_box2.draw()
-
+        # Base
+        super().draw()
 
         _c = ColliderManager_2D.get_singleton()
         _c.draw_chunks()
