@@ -81,7 +81,6 @@ class MarioState_Idle(MarioState):
 
     def enter(self):
         self._mario.set_animation('anim_mario_idle')
-        self._mario.rigidbody.enabled = False
         pass
 
     def exit(self):

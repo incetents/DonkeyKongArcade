@@ -30,6 +30,9 @@ class SpriteBatch:
 
         self._sprite_ref.get_texture().bind()
 
+        _offset = self._sprite_ref.get_offset()
+        _spr_size_half = Vector2(self._sprite_ref.get_width_half(), self._sprite_ref.get_height_half())
+
         # Quad
         glEnable(GL_BLEND)
         glBegin(GL_QUADS)
@@ -43,26 +46,26 @@ class SpriteBatch:
 
             glTexCoord2f(0, 0)
             glVertex2f(
-                (-self._sprite_ref.get_width_half() * _xscale) + i.get_position().x,
-                (-self._sprite_ref.get_height_half() * _yscale) + i.get_position().y
+                (_spr_size_half.x * (_offset.x - _xscale)) + i.get_position().x,
+                (_spr_size_half.y * (_offset.y - _yscale)) + i.get_position().y
             )
 
             glTexCoord2f(1, 0)
             glVertex2f(
-                (+self._sprite_ref.get_width_half() * _xscale) + i.get_position().x,
-                (-self._sprite_ref.get_height_half() * _yscale) + i.get_position().y
+                (_spr_size_half.x * (_offset.x + _xscale)) + i.get_position().x,
+                (_spr_size_half.y * (_offset.y - _yscale)) + i.get_position().y
             )
 
             glTexCoord2f(1, 1)
             glVertex2f(
-                (+self._sprite_ref.get_width_half() * _xscale) + i.get_position().x,
-                (+self._sprite_ref.get_height_half() * _yscale) + i.get_position().y
+                (_spr_size_half.x * (_offset.x + _xscale)) + i.get_position().x,
+                (_spr_size_half.y * (_offset.y + _yscale)) + i.get_position().y
             )
 
             glTexCoord2f(0, 1)
             glVertex2f(
-                (-self._sprite_ref.get_width_half() * _xscale) + i.get_position().x,
-                (+self._sprite_ref.get_height_half() * _yscale) + i.get_position().y
+                (_spr_size_half.x * (_offset.x - _xscale)) + i.get_position().x,
+                (_spr_size_half.y * (_offset.y + _yscale)) + i.get_position().y
             )
 
         glEnd()

@@ -8,7 +8,7 @@ from Engine.Collision import *
 from Engine.CollisionManager import *
 from typing import *
 from Engine.Entity import *
-
+import Engine.Collision
 
 def Raypoint_2D(position: Vector2) -> List[Entity_2D]:
     _result: List[Entity_2D] = []
@@ -23,7 +23,7 @@ def Raypoint_2D(position: Vector2) -> List[Entity_2D]:
 
 
 class Raycast_2D:
-    def __init__(self, position: Vector2, direction: Vector2, distance: float=100):
+    def __init__(self, position: Vector2, direction: Vector2, distance: float=100, ignore_trigger: bool=True):
         self._position: Vector2 = position
         self._direction: Vector2 = direction.normalize()
         self._distance = distance
@@ -52,6 +52,10 @@ class Raycast_2D:
             ents = i.get_entities()
             # check all entities
             for e in ents:
+                # Ignore potential
+                if e.collision.type is Collision_Type.TRIGGER and ignore_trigger:
+                    continue
+
                 # if collision occurs, check intersection
                 _mem: Tuple[Vector2, bool] = e.collision.get_hit_point(self._position, self._direction, self._distance)
                 if _mem[1] is True:

@@ -16,6 +16,7 @@ from Engine.Rigidbody import *
 from Engine.Collision import *
 from Engine.CollisionManager import *
 from Engine.Raycast import *
+from Engine.Anchor import *
 import Engine.Config
 
 DEAD_HEIGHT = -10
@@ -31,6 +32,7 @@ class Mario(Entity_2D):
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
         self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision.offset = Vector2(0, 8)
         self._ray_left: Raycast_2D = None
         self._ray_right: Raycast_2D = None
         # Inputs
@@ -87,17 +89,17 @@ class Mario(Entity_2D):
         self.collision.set_size_from_sprite(self.transform, _sprite)
         self.rigidbody.update(delta_time)
 
-        self._bottom_left_anchor = _sprite.get_anchor_bottom_left(self.transform) + Vector2(0, 0.2)
-        self._bottom_right_anchor = _sprite.get_anchor_bottom_right(self.transform) + Vector2(0, 0.2)
+        self._bottom_left_anchor = _sprite.get_anchor(Anchor.BOTLEFT, self.transform) + Vector2(0, 0.2)
+        self._bottom_right_anchor = _sprite.get_anchor(Anchor.BOTRIGHT, self.transform) + Vector2(0, 0.2)
 
         # Update Raycast Data
-        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 20)
-        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 20)
+        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 20, True)
+        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 20, True)
 
         # Update Ground Data
         self.touching_ground =\
-            (self._ray_left.hit_distance < 0.2 and self._ray_left.hit_flag is True) or\
-            (self._ray_right.hit_distance < 0.2 and self._ray_right.hit_flag is True)
+            (self._ray_left.hit_distance < 0.4 and self._ray_left.hit_flag is True) or\
+            (self._ray_right.hit_distance < 0.4 and self._ray_right.hit_flag is True)
 
         # Update State
         self._state.update()

@@ -35,6 +35,10 @@ class Vector2:
         self.y /= _mag
         return self
 
+    # Multiply with other vector
+    def mult(self, other: Vector2) -> Vector2:
+        return Vector2(self.x * other.x, self.y * other.y)
+
     @staticmethod
     def get_rotation(angle: float):
         return Vector2(
@@ -172,6 +176,10 @@ class Vector3:
         self.y /= _mag
         self.z /= _mag
         return self
+
+    # Multiply with other vector
+    def mult(self, other: Vector3) -> Vector3:
+        return Vector3(self.x * other.x, self.y * other.y, self.z * other.z)
 
     # [str] string overload
     def __str__(self):

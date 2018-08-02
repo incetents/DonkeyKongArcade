@@ -1,37 +1,43 @@
 
 # Emmanuel Lajeunesse ©2018 - Using PyGame and PyOpenGL
 
-# Enemy fire guy that slowly follows mario and kills on hit
+# Oil Barrel is a kill zone that spawns fire
 
-import Engine.Input
 from Engine.Entity import *
 from Engine.Sprite import *
-import Engine.Input
 import pygame
 from Game.MarioState import *
 import Game.MarioState
+from Game.Direction import *
 # Math
 from Engine.Vector import *
+from Engine.Raycast import *
+from Engine.Config import *
 # Physics
 from Engine.Rigidbody import *
 from Engine.Collision import *
 import Engine.Config
+# Misc
+from Engine.Anchor import *
 
-class Enemy_Fire(Entity_2D):
-    def __init__(self, entity_name: str):
+class Oilbarrel(Entity_2D):
+    def __init__(self, entity_name: str, _pos: Vector3):
         # Base Constructor
         Entity_2D.__init__(self, entity_name)
-        self.enabled = False
+        self.transform.set_position(_pos)
         # Physics
-        self.rigidbody = Rigidbody(self.transform.get_position())
-        self.rigidbody.set_terminal_velocity_y(250)
-        self.rigidbody.set_gravity(Vector3(0, -100, 0))
         self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision.offset = Vector2(0, 16)
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_DEATH
+        self._ray_left: Raycast_2D = None
+        self._ray_right: Raycast_2D = None
         # Animations
-        self.animations = SpriteAnimation('anim_enemy1')
-        self.animations.set_speed(10.0)
+        self.animations = SpriteAnimation('anim_oil_barrel_empty')
+        self.animations.set_speed(8.0)
+        # Data
+        ColliderManager_2D.get_singleton().add_static_collider(self)
+
 
     def update(self, delta_time):
         self.animations.update(delta_time)
@@ -39,8 +45,13 @@ class Enemy_Fire(Entity_2D):
 
         # Update Physics
         self.collision.set_size_from_sprite(self.transform, _sprite)
-        self.rigidbody.update(delta_time)
+        self.collision.size *= 0.5
 
     def draw(self):
         self.animations.draw(self.transform)
         self.collision.draw(Vector3(1, 0, 0))
+
+        _pos = self.transform.get_position().get_vec2()
+
+        Debug.draw_x_2d(_pos, 5.0, Vector3(1, 1, 0))
+

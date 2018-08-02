@@ -350,16 +350,22 @@ def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rig
             if _xdepth < _ydepth:
                 if _left and rigid1.get_velocity().x > 0:
                     a1.position.x -= _xdepth
+                    # Vel can only go left
+                    rigid1.set_vel_x(min(0, rigid1.get_velocity().x))
                 elif not _left and rigid1.get_velocity().x < 0:
                     a1.position.x += _xdepth
-                rigid1.set_vel_x(0)
+                    # Vel can only go right
+                    rigid1.set_vel_x(max(0, rigid1.get_velocity().x))
             # Fix Y-axis
             else:
                 if _up and rigid1.get_velocity().y < 0:
                     a1.position.y += _ydepth
+                    # Vel can only go up
+                    rigid1.set_vel_y(max(0, rigid1.get_velocity().y))
                 elif not _up and rigid1.get_velocity().y > 0:
                     a1.position.y -= _ydepth
-                rigid1.set_vel_y(0)
+                    # Vel can only go down
+                    rigid1.set_vel_y(min(0, rigid1.get_velocity().y))
 
         # Final Fix
         rigid1.set_position(a1.position)

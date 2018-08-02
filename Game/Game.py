@@ -12,6 +12,7 @@ from Engine.Sprite import *
 # Math
 import math
 import Engine.Camera
+from Engine.Anchor import *
 from Engine.Vector import *
 from Engine.Collision import *
 from Engine.Transform import *
@@ -22,7 +23,6 @@ from Engine.Rigidbody import *
 import Engine.Input
 import Engine.Storage
 from Engine.Text import *
-
 from Engine.Graphics import *
 
 # Entities
@@ -30,11 +30,11 @@ from Engine.Entity import *
 from Game.Mario import *
 from Game.Tile import *
 
-
 # Misc
 from typing import List
 from OpenGL.GL import *
 import Engine.Config
+
 from Game.GameState import *
 
 _instance = None
@@ -61,9 +61,6 @@ class Game:
 
     def set_state(self, _new_state: GameState):
         self._state.exit()
-        # Reset Collision System
-        ColliderManager_2D.get_singleton().clear()
-
         self._state = _new_state
         self._state.enter()
 
@@ -78,6 +75,12 @@ class Game:
         # Load Textures
         Texture('font', 'assets/text/tilesheet.png', FilterMode.POINT, WrapMode.CLAMP)
 
+        Texture('pixel_black', 'assets/pixels/pixel_black.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('pixel_white', 'assets/pixels/pixel_white.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('pixel_red', 'assets/pixels/pixel_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('pixel_green', 'assets/pixels/pixel_green.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('pixel_blue', 'assets/pixels/pixel_blue.png', FilterMode.POINT, WrapMode.CLAMP)
+
         Texture('dk1', 'assets/dk/dk1.png', FilterMode.POINT, WrapMode.CLAMP)
 
         Texture('mario1',     'assets/mario/mario1.png',     FilterMode.POINT, WrapMode.CLAMP)
@@ -91,6 +94,18 @@ class Game:
         Texture('floor1', 'assets/tiles/floor1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('ladder1', 'assets/tiles/ladder1.png', FilterMode.POINT, WrapMode.CLAMP)
 
+        Texture('barrel_side1', 'assets/objects/barrel_side1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel_side2', 'assets/objects/barrel_side2.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel', 'assets/objects/barrel.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel_vertical', 'assets/objects/barrel_vertical.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel_stack', 'assets/objects/stacked_barrels.png', FilterMode.POINT, WrapMode.CLAMP)
+
+        Texture('fire_barrel1', 'assets/enemies/fire_barrel1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('fire_barrel2', 'assets/enemies/fire_barrel2.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('fire_barrel3', 'assets/enemies/fire_barrel3.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('fire_barrel4', 'assets/enemies/fire_barrel4.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('fire_barrel5', 'assets/enemies/fire_barrel5.png', FilterMode.POINT, WrapMode.CLAMP)
+
         Texture('fire1', 'assets/enemies/fire1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('fire2', 'assets/enemies/fire2.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('fire_blue1', 'assets/enemies/fire_blue1.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -98,20 +113,41 @@ class Game:
 
     def setup_sprites(self):
         # Load Sprites
+        Sprite('spr_pixel_black', 'pixel_black')
+        Sprite('spr_pixel_white', 'pixel_white')
+        Sprite('spr_pixel_red', 'pixel_red')
+        Sprite('spr_pixel_green', 'pixel_green')
+        Sprite('spr_pixel_blue', 'pixel_blue')
+
         Sprite('spr_dk1', 'dk1')
 
-        Sprite('spr_mario1', 'mario1')
-        Sprite('spr_mario2', 'mario2')
-        Sprite('spr_mario3', 'mario3')
-        Sprite('spr_mario_jump', 'mario_jump')
-        Sprite('spr_mario_death1', 'mario_death1')
-        Sprite('spr_mario_death2', 'mario_death2')
-        Sprite('spr_mario_death3', 'mario_death1').set_flip_y(True)
-        Sprite('spr_mario_death4', 'mario_death2').set_flip_x(True)
-        Sprite('spr_mario_dead', 'mario_dead')
+        Sprite('spr_mario1', 'mario1', Anchor.BOT)
+        Sprite('spr_mario2', 'mario2', Anchor.BOT)
+        Sprite('spr_mario3', 'mario3', Anchor.BOT)
+        Sprite('spr_mario_jump', 'mario_jump', Anchor.BOT)
+        Sprite('spr_mario_death1', 'mario_death1', Anchor.BOT)
+        Sprite('spr_mario_death2', 'mario_death2', Anchor.BOT)
+        Sprite('spr_mario_death3', 'mario_death1', Anchor.BOT).set_flip_y(True)
+        Sprite('spr_mario_death4', 'mario_death2', Anchor.BOT).set_flip_x(True)
+        Sprite('spr_mario_dead', 'mario_dead', Anchor.BOT)
 
-        Sprite('spr_floor1', 'floor1')
-        Sprite('spr_ladder1', 'ladder1')
+        Sprite('spr_floor1', 'floor1', Anchor.BOTLEFT)
+        Sprite('spr_ladder1', 'ladder1', Anchor.BOTLEFT)
+
+        Sprite('spr_fire_barrel1', 'fire_barrel1', Anchor.BOT)
+        Sprite('spr_fire_barrel2', 'fire_barrel2', Anchor.BOT)
+        Sprite('spr_fire_barrel3', 'fire_barrel3', Anchor.BOT)
+        Sprite('spr_fire_barrel4', 'fire_barrel4', Anchor.BOT)
+        Sprite('spr_fire_barrel5', 'fire_barrel5', Anchor.BOT)
+
+        Sprite('spr_barrel_side1', 'barrel_side1')
+        Sprite('spr_barrel_side2', 'barrel_side2')
+        Sprite('spr_barrel_1', 'barrel')
+        Sprite('spr_barrel_2', 'barrel').set_flip_x(True)
+        Sprite('spr_barrel_3', 'barrel').set_flip_x(True).set_flip_y(True)
+        Sprite('spr_barrel_4', 'barrel').set_flip_y(True)
+        Sprite('spr_barrel_vertical', 'barrel_vertical')
+        Sprite('spr_barrel_stack1', 'barrel_stack', Anchor.BOT)
 
         Sprite('spr_enemy_fire1', 'fire1')
         Sprite('spr_enemy_fire2', 'fire2')
@@ -141,6 +177,23 @@ class Game:
         SpriteSequence('anim_mario_dead',
                         'spr_mario_dead'
                         )
+
+        SpriteSequence('anim_oil_barrel_empty',
+                       'spr_fire_barrel1',
+                       'spr_fire_barrel2'
+                       )
+
+        SpriteSequence('anim_oil_barrel_burn',
+                       'spr_fire_barrel3',
+                       'spr_fire_barrel4',
+                       )
+
+        SpriteSequence('anim_barrel_roll',
+                       'spr_barrel_1',
+                       'spr_barrel_2',
+                       'spr_barrel_3',
+                       'spr_barrel_4'
+                       )
 
         SpriteSequence('anim_enemy1',
                        'spr_enemy_fire1',

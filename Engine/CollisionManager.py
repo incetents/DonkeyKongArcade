@@ -53,13 +53,13 @@ class ColliderManager_2D:
     def clear(self):
         self._chunks.clear()
 
-
     def process_collision_aabb(self, _entity: Entity_2D, *_other: Entity_2D):
         _chunks = self.get_chunks_from_collider_aabb_2d(_entity.collision)
 
         _entity.process_collision_start()
 
         for c in _chunks:
+            # print(c.get_id_position(), len(c.get_entities()))
             _entity.process_collision_list(c.get_entities())
 
         _entity.process_collision_list(list(_other))

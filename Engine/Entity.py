@@ -16,11 +16,19 @@ import Engine.Collision
 
 class Entity_2D:
     def __init__(self, ent_name: str):
+        self.name: str = ent_name
+        self.enabled: bool = True
         self.transform: Transform = Transform()
         self.rigidbody: Rigidbody = None
         self.collision: Collider = None
         # Add To Storage
         Engine.Storage.add(Engine.Storage.Type.ENTITY_2D, ent_name, self)
+
+    def update(self, delta_time):
+        pass
+
+    def draw(self):
+        pass
 
     def col_collider_stay(self, collider: Collider):
         pass
@@ -63,6 +71,7 @@ class Entity_2D:
                 self.col_collider_exit(i)
 
     def process_collision_list(self, entities: List[Entity_2D]):
+
         # Requires collision box and rigidbody to process collision
         if self.collision is None or self.rigidbody is None:
             return
@@ -77,8 +86,9 @@ class Entity_2D:
 
         # Collision Simple
         for i in entities:
+
             # Ignore disabled colliders
-            if i.collision.enabled is False:
+            if (i.enabled is False) or (i.collision.enabled is False):
                 continue
 
             # Check Collide between both colliders

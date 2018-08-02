@@ -34,6 +34,17 @@ class Debug:
         pass
 
     @staticmethod
+    def draw_x_2d(_pos: Vector2, _size: float, _color: Vector3, _depth: float=0):
+        glDisable(GL_BLEND)
+        glBegin(GL_LINES)
+        glColor(_color.x, _color.y, _color.z, 1)
+        glVertex3f(_pos.x - _size, _pos.y + _size, _depth)
+        glVertex3f(_pos.x + _size, _pos.y - _size, _depth)
+        glVertex3f(_pos.x + _size, _pos.y + _size, _depth)
+        glVertex3f(_pos.x - _size, _pos.y - _size, _depth)
+        glEnd()
+
+    @staticmethod
     def draw_line_2d(_pos1: Vector2, _pos2: Vector2, _color: Vector3, _depth: float=0):
         glDisable(GL_BLEND)
         glBegin(GL_LINES)

@@ -3,19 +3,21 @@
 
 # 2D Sprites
 
-import Engine.Storage
 from Engine.Texture import Texture
 from Engine.Graphics import Mesh
 from Engine.Vector import *
 from Engine.Transform import *
 from Engine.Graphics import *
+from Engine.Anchor import *
+import Engine.Anchor
+import Engine.Storage
 from OpenGL.GL import *
 from typing import List, Dict
 import math
 
 
 class Sprite:
-    def __init__(self, sprite_name: str, texture_name: str):
+    def __init__(self, sprite_name: str, texture_name: str, _anchor: Anchor=Anchor.MID):
         self._texture: Texture = Engine.Storage.get(Engine.Storage.Type.TEXTURE, texture_name)
         if self._texture is None:
             print('ERR CANNOT FIND TEX: ', texture_name, ' for Sprite')
@@ -25,14 +27,25 @@ class Sprite:
         self._tex_w_half: float = self._tex_width * 0.5
         self._tex_h_half: float = self._tex_height * 0.5
         self._flip: List[bool] = [False, False]
+        self._offset: Vector2 = Vector2()
+        self.set_anchor(_anchor)
         # Add Sprite to Storage
         Engine.Storage.add(Engine.Storage.Type.SPRITE, sprite_name, self)
 
+    def set_anchor(self, _anchor: Anchor):
+        self._offset = Vector2(-Engine.Anchor._AnchorValues[_anchor][0], -Engine.Anchor._AnchorValues[_anchor][1])
+        return self
+
     def set_flip_x(self, state: bool):
         self._flip[0] = state
+        return self
 
     def set_flip_y(self, state: bool):
         self._flip[1] = state
+        return self
+
+    def get_offset(self) -> Vector2:
+        return self._offset
 
     def get_texture(self) -> Texture:
         return self._texture
@@ -49,37 +62,12 @@ class Sprite:
     def get_height_half(self) -> float:
         return self._tex_h_half
 
-    def get_anchor_bottom(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() + Vector2(0, -0.5) * self._tex_height * _model.get_scale().y
-
-    def get_anchor_top(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() + Vector2(0, +0.5) * self._tex_height * _model.get_scale().y
-
-    def get_anchor_left(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() + Vector2(-0.5, 0) * self._tex_width * _model.get_scale().x
-
-    def get_anchor_right(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() + Vector2(+0.5, 0) * self._tex_width * _model.get_scale().x
-
-    def get_anchor_bottom_left(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() +\
-               Vector2(0, -0.5) * self._tex_height * _model.get_scale().y +\
-               Vector2(-0.5, 0) * self._tex_width * _model.get_scale().x
-
-    def get_anchor_bottom_right(self, _model: Transform) -> Vector2:
+    def get_anchor(self, _anchor: Anchor, _model: Transform) -> Vector2:
         return _model.get_position().get_vec2() + \
-               Vector2(0, -0.5) * self._tex_height * _model.get_scale().y + \
-               Vector2(+0.5, 0) * self._tex_width * _model.get_scale().x
-
-    def get_anchor_top_left(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() +\
-               Vector2(0, +0.5) * self._tex_height * _model.get_scale().y +\
-               Vector2(-0.5, 0) * self._tex_width * _model.get_scale().x
-
-    def get_anchor_top_right(self, _model: Transform) -> Vector2:
-        return _model.get_position().get_vec2() + \
-               Vector2(0, +0.5) * self._tex_height * _model.get_scale().y + \
-               Vector2(+0.5, 0) * self._tex_width * _model.get_scale().x
+               Vector2(
+                   _model.get_scale().y * self._tex_w_half * (self._offset.x + Engine.Anchor._AnchorValues[_anchor][0]),
+                   _model.get_scale().x * self._tex_h_half * (self._offset.y + Engine.Anchor._AnchorValues[_anchor][1])
+               )
 
     def draw(self, _model: Transform):
         # Texture
@@ -96,29 +84,29 @@ class Sprite:
         # Bottom Left
         glTexCoord2f(0, 0)
         glVertex2f(
-            (-self._tex_w_half * _xscale) + _model._position.x,
-            (-self._tex_h_half * _yscale) + _model._position.y
+            (self._tex_w_half * (self._offset.x -_xscale)) + _model._position.x,
+            (self._tex_h_half * (self._offset.y -_yscale)) + _model._position.y
         )
 
         # Bottom Right
         glTexCoord2f(1, 0)
         glVertex2f(
-            (+self._tex_w_half * _xscale) + _model._position.x,
-            (-self._tex_h_half * _yscale) + _model._position.y
+            (self._tex_w_half * (self._offset.x +_xscale)) + _model._position.x,
+            (self._tex_h_half * (self._offset.y -_yscale)) + _model._position.y
         )
 
         # Top Right
         glTexCoord2f(1, 1)
         glVertex2f(
-            (+self._tex_w_half * _xscale) + _model._position.x,
-            (+self._tex_h_half * _yscale) + _model._position.y
+            (self._tex_w_half * (self._offset.x +_xscale)) + _model._position.x,
+            (self._tex_h_half * (self._offset.y +_yscale)) + _model._position.y
         )
 
         # Top Left
         glTexCoord2f(0, 1)
         glVertex2f(
-            (-self._tex_w_half * _xscale) + _model._position.x,
-            (+self._tex_h_half * _yscale) + _model._position.y
+            (self._tex_w_half * (self._offset.x -_xscale)) + _model._position.x,
+            (self._tex_h_half * (self._offset.y +_yscale)) + _model._position.y
         )
 
         glEnd()
@@ -193,6 +181,10 @@ class SpriteAnimation:
     def update(self, delta_time):
         # Increment Time
         self._time_index = (self._time_index + delta_time * self._speed * self._current_sequence.speed) % len(self._current_sequence)
+        # Fix Negative
+        if self._time_index < 0:
+            self._time_index += len(self._current_sequence)
+
         _index = math.floor(self._time_index)
         # Set Current Sprite
         self._current_sprite = self._current_sequence[_index]
