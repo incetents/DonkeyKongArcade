@@ -28,11 +28,12 @@ import pygame
 from Game.MarioState import *
 from Game.Mario import *
 from Game.Tile import *
+from Game.Ladder import *
 from Game.Enemy_Fire import *
 from Game.Barrel import *
 from Game.Oilbarrel import *
 from Game.InvisBlock import *
-from Game.DK_Barrel import *
+from Game.DonkeyKong import *
 # Text
 from Engine.Text import *
 
@@ -45,6 +46,8 @@ class GameState:
         ColliderManager_2D.get_singleton().clear()
         # Reset Current List of Entities
         EntityManager_2D.get_singleton().clear()
+        # Mario is global#
+        self._mario: Mario = None
         pass
 
     def enter(self):
@@ -71,7 +74,6 @@ class GameState_Menu(GameState):
     def __init__(self):
         GameState.__init__(self)
         self.test = Tile('dk', 'spr_dk_center', Vector3())
-
         pass
 
     def enter(self):
@@ -81,10 +83,11 @@ class GameState_Menu(GameState):
         pass
 
     def update(self, delta_time: float):
+        super().update(delta_time)
         pass
 
     def draw(self):
-        self.test.draw()
+        super().draw()
         pass
 
     def draw_ui(self, delta_time: float):
@@ -117,20 +120,21 @@ class GameState_Game(GameState):
         GameState.__init__(self)
 
         # Special Entities
-        self._gametiles = GameTiles('game_tiles', 'spr_floor1', 'spr_ladder1')
+        self._floor_tiles = TileBatch('batch_tiles1', 'spr_floor1', Collision_Type.PLATFORM)
+        # Ladders
+        # self._ladders: List[Entity_2D] = []
 
         # Entities
         self._mario: Mario = Mario('mario')
         self._mario.transform.set_position(Vector3(50, 20, 0))
         self._mario.transform.set_flip_x(True)
 
-        self._enemy1 = Enemy_Fire('enemy1')
-        self._enemy1.transform.set_position(Vector3(120, 20, 0))
+        self._enemy1 = Enemy_Fire('enemy1', Vector3(120, 20, 0))
 
-        self._barrel_1 = Barrel('barrel1', Vector3(50, 172, 0))
+        self._barrel_1 = Barrel('barrel1', Vector3(50, 172 + 5, 0))
 
-        self._invis_box1 = InvisBlock('invis1', Vector3(-4, 92, 0), Vector3(8, 216, 1))
-        self._invis_box2 = InvisBlock('invis2', Vector3(228, 92, 0), Vector3(8, 216, 1))
+        self._invis_box1 = InvisBlock('invis1', Vector3(-12, 92, 0), Vector3(8, 216, 1))
+        self._invis_box2 = InvisBlock('invis2', Vector3(236, 92, 0), Vector3(8, 216, 1))
 
         self._oil1 = Oilbarrel('oil1', Vector3(24, 8, 0))
 
@@ -139,61 +143,67 @@ class GameState_Game(GameState):
         self._stack_barrels.collision.type = Collision_Type.TRIGGER
         self._stack_barrels.collision.id = Engine.Config.TRIGGER_ID_DEATH
 
-        EntityManager_2D.get_singleton().add_entity(self._gametiles)
-        EntityManager_2D.get_singleton().add_entity(self._mario)
+        self._dk = DonkeyKong('dk', Vector3(42, 172, 0))
+
+        # FLOORS
+        ################
+        # First Line
+        for i in range(14):
+            self._floor_tiles.add_tile(Vector3(8 * i, 0, 0))
+
+        for i in range(14):
+            self._floor_tiles.add_tile(Vector3(8 * (i + 14), math.floor(i / 2), 0))
+
+        # Backslash line 1
+        for i in range(26):
+            self._floor_tiles.add_tile(Vector3(8 * i, 40 - math.floor(i / 2), 0))
+
+        # Forwardslash line 1
+        for i in range(26):
+            self._floor_tiles.add_tile(Vector3(8 * i + 16, 60 + math.floor(i / 2), 0))
+
+        # Backslash line 2
+        for i in range(26):
+            self._floor_tiles.add_tile(Vector3(8 * i, 106 - math.floor(i / 2), 0))
+
+        # Forwardslash line 2
+        for i in range(26):
+            self._floor_tiles.add_tile(Vector3(8 * i + 16, 126 + math.floor(i / 2), 0))
+
+        # Last Line
+        for i in range(18):
+            self._floor_tiles.add_tile(Vector3(8 * i, 164, 0))
+        for i in range(8):
+            self._floor_tiles.add_tile(Vector3(8 * (i + 18), 163 - math.floor(i / 2), 0))
+
+        # Pauline Line
+        for i in range(6):
+            self._floor_tiles.add_tile(Vector3(8 * i + (8 * 11), 192, 0))
+
+        # LADDERS
+        ################
+        self._ladders: List[Ladder] = []
+        self._ladders.append(Ladder('ladder' + str(1), 'spr_ladder_52', Vector3(64, 172, 0)))
+        self._ladders.append(Ladder('ladder' + str(2), 'spr_ladder_52', Vector3(80, 172, 0)))
+
+        # Extra Blocks#
+
         EntityManager_2D.get_singleton().add_entity(self._enemy1)
         EntityManager_2D.get_singleton().add_entity(self._barrel_1)
         EntityManager_2D.get_singleton().add_entity(self._invis_box1)
         EntityManager_2D.get_singleton().add_entity(self._invis_box2)
         EntityManager_2D.get_singleton().add_entity(self._oil1)
         EntityManager_2D.get_singleton().add_entity(self._stack_barrels)
+        EntityManager_2D.get_singleton().add_entity(self._dk)
 
+        EntityManager_2D.get_singleton().add_entity_list(self._ladders)
+
+        EntityManager_2D.get_singleton().add_batch(self._floor_tiles)
+
+        EntityManager_2D.get_singleton().add_entity(self._mario)
         pass
 
     def enter(self):
-        # FLOORS
-        ################
-        # First Line
-        for i in range(14):
-            self._gametiles.add_tile_floor(Vector3(8 * i, 0, 0))
-
-        for i in range(14):
-            self._gametiles.add_tile_floor(Vector3(8 * (i + 14), math.floor(i / 2), 0))
-
-        # Backslash line 1
-        for i in range(26):
-            self._gametiles.add_tile_floor(Vector3(8 * i, 40 - math.floor(i / 2), 0))
-
-        # Forwardslash line 1
-        for i in range(26):
-            self._gametiles.add_tile_floor(Vector3(8 * i + 16, 60 + math.floor(i / 2), 0))
-
-        # Backslash line 2
-        for i in range(26):
-            self._gametiles.add_tile_floor(Vector3(8 * i, 106 - math.floor(i / 2), 0))
-
-        # Forwardslash line 2
-        for i in range(26):
-            self._gametiles.add_tile_floor(Vector3(8 * i + 16, 126 + math.floor(i / 2), 0))
-
-        # Last Line
-        for i in range(18):
-            self._gametiles.add_tile_floor(Vector3(8 * i, 164, 0))
-        for i in range(8):
-            self._gametiles.add_tile_floor(Vector3(8 * (i + 18), 163 - math.floor(i / 2), 0))
-
-        # Pauline Line
-        for i in range(6):
-            self._gametiles.add_tile_floor(Vector3(8 * i + (8 * 11), 192, 0))
-
-        # LADDERS
-        ################
-        self._gametiles.add_tile_ladder(Vector3(8 * 11, Engine.Config.TILE_SIZE * 1, 0))
-        self._gametiles.add_tile_ladder(Vector3(8 * 11, Engine.Config.TILE_SIZE * 2, 0))
-        self._gametiles.add_tile_ladder(Vector3(8 * 11, Engine.Config.TILE_SIZE * 3, 0))
-
-        # Extra Blocks#
-
         pass
 
     def exit(self):
@@ -209,20 +219,10 @@ class GameState_Game(GameState):
         if Engine.Input.get_key(pygame.K_m):
             self._mario.debug = False
 
-        # COLLISION
-        # -------------------------------------
+        # TEST
+        if Engine.Input.get_key(pygame.K_z):
+            self._oil1.spawn_fire()
 
-        # Mario
-        if self._mario.debug is False:
-            ColliderManager_2D.get_singleton().process_collision_aabb(self._mario,
-            self._enemy1, self._barrel_1
-            )
-
-        # Others
-        ColliderManager_2D.get_singleton().process_collision_aabb(self._enemy1)
-        ColliderManager_2D.get_singleton().process_collision_aabb(self._barrel_1,
-        )
-#
         # Test
         if Engine.Input.get_key(pygame.K_q):
             self._mario.set_state(MarioState_Enum.DEAD)
@@ -231,11 +231,14 @@ class GameState_Game(GameState):
         # ------------------------------------------
 
     def draw(self):
+
         # Base
         super().draw()
 
+        # Chunk outlines
         _c = ColliderManager_2D.get_singleton()
         _c.draw_chunks()
+
         pass
 
     def draw_ui(self, delta_time: float):

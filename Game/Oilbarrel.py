@@ -3,9 +3,10 @@
 
 # Oil Barrel is a kill zone that spawns fire
 
+import pygame
 from Engine.Entity import *
 from Engine.Sprite import *
-import pygame
+from Engine.EntityManager import *
 from Game.MarioState import *
 import Game.MarioState
 from Game.Direction import *
@@ -19,6 +20,10 @@ from Engine.Collision import *
 import Engine.Config
 # Misc
 from Engine.Anchor import *
+from Game.Enemy_Fire import *
+from Engine.Clock import *
+from Engine.SpriteBatch import *
+
 
 class Oilbarrel(Entity_2D):
     def __init__(self, entity_name: str, _pos: Vector3):
@@ -35,8 +40,25 @@ class Oilbarrel(Entity_2D):
         # Animations
         self.animations = SpriteAnimation('anim_oil_barrel_empty')
         self.animations.set_speed(8.0)
+
         # Data
-        ColliderManager_2D.get_singleton().add_static_collider(self)
+        self.fires: List[Enemy_Fire] = []
+        self.firespawn_wait: Clock = Clock(0.3)
+
+    def spawn_fire(self):
+        # Prevent entity spamming
+        if self.firespawn_wait.is_finished():
+            # append time to created fire to make sure its unique
+            _enemy = Enemy_Fire(
+                'new_fire_' + str(pygame.time.get_ticks()),
+                self.transform.get_position() + Vector3(0, 20.0, 0)
+            )
+            _enemy.rigidbody.set_velocity(Vector3(20, 40, 0))
+            self.fires.append(_enemy)
+
+            self.firespawn_wait.reset()
+
+            EntityManager_2D.get_singleton().add_entity(_enemy)
 
 
     def update(self, delta_time):

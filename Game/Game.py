@@ -87,6 +87,8 @@ class Game:
         Texture('dk_pound', 'assets/dk/dk4.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('dk_climb1', 'assets/dk/dk5.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('dk_climb2', 'assets/dk/dk6.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_hold1', 'assets/dk/dk7.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('dk_hold2', 'assets/dk/dk8.png', FilterMode.POINT, WrapMode.CLAMP)
 
         Texture('mario1',     'assets/mario/mario1.png',     FilterMode.POINT, WrapMode.CLAMP)
         Texture('mario2',     'assets/mario/mario2.png',     FilterMode.POINT, WrapMode.CLAMP)
@@ -96,8 +98,8 @@ class Game:
         Texture('mario_death2', 'assets/mario/mario_death2.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('mario_dead', 'assets/mario/mario_dead.png', FilterMode.POINT, WrapMode.CLAMP)
 
-        Texture('floor1', 'assets/tiles/floor1.png', FilterMode.POINT, WrapMode.CLAMP)
-        Texture('ladder1', 'assets/tiles/ladder1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('floor1', 'assets/tiles/floor1.png', FilterMode.POINT, WrapMode.REPEAT)
+        Texture('ladder1', 'assets/tiles/ladder1.png', FilterMode.POINT, WrapMode.REPEAT)
 
         Texture('barrel_side1', 'assets/objects/barrel_side1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('barrel_side2', 'assets/objects/barrel_side2.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -128,19 +130,32 @@ class Game:
         Sprite('spr_dk_left', 'dk_left', Anchor.BOT)
         Sprite('spr_dk_right', 'dk_left', Anchor.BOT).set_flip_x(True)
         Sprite('spr_dk_drop', 'dk_drop', Anchor.BOT)
+        Sprite('spr_dk_hold_barrel1', 'dk_hold1', Anchor.BOT)
+        Sprite('spr_dk_hold_barrel2', 'dk_hold2', Anchor.BOT)
 
         Sprite('spr_mario1', 'mario1', Anchor.BOT)
         Sprite('spr_mario2', 'mario2', Anchor.BOT)
         Sprite('spr_mario3', 'mario3', Anchor.BOT)
         Sprite('spr_mario_jump', 'mario_jump', Anchor.BOT)
         Sprite('spr_mario_death1', 'mario_death1', Anchor.BOT)
-        Sprite('spr_mario_death2', 'mario_death2', Anchor.BOT)
+        Sprite('spr_mario_death2', 'mario_death2', Anchor.BOT).set_flip_x(True)
         Sprite('spr_mario_death3', 'mario_death1', Anchor.BOT).set_flip_y(True)
-        Sprite('spr_mario_death4', 'mario_death2', Anchor.BOT).set_flip_x(True)
+        Sprite('spr_mario_death4', 'mario_death2', Anchor.BOT)
         Sprite('spr_mario_dead', 'mario_dead', Anchor.BOT)
 
         Sprite('spr_floor1', 'floor1', Anchor.BOTLEFT)
-        Sprite('spr_ladder1', 'ladder1', Anchor.BOTLEFT)
+
+        Sprite('spr_ladder_52', 'ladder1', Anchor.BOTLEFT).set_scale_y(52.0 / 8.0).set_uv_top(52.0 / 8.0)
+        Sprite('spr_ladder_24', 'ladder1', Anchor.BOTLEFT).set_scale_y(24.0 / 8.0).set_uv_top(24.0 / 8.0)
+        Sprite('spr_ladder_20', 'ladder1', Anchor.BOTLEFT).set_scale_y(20.0 / 8.0).set_uv_top(20.0 / 8.0)
+        Sprite('spr_ladder_16', 'ladder1', Anchor.BOTLEFT).set_scale_y(16.0 / 8.0).set_uv_top(16.0 / 8.0)
+        Sprite('spr_ladder_13', 'ladder1', Anchor.BOTLEFT).set_scale_y(13.0 / 8.0).set_uv_top(13.0 / 8.0)
+
+        Sprite('spr_ladder_8', 'ladder1', Anchor.BOTLEFT)
+        Sprite('spr_ladder_6', 'ladder1', Anchor.BOTLEFT).set_scale_y(6.0 / 8.0).set_uv_top(6.0 / 8.0)
+        Sprite('spr_ladder_4', 'ladder1', Anchor.BOTLEFT).set_scale_y(4.0 / 8.0).set_uv_top(4.0 / 8.0)
+        Sprite('spr_ladder_3', 'ladder1', Anchor.BOTLEFT).set_scale_y(3.0 / 8.0).set_uv_top(3.0 / 8.0)
+        # Sprite('spr_ladder1_double', 'ladder1', Anchor.BOTLEFT)
 
         Sprite('spr_fire_barrel1', 'fire_barrel1', Anchor.BOT)
         Sprite('spr_fire_barrel2', 'fire_barrel2', Anchor.BOT)
@@ -185,6 +200,15 @@ class Game:
         SpriteSequence('anim_mario_dead',
                         'spr_mario_dead'
                         )
+
+        SpriteSequence('anim_dk_frames',
+                       'spr_dk_center',
+                       'spr_dk_left',
+                       'spr_dk_right',
+                       'spr_dk_hold_barrel1',
+                       'spr_dk_hold_barrel2',
+                       'spr_dk_drop'
+                       )
 
         SpriteSequence('anim_oil_barrel_empty',
                        'spr_fire_barrel1',
@@ -243,11 +267,6 @@ class Game:
         elif Engine.Input.get_key(pygame.K_d):
             Engine.Camera.move_right()
 
-        if Engine.Input.get_key(pygame.K_z):
-            Engine.Camera.zoom_in()
-        elif Engine.Input.get_key(pygame.K_x):
-            Engine.Camera.zoom_out()#
-
         # Mode Switcher
         if Engine.Input.get_key(pygame.K_1):
             self.set_state(GameState_Menu())
@@ -269,7 +288,5 @@ class Game:
         # Draw UI
         self._state.draw_ui(delta_time)
 
-
-
-
-        pass
+    def get_Mario(self) -> Mario:
+        return self._state._mario

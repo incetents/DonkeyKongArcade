@@ -151,10 +151,7 @@ class Collider_AABB_2D(Collider):
         self.size: Vector2 = size
 
     def set_size_from_sprite(self, model: Transform, spr: Sprite):
-        self.size = Vector2(
-            model.get_scale().x * spr.get_width(),
-            model.get_scale().y * spr.get_height()
-        )
+        self.size = model.get_scale().get_vec2().mult(spr.get_scale())
 
     def get_hit_point(self, point: Vector2, direction: Vector2, distance: float) -> Tuple[Vector2, bool]:
         # Make sure point is outside box
@@ -242,7 +239,6 @@ class Collider_AABB_2D(Collider):
 
     def draw(self, _color: Vector3 = Vector3(0, 1, 0)):
         Debug.draw_square_2d(self.get_position(), self.size, _color)
-
 
 
 # Collision Checking Functions

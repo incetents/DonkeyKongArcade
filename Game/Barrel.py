@@ -81,26 +81,26 @@ class Barrel(Entity_2D):
         self.animations.draw(self.transform)
         self.collision.draw(Vector3(1, 0, 0))
 
-        # # Draw Raycast Stuff
-        # Debug.draw_circle_2d(self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
-        # Debug.draw_circle_2d(self._bottom_right_anchor, 1.0, Vector3(0, 1, 0))
-        # Debug.draw_line_2d(
-        #     self._bottom_left_anchor,
-        #     self._ray_left.ray_end,
-        #     Vector3(1, 0, 0)
-        # )
-        # Debug.draw_line_2d(
-        #     self._bottom_right_anchor,
-        #     self._ray_right.ray_end,
-        #     Vector3(1, 0, 0)
-        # )
-        # if self._ray_left.hit_flag is not False:
-        #     Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0,1,0))
-        # if self._ray_right.hit_flag is not False:
-        #     Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
+        # Draw Raycast Stuff
+        if self._ray_right is not None and self._ray_left is not None:
+            Debug.draw_circle_2d(self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
+            Debug.draw_circle_2d(self._bottom_right_anchor, 1.0, Vector3(0, 1, 0))
+            Debug.draw_line_2d(
+                self._bottom_left_anchor,
+                self._ray_left.ray_end,
+                Vector3(1, 0, 0)
+            )
+            Debug.draw_line_2d(
+                self._bottom_right_anchor,
+                self._ray_right.ray_end,
+                Vector3(1, 0, 0)
+            )
+            if self._ray_left.hit_flag is not False:
+                Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0,1,0))
+            if self._ray_right.hit_flag is not False:
+                Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
 
-
-    def col_collider_enter(self, collider: Collider):
+    def collider_enter(self, collider: Collider):
         if collider.id is Engine.Config.TRIGGER_ID_WALL:
             if self.direction is Direction.RIGHT:
                 self.direction = Direction.LEFT

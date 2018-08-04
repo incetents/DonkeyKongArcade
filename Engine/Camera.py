@@ -8,7 +8,7 @@ from Engine.Transform import Transform
 from Engine.Vector import Vector3
 import Engine.Config
 
-position: Vector3 = Vector3(114, 90, 0)
+position: Vector3 = Vector3(114, 114, 0)
 zoom: float = 3
 
 move_speed: float = 3

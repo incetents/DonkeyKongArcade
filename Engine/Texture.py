@@ -87,6 +87,9 @@ class Texture:
     def get_height(self) -> int:
         return self._height
 
+    def get_name(self) -> str:
+        return self._name
+
 
 
 

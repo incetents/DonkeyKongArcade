@@ -11,7 +11,7 @@ from Engine.Clock import *
 from enum import Enum
 
 class MarioState_Enum(Enum):
-    ERR = 0
+    ERR = 0,
     IDLE = 1,
     WALK = 2,
     JUMP = 3,

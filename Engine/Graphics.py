@@ -35,6 +35,7 @@ class Debug:
 
     @staticmethod
     def draw_x_2d(_pos: Vector2, _size: float, _color: Vector3, _depth: float=0):
+        glDisable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glBegin(GL_LINES)
         glColor(_color.x, _color.y, _color.z, 1)
@@ -46,6 +47,7 @@ class Debug:
 
     @staticmethod
     def draw_line_2d(_pos1: Vector2, _pos2: Vector2, _color: Vector3, _depth: float=0):
+        glDisable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glBegin(GL_LINES)
         glColor(_color.x, _color.y, _color.z, 1)
@@ -55,6 +57,7 @@ class Debug:
 
     @staticmethod
     def draw_line_3d(_pos1: Vector3, _pos2: Vector3, _color: Vector3):
+        glDisable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glBegin(GL_LINES)
         glColor(_color.x, _color.y, _color.z, 1)
@@ -64,6 +67,7 @@ class Debug:
 
     @staticmethod
     def draw_circle_2d(_pos, _radius: float, _color: Vector3, _vertices: int = 40):
+        glDisable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glBegin(GL_LINE_LOOP)
         glColor(_color.x, _color.y, _color.z, 1)
@@ -80,6 +84,7 @@ class Debug:
         _down_y = _pos.y - _size.y * 0.5
         _up_y = _pos.y + _size.y * 0.5
 
+        glDisable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glBegin(GL_LINE_LOOP)
         glColor(_color.x, _color.y, _color.z, 1)

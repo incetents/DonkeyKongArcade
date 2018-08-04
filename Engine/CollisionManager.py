@@ -2,6 +2,7 @@
 # Emmanuel Lajeunesse ©2018 - Using PyGame and PyOpenGL
 
 # System to manage locations of all colliders
+from __future__ import annotations
 from typing import Dict
 from Engine.Vector import *
 from Engine.Collision import *
@@ -9,9 +10,8 @@ from Engine.Entity import *
 from Engine.Vector import *
 import Engine.Graphics
 from Engine.Collision import *
-from Engine.Entity import *
 
-CHUNK_SIZE = 64
+CHUNK_SIZE = 32
 CHUNK_SIZE_VEC_HALF = Vector2(CHUNK_SIZE/2, CHUNK_SIZE/2)
 CHUNK_SIZE_VEC = Vector2(CHUNK_SIZE, CHUNK_SIZE)
 
@@ -53,20 +53,6 @@ class ColliderManager_2D:
     def clear(self):
         self._chunks.clear()
 
-    def process_collision_aabb(self, _entity: Entity_2D, *_other: Entity_2D):
-        _chunks = self.get_chunks_from_collider_aabb_2d(_entity.collision)
-
-        _entity.process_collision_start()
-
-        for c in _chunks:
-            # print(c.get_id_position(), len(c.get_entities()))
-            _entity.process_collision_list(c.get_entities())
-
-        _entity.process_collision_list(list(_other))
-
-        _entity.process_collision_end()
-        pass
-
     def get_chunks_from_square_region(self, pos: Vector2, size: Vector2):
         _chunks: List[ColliderChunk] = []
         # Minimum Size of size vector for safety
@@ -101,6 +87,12 @@ class ColliderManager_2D:
     def get_chunks_from_collider_aabb_2d(self, collider: Collider_AABB_2D):
         return self.get_chunks_from_square_region(collider.get_position().get_vec2(), collider.size)
 
+    def get_chunks_from_collider(self, collider: Collider):
+        if type(collider) is Collider_AABB_2D:
+            return self.get_chunks_from_collider_aabb_2d(collider)
+        else:
+            print('process collision error 101')
+
     def get_chunk(self, world_pos: Vector2) -> ColliderChunk:
         _index_val = (world_pos / CHUNK_SIZE).__floor__()
         _index: Tuple[float,float] = (_index_val.x, _index_val.y)
@@ -110,10 +102,29 @@ class ColliderManager_2D:
             self._chunks[_index] = ColliderChunk(Vector3(_index_val.x, _index_val.y, 0) * CHUNK_SIZE)
         return self._chunks[_index]
 
-    def add_static_collider(self, ent: Entity_2D):
+    def process_collision(self, _entity: Entity_2D, _others: List[Entity_2D] = []):
+        _chunks = self.get_chunks_from_collider(_entity.collision)
+
+        # Begin
+        _entity.process_collision_start()
+
+        # Create list of all possible entities in region
+        _megalist: List[Entity_2D] = []
+        for c in _chunks:
+            _megalist += c.get_entities()
+        _megalist += _others
+
+        # Process all those entities
+        _entity.process_collision_list(_megalist)
+
+        # End
+        _entity.process_collision_end()
+
+    def add(self, ent: Entity_2D):
+
+        # Static Collider
         if ent.rigidbody is None:
             # Add Collider based on type
-
             if type(ent.collision) is Collider_AABB_2D:
                 _col: Collider_AABB_2D = ent.collision
                 _chunks = self.get_chunks_from_collider_aabb_2d(_col)
@@ -131,14 +142,9 @@ class ColliderManager_2D:
 
             else:
                 print('unknown collider type attemped to be added:', ent.collision)
-        else:
-            print('cannot add static collider if rigidbody is present:', ent)
 
     def draw_chunks(self):
         for i in self._chunks.values():
             Debug.draw_square_2d(
-                i._collider.get_position(), CHUNK_SIZE_VEC, Vector3(0,0,0.5)
+                i._collider.get_position(), CHUNK_SIZE_VEC, Vector3(0, 0, 0.5)
             )
-
-
-    pass

@@ -32,6 +32,7 @@ class Mario(Entity_2D):
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -Engine.Config.GRAV, 0))
         self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision.type = Collision_Type.TRIGGER
         self.collision.offset = Vector2(0, 8)
         self._ray_left: Raycast_2D = None
         self._ray_right: Raycast_2D = None
@@ -45,7 +46,7 @@ class Mario(Entity_2D):
 
         # Mario Data
         self.debug: bool = False
-        self.debug_speed: float = 10
+        self.debug_speed: float = 4
         self.alive: bool = True
         self.speed: float = 35
         self.jumpspeed: float = 50
@@ -54,10 +55,14 @@ class Mario(Entity_2D):
         self._bottom_right_anchor: Vector2 = Vector2()
 
     def set_state(self, _new_state: MarioState_Enum):
-        self._state.exit()
+        if self._state is not None:
+            self._state.exit()
+
         self._state = Game.MarioState.create_state(self, _new_state)
-        self._state.ID = _new_state
-        self._state.enter()
+
+        if self._state is not None:
+            self._state.ID = _new_state
+            self._state.enter()
 
     def set_animation(self, _sequence: str):
         self.animations.set_sprite_sequence(_sequence)
@@ -153,26 +158,17 @@ class Mario(Entity_2D):
             if self._ray_right.hit_flag is not False:
                 Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
 
-    def col_collider_stay(self, collider: Collider):
-        pass
-
-    def col_collider_enter(self, collider: Collider):
-        pass
-
-    def col_collider_exit(self, collider: Collider):
-        pass
-
-    def col_trigger_stay(self, trigger: Collider):
+    def trigger_stay(self, trigger: Collider):
         # print('trigger id:', trigger.id)
         pass
 
-    def col_trigger_enter(self, trigger: Collider):
+    def trigger_enter(self, trigger: Collider):
         if trigger.id is Engine.Config.TRIGGER_ID_DEATH:
             self.set_state(MarioState_Enum.DEAD)
         print('ENTER id:', trigger.id)
         pass
 
-    def col_trigger_exit(self, trigger: Collider):
+    def trigger_exit(self, trigger: Collider):
         print('EXIT id:', trigger.id)
         pass
 

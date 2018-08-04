@@ -32,8 +32,6 @@ class InvisBlock(Entity_2D):
         self.collision.type = Collision_Type.SOLID
         self.collision.id = Engine.Config.TRIGGER_ID_WALL
         self.collision.size = self.transform.get_scale().get_vec2()
-        # Data
-        ColliderManager_2D.get_singleton().add_static_collider(self)
 
     def update(self, delta_time):
         pass

@@ -33,10 +33,16 @@ def add(_type: Type, _name: str, _data):
 
 
 def get(_type: Type, _name: str):
+    # Exception
+    if _name is '':
+        return None
+
+    # Grab Data
     global Storage
     if _name in Storage[_type]:
         _data = Storage[_type][_name]
         return _data
+    # Data not found
     else:
         print('Storage Get Error, type:', _type, ',name:', _name)
         return None

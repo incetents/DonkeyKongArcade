@@ -6,7 +6,6 @@
 import Engine.Input
 from Engine.Entity import *
 from Engine.Sprite import *
-import Engine.Input
 import pygame
 from Game.MarioState import *
 import Game.MarioState
@@ -15,12 +14,17 @@ from Engine.Vector import *
 # Physics
 from Engine.Rigidbody import *
 from Engine.Collision import *
+from Engine.Clock import *
+from Engine.EntityManager import *
 import Engine.Config
 
+from Game.Mario import *
+
 class Enemy_Fire(Entity_2D):
-    def __init__(self, entity_name: str):
+    def __init__(self, entity_name: str, _position: Vector3):
         # Base Constructor
         Entity_2D.__init__(self, entity_name)
+        self.transform.set_position(_position)
         # Physics
         self.rigidbody = Rigidbody(self.transform.get_position())
         self.rigidbody.set_terminal_velocity_y(250)
@@ -32,13 +36,31 @@ class Enemy_Fire(Entity_2D):
         self.animations = SpriteAnimation('anim_enemy1')
         self.animations.set_speed(10.0)
 
+        # Data
+        self.speed: float = 5
+
     def update(self, delta_time):
+        import Game.Game
+
         self.animations.update(delta_time)
         _sprite = self.animations.get_current_frame()
 
         # Update Physics
         self.collision.set_size_from_sprite(self.transform, _sprite)
         self.rigidbody.update(delta_time)
+
+        # Simple AI (Move Towards Mario)
+        _mario = Game.Game._instance.get_singleton().get_Mario()
+        # _m: Mario = Game.get_singleton().get_Mario()
+        # if self.transform.get_position().x < _m.transform.get_position().x:
+        #     self.rigidbody.set_velocity(Vector3(+self.speed, 0, 0))
+        # else:
+        #     self.rigidbody.set_velocity(Vector3(-self.speed, 0, 0))
+
+        # Kill Condition
+        # if self.transform.get_position().y < - 5.0:
+        #     print('fart')
+        #     EntityManager_2D.get_singleton().remove_entity(self)
 
     def draw(self):
         self.animations.draw(self.transform)

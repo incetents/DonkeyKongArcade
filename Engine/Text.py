@@ -156,6 +156,7 @@ class Text:
         global font_uvs
         Engine.Storage.get(Engine.Storage.Type.TEXTURE, 'font').bind()
 
+        glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glPushMatrix()
 
