@@ -13,7 +13,7 @@ class SpriteBatch:
     def __init__(self, batch_name: str, sprite_ref: str):
         self.name: str = batch_name
         self._sprite_ref: Sprite = Engine.Storage.get(Engine.Storage.Type.SPRITE, sprite_ref)
-        self._entities: List[Entity_2D] = []
+        self._entities: List[Entity] = []
         self._vertices: List[Tuple[Vector2, Vector2, Vector2, Vector2]] =\
             [Tuple[Vector2, Vector2, Vector2, Vector2]]
         self._dirty = True
@@ -29,7 +29,7 @@ class SpriteBatch:
     def get_sprite(self) -> Sprite:
         return self._sprite_ref
 
-    def get_entities(self) -> List[Entity_2D]:
+    def get_entities(self) -> List[Entity]:
         return self._entities
 
     def set_sprite(self, sprite_ref: str):
@@ -37,7 +37,7 @@ class SpriteBatch:
         self._update_temp()
         return self
 
-    def add_entity(self, entity: Entity_2D):
+    def add_entity(self, entity: Entity):
         self._entities.append(entity)
         self._dirty = True
         return self

@@ -20,10 +20,10 @@ import Engine.Config
 # Misc
 from Engine.Anchor import *
 
-class InvisBlock(Entity_2D):
-    def __init__(self, entity_name: str, _pos: Vector3, _scale: Vector3):
+class InvisBlock(Entity):
+    def __init__(self, entity_name: str, _pos: Vector3, _scale: Vector3= Vector3(1,1,1)):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         self.transform.set_position(_pos)
         self.transform.set_scale(_scale)
         # Physics

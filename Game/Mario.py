@@ -6,6 +6,7 @@
 from Engine.Entity import *
 from Engine.Sprite import *
 import Engine.Input
+import Engine.Raycast
 import pygame
 from Game.MarioState import *
 import Game.MarioState
@@ -21,10 +22,10 @@ import Engine.Config
 
 DEAD_HEIGHT = -10
 
-class Mario(Entity_2D):
+class Mario(Entity):
     def __init__(self, entity_name: str):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         # State
         self._state: MarioState = MarioState_Idle(self)
         # Physics
@@ -115,8 +116,8 @@ class Mario(Entity_2D):
         self._bottom_right_anchor = _sprite.get_anchor(Anchor.BOTRIGHT, self.transform) + Vector2(0, 0.2)
 
         # Update Raycast Data
-        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 20, True)
-        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 20, True)
+        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 5, True)
+        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 5, True)
 
         # Update Ground Data
         self.touching_ground =\
@@ -129,6 +130,10 @@ class Mario(Entity_2D):
         # Force dead state if below vertical area
         if self.transform.get_position().y < DEAD_HEIGHT and self._state.ID is not MarioState_Enum.DEAD:
             self.set_state(MarioState_Enum.DEAD)
+
+        # Test
+        # _cols: List[Entity] = Engine.Raycast.Raypoint_2D(self.transform.get_position().get_vec2())
+        # prin# t(len(_cols))
 
         pass
 

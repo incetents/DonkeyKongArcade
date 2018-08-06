@@ -132,9 +132,9 @@ def main():
         # Update Game
         _delta_time: float = 0
         if clock.get_fps() > 0.0:
-            _delta_time = 1.0 / clock.get_fps()
+            # set and Cap delta time for safety
+            _delta_time = min(0.1, 1.0 / clock.get_fps())
 
-        # Update with Delta time (0 safety check)
         _game.update(_delta_time)
         # Draw Game
         _game.draw()

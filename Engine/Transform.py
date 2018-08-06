@@ -6,9 +6,11 @@
 from Engine.Vector import *
 from OpenGL.GL import *
 from typing import List
+from Engine.Component import *
 
-class Transform:
+class Transform(Component):
     def __init__(self):
+        super().__init__()
         self._parent = None
         self._position: Vector3 = Vector3()
         self._rotation_dir: Vector3 = Vector3(0, 0, 1)

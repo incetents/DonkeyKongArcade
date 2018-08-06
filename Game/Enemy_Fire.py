@@ -20,10 +20,10 @@ import Engine.Config
 
 from Game.Mario import *
 
-class Enemy_Fire(Entity_2D):
+class Enemy_Fire(Entity):
     def __init__(self, entity_name: str, _position: Vector3):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         self.transform.set_position(_position)
         # Physics
         self.rigidbody = Rigidbody(self.transform.get_position())

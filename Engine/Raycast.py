@@ -10,8 +10,8 @@ from typing import *
 from Engine.Entity import *
 import Engine.Collision
 
-def Raypoint_2D(position: Vector2) -> List[Entity_2D]:
-    _result: List[Entity_2D] = []
+def Raypoint_2D(position: Vector2) -> List[Entity]:
+    _result: List[Entity] = []
     _chunk = ColliderManager_2D.get_singleton().get_chunk(position)
     # inside the chunk get all entities that touch point
     _ents = _chunk.get_entities()
@@ -38,7 +38,7 @@ class Raycast_2D:
         _size = Vector2(abs(self._position.x - self.ray_end.x), abs(self._position.y - self.ray_end.y))
         # Get all chunks that are inside the square region
 
-        _chunks = ColliderManager_2D.get_singleton().get_chunks_from_square_region(_center, _size)
+        _chunks = ColliderManager_2D.get_singleton().get_chunks_from_square_region_safe(_center, _size)
         # Check chunks that intersect with lines
         _chunks_intersect: List[ColliderChunk] = []
         for chunk in _chunks:

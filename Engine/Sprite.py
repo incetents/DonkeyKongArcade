@@ -255,15 +255,24 @@ class SpriteAnimation:
         self._current_sequence = self._sequences[sequence_name]
         # Reset index/time
         self._time_index = 0.0
+        return self
+
+    def set_frame(self, _index: int):
+        self._time_index = _index
+        self.update(0.0)
+        return self
 
     def set_speed(self, _speed: float):
         self._speed = _speed
+        return self
 
     def set_flip_x(self, state: bool):
         self._flips[0] = state
+        return self
 
     def set_flip_y(self, state: bool):
         self._flips[1] = state
+        return self
 
     def get_current_frame(self) -> Sprite:
         return self._current_sprite
@@ -274,6 +283,9 @@ class SpriteAnimation:
         # Fix Negative
         if self._time_index < 0:
             self._time_index += len(self._current_sequence)
+            # If it's still in negative range, set it to the final frame
+            if self._time_index < 0:
+                self._time_index =  len(self._current_sequence) - 1.0
 
         _index = math.floor(self._time_index)
         # Set Current Sprite

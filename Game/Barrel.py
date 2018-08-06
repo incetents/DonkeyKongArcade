@@ -6,6 +6,7 @@
 # or it can fall from its spawn position from donkey kong
 
 from Engine.Entity import *
+from Engine.EntityManager import *
 from Engine.Sprite import *
 import pygame
 from Game.MarioState import *
@@ -18,12 +19,13 @@ from Engine.Config import *
 # Physics
 from Engine.Rigidbody import *
 from Engine.Collision import *
+import Engine.Collision
 import Engine.Config
 
-class Barrel(Entity_2D):
-    def __init__(self, entity_name: str, _pos: Vector3):
+class Barrel(Entity):
+    def __init__(self, entity_name: str, _pos: Vector3, _direction: Direction=Direction.RIGHT):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         self.transform.set_position(_pos)
         # Physics
         self.rigidbody = Rigidbody(self.transform.get_position())
@@ -44,7 +46,7 @@ class Barrel(Entity_2D):
         self.h_speed_current: float = 0
         self.h_speed_move: float = 50
         self.h_speed_fall: float = 20
-        self.direction = Direction.RIGHT
+        self.direction = _direction
 
     def update(self, delta_time):
         _sprite = self.animations.get_current_frame()
@@ -57,8 +59,11 @@ class Barrel(Entity_2D):
         self._bottom_left_anchor = _sprite.get_anchor(Anchor.BOTLEFT, self.transform) + Vector2(0, 0.2)
         self._bottom_right_anchor = _sprite.get_anchor(Anchor.BOTRIGHT, self.transform) + Vector2(0, 0.2)
 
-        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 20, True)
-        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 20, True)
+        # print('~~~')#
+        # _t = pygame.time.get_ticks()
+        self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 5, True)
+        self._ray_right = Raycast_2D(self._bottom_right_anchor, Vector2(0, -1), 5, True)
+        # print('raycast time for:', self.name, pygame.time.get_ticks() - _t)
 
         # Update Ground Data
         self.above_emptiness = \
@@ -82,23 +87,23 @@ class Barrel(Entity_2D):
         self.collision.draw(Vector3(1, 0, 0))
 
         # Draw Raycast Stuff
-        if self._ray_right is not None and self._ray_left is not None:
-            Debug.draw_circle_2d(self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
-            Debug.draw_circle_2d(self._bottom_right_anchor, 1.0, Vector3(0, 1, 0))
-            Debug.draw_line_2d(
-                self._bottom_left_anchor,
-                self._ray_left.ray_end,
-                Vector3(1, 0, 0)
-            )
-            Debug.draw_line_2d(
-                self._bottom_right_anchor,
-                self._ray_right.ray_end,
-                Vector3(1, 0, 0)
-            )
-            if self._ray_left.hit_flag is not False:
-                Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0,1,0))
-            if self._ray_right.hit_flag is not False:
-                Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
+        # if self._ray_right is not None and self._ray_left is not None:
+        #     Debug.draw_circle_2d(self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
+        #     Debug.draw_circle_2d(self._bottom_right_anchor, 1.0, Vector3(0, 1, 0))
+        #     Debug.draw_line_2d(
+        #         self._bottom_left_anchor,
+        #         self._ray_left.ray_end,
+        #         Vector3(1, 0, 0)
+        #     )
+        #     Debug.draw_line_2d(
+        #         self._bottom_right_anchor,
+        #         self._ray_right.ray_end,
+        #         Vector3(1, 0, 0)
+        #     )
+        #     if self._ray_left.hit_flag is not False:
+        #         Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0,1,0))
+        #     if self._ray_right.hit_flag is not False:
+        #         Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
 
     def collider_enter(self, collider: Collider):
         if collider.id is Engine.Config.TRIGGER_ID_WALL:
@@ -106,3 +111,8 @@ class Barrel(Entity_2D):
                 self.direction = Direction.LEFT
             else:
                 self.direction = Direction.RIGHT
+
+    def trigger_enter(self, trigger: Collider):
+        if trigger.id is Engine.Config.TRIGGER_ID_FIRE_BARREL:
+            EntityManager_2D.get_singleton().remove_entity(self)
+        pass

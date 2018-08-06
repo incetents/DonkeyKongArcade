@@ -4,11 +4,10 @@
 # DK from stage 1 that randomly throws barrels at given intervals
 
 from Engine.Entity import *
+from Engine.EntityManager import *
 from Engine.Sprite import *
 import pygame
 from enum import Enum
-from Game.MarioState import *
-import Game.MarioState
 from Game.Direction import *
 # Math
 from Engine.Vector import *
@@ -21,12 +20,13 @@ from Engine.Collision import *
 import Engine.Config
 from Game.DonkeyKongState import *
 import Game.DonkeyKongState
+from Game.Barrel import *
 
 
-class DonkeyKong(Entity_2D):
+class DonkeyKong(Entity):
     def __init__(self, entity_name: str, _pos: Vector3):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         self.transform.set_position(_pos)
 
         # Physics
@@ -40,7 +40,8 @@ class DonkeyKong(Entity_2D):
         self.animations.set_speed(4.0)
 
         # Data
-        self._state: DK_State = None
+        self._barrels: List[Barrel] = []
+        self._state: DK_State = DK_State_Still(self)
 
     def set_state(self, _new_state: DK_State_Enum):
         if self._state is not None:
@@ -52,19 +53,30 @@ class DonkeyKong(Entity_2D):
             self._state.ID = _new_state
             self._state.enter()
 
+    def set_frame(self, _index: int):
+        self.animations.set_frame(_index)
+        return self
+
+    def spawn_barrel(self, dropped: bool=False):
+        _barrel = Barrel('barrel' + str(len(self._barrels)), self.transform.get_position() + Vector3(20, 0, -2))
+        # _barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(50, 30, -2), Direction.LEFT)
+        EntityManager_2D.get_singleton().add_entity(_barrel)
+
+        self._barrels.append(_barrel)
+        return self
+
     def update(self, delta_time):
-        self.animations.update(delta_time)
+        # self.animations.update(delta_time)
         _sprite = self.animations.get_current_frame()
 
-        # # Simple AI
-        # if self._state is DK_Barrel_State.STILL:
-        #     # If time is complete
-        #     if self._timer.is_finished():
-        #         self._state = DK_Barrel_State.THROW
+        # Update State
+        self._state.update(delta_time)
 
-        # Update Physics
-
-
+        # Update Barrel list
+        _copy_barrels = self._barrels.copy()
+        for b in _copy_barrels:
+            if b.deleted is True:
+                self._barrels.remove(b)
 
     def draw(self):
         self.animations.draw(self.transform)

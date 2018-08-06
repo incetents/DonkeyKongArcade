@@ -11,25 +11,53 @@ from Engine.Sprite import Sprite
 import Engine.Storage
 # Physics
 from Engine.Rigidbody import *
-from Engine.CollisionManager import *
 from Engine.Collision import *
 import Engine.Collision
+from Engine.Component import *
 
-class Entity_2D:
+class Entity:
     def __init__(self, ent_name: str):
         self.name: str = ent_name
+        # Special Case
+        self.deleted: bool = False
         self.enabled: bool = True
+
+        # Components
+        self._components: Dict(type, Component) = {}
+
         self.transform: Transform = Transform()
         self.rigidbody: Rigidbody = None
         self.collision: Collider = None
+
+        self.add_component(self.transform)
+
         # Add To Storage
-        Engine.Storage.add(Engine.Storage.Type.ENTITY_2D, ent_name, self)
+        Engine.Storage.add(Engine.Storage.Type.Entity, ent_name, self)
 
     def update(self, delta_time):
         pass
 
     def draw(self):
         pass
+
+    def add_component(self, component: Component):
+        # cannot be base class
+        if type(component) is not Component:
+            self._components[type(component)] = component
+        else:
+            print('attempting to add duplicate components', component, ' on entity', self)
+
+    def remove_component(self, component: Component):
+        self._components.pop(type(component), None)
+
+    def remove_all_components(self):
+        self._components.clear()
+
+    def get_component(self, component_type):
+        if component_type in self._components:
+            return self._components[component_type]
+
+        return None
 
     def collider_stay(self, collider: Collider):
         pass
@@ -71,7 +99,7 @@ class Entity_2D:
             else:
                 self.collider_exit(i)
 
-    def process_collision_list(self, entities: List[Entity_2D]):
+    def process_collision_list(self, entities: List[Entity]):
 
         # Collision and rigidbody must be present
         if self.collision is None or self.rigidbody is None:

@@ -12,7 +12,7 @@ class Type(Enum):
     MESH = 2,
     SPRITE = 3
     SPRITE_SEQUENCE = 4
-    ENTITY_2D = 5,
+    Entity = 5,
     ENTITY_3D = 6
 
 
@@ -22,7 +22,7 @@ Storage = {
     Type.MESH: {},
     Type.SPRITE: {},
     Type.SPRITE_SEQUENCE: {},
-    Type.ENTITY_2D: {},
+    Type.Entity: {},
     Type.ENTITY_3D: {}
 }
 

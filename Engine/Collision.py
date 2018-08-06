@@ -16,28 +16,31 @@ from Engine.Transform import *
 from Engine.Sprite import *
 from Engine.Config import *
 
+# Collision Checking Classes
+#
+class Collision_Type(Enum):
+    SOLID = 1,
+    TRIGGER = 2,
+    PLATFORM = 3,
+
 # 1D Collision General Use
 #
 
 # Assumes p1 is smaller than p2 for both lines
-def collision_1D_safe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
+def collision_1D_unsafe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
     # Check intersection
     return line1_p2 >= line2_p1 and line2_p2 >= line1_p1
 
-
 # Assumes that lines could be backwards
-def collision_1D_unsafe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
+def collision_1D_safe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
     # Check End points of lines
     _min_line1 = min(line1_p1, line1_p2)
     _max_line1 = max(line1_p1, line1_p2)
     _min_line2 = min(line2_p1, line2_p2)
     _max_line2 = max(line2_p1, line2_p2)
     # Check intersection
-    return collision_1D_safe(_min_line1, _max_line1, _min_line2, _max_line2)
+    return collision_1D_unsafe(_min_line1, _max_line1, _min_line2, _max_line2)
 
-
-def fart():
-    pass
 # Checks if two lines intersect and return the resulting point if they do
 def line_to_line_collision(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) -> Tuple[Vector2, bool]:
     b: Vector2 = a2 - a1
@@ -58,14 +61,6 @@ def line_to_line_collision(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) -
 
     out_result = a1 + b * t
     return out_result, True
-
-# Collision Checking Classes
-#
-class Collision_Type(Enum):
-    SOLID = 1,
-    TRIGGER = 2,
-    PLATFORM = 3,
-
 
 class Collider:
     def __init__(self, position: Vector3):
@@ -203,7 +198,7 @@ class Collider_AABB_2D(Collider):
 
         # Vertical Slope possibility
         else:
-            return collision_1D_safe(
+            return collision_1D_unsafe(
                 self.get_down(), self.get_up(),
                 min(p1.y, p2.y), max(p1.y, p2.y))
 
@@ -261,9 +256,11 @@ def check2d(collider1, collider2) -> bool:
 
 
 def _check2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D) -> bool:
-    _x_intersection = collision_1D_safe(a1.get_left(), a1.get_right(), a2.get_left(), a2.get_right())
-    _y_intersection = collision_1D_safe(a1.get_down(), a1.get_up(), a2.get_down(), a2.get_up())
-    return _x_intersection and _y_intersection
+    _x_intersection = collision_1D_unsafe(a1.get_left(), a1.get_right(), a2.get_left(), a2.get_right())
+    if _x_intersection is False:
+        return False
+    _y_intersection = collision_1D_unsafe(a1.get_down(), a1.get_up(), a2.get_down(), a2.get_up())
+    return _y_intersection
 
 
 def _check2d_circle_circle(c1: Collider_Circle_2D, c2: Collider_Circle_2D) -> bool:
@@ -291,32 +288,31 @@ def resolve2d(collider1, collider2, rigid1: Rigidbody, rigid2: Rigidbody=None):
         return False
 
 
-def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rigidbody, rigid2: Rigidbody):
+def _resolve2d_aabb_aabb(collider1: Collider_AABB_2D, collider2: Collider_AABB_2D, rigid1: Rigidbody, rigid2: Rigidbody):
     # Error
-    if rigid1 is None and rigid2 is None:
+    if rigid1 is None:
         return
-
-    # Correct Positions
-    a1.position = rigid1.get_position()
-
-    # Ref Positions
-    _a1x = a1.get_position().x
-    _a1y = a1.get_position().y
-    _a2x = a2.get_position().x
-    _a2y = a2.get_position().y
 
     # Fix only first collider
     if rigid2 is None:
 
+        # Initial Position Fix
+        collider1.position = rigid1.get_position()
+
+        # Correct Positions (due to collider class having offsets internally)
+        _a = collider1.get_position().get_vec2()
+        _b = collider2.get_position().get_vec2()
+
         # Platform Collision
-        if a2.type is Collision_Type.PLATFORM:
-            if a1.get_down() >= _a2y and rigid1.get_velocity().y <= 0:
-                a1.position.y += a2.get_up() - a1.get_down()
-                rigid1.set_vel_y(0)
+        if collider2.type is Collision_Type.PLATFORM:
+            if collider1.get_down() >= _b.y and rigid1.get_velocity().y <= 0:
+                collider1.position.y += collider2.get_up() - collider1.get_down()
+                # Vel can only go up
+                rigid1.set_vel_y(max(0, rigid1.get_velocity().y))
             pass
 
         # Normal Collision
-        elif a2.type is Collision_Type.SOLID:
+        elif collider2.type is Collision_Type.SOLID:
             # Check depth of X and Y intersection
             _xdepth: int = 0
             _ydepth: int = 0
@@ -324,48 +320,48 @@ def _resolve2d_aabb_aabb(a1: Collider_AABB_2D, a2: Collider_AABB_2D, rigid1: Rig
             _up: bool
 
             # Check X position
-            if _a1x < _a2x:
+            if _a.x < _b.x:
                 # Depth
                 _left = True
-                _xdepth = a1.get_right() - a2.get_left()
+                _xdepth = collider1.get_right() - collider2.get_left()
             else:
                 # Depth
                 _left = False
-                _xdepth = a2.get_right() - a1.get_left()
+                _xdepth = collider2.get_right() - collider1.get_left()
 
             # Check Y position
-            if _a1y < _a2y:
+            if _a.y < _b.y:
                 # Depth
                 _up = False
-                _ydepth = a1.get_up() - a2.get_down()
+                _ydepth = collider1.get_up() - collider2.get_down()
             else:
                 # Depth
                 _up = True
-                _ydepth = a2.get_up() - a1.get_down()
+                _ydepth = collider2.get_up() - collider1.get_down()
 
             # Fix X-axis
             if _xdepth < _ydepth:
                 if _left and rigid1.get_velocity().x > 0:
-                    a1.position.x -= _xdepth
+                    collider1.position.x -= _xdepth
                     # Vel can only go left
                     rigid1.set_vel_x(min(0, rigid1.get_velocity().x))
                 elif not _left and rigid1.get_velocity().x < 0:
-                    a1.position.x += _xdepth
+                    collider1.position.x += _xdepth
                     # Vel can only go right
                     rigid1.set_vel_x(max(0, rigid1.get_velocity().x))
             # Fix Y-axis
             else:
                 if _up and rigid1.get_velocity().y < 0:
-                    a1.position.y += _ydepth
+                    collider1.position.y += _ydepth
                     # Vel can only go up
                     rigid1.set_vel_y(max(0, rigid1.get_velocity().y))
                 elif not _up and rigid1.get_velocity().y > 0:
-                    a1.position.y -= _ydepth
+                    collider1.position.y -= _ydepth
                     # Vel can only go down
                     rigid1.set_vel_y(min(0, rigid1.get_velocity().y))
 
         # Final Fix
-        rigid1.set_position(a1.position)
+        rigid1.set_position(collider1.position)
 
     # Fix both colliders
     else:

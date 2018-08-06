@@ -28,3 +28,11 @@ def get_key(_key_code: pygame.key) -> bool:
     return KeyboardState_Current[_key_code]
 
 
+def get_key_pressed(_key_code: pygame.key) -> bool:
+    return KeyboardState_Current[_key_code] and not KeyboardState_Previous[_key_code]
+
+
+def get_key_release(_key_code: pygame.key) -> bool:
+    return not KeyboardState_Current[_key_code] and KeyboardState_Previous[_key_code]
+
+

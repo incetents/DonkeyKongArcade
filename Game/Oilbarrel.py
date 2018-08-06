@@ -5,8 +5,8 @@
 
 import pygame
 from Engine.Entity import *
-from Engine.Sprite import *
 from Engine.EntityManager import *
+from Engine.Sprite import *
 from Game.MarioState import *
 import Game.MarioState
 from Game.Direction import *
@@ -25,10 +25,10 @@ from Engine.Clock import *
 from Engine.SpriteBatch import *
 
 
-class Oilbarrel(Entity_2D):
+class Oilbarrel(Entity):
     def __init__(self, entity_name: str, _pos: Vector3):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         self.transform.set_position(_pos)
         # Physics
         self.collision = Collider_AABB_2D(self.transform.get_position())
@@ -42,23 +42,17 @@ class Oilbarrel(Entity_2D):
         self.animations.set_speed(8.0)
 
         # Data
-        self.fires: List[Enemy_Fire] = []
-        self.firespawn_wait: Clock = Clock(0.3)
+        self._fire: Enemy_Fire = None
 
     def spawn_fire(self):
-        # Prevent entity spamming
-        if self.firespawn_wait.is_finished():
-            # append time to created fire to make sure its unique
-            _enemy = Enemy_Fire(
-                'new_fire_' + str(pygame.time.get_ticks()),
-                self.transform.get_position() + Vector3(0, 20.0, 0)
-            )
-            _enemy.rigidbody.set_velocity(Vector3(20, 40, 0))
-            self.fires.append(_enemy)
+        # append time to created fire to make sure its unique
+        if self._fire is not None:
+            EntityManager_2D.get_singleton().remove_entity(self._fire)
 
-            self.firespawn_wait.reset()
+        self._fire = Enemy_Fire('new_fire', self.transform.get_position() + Vector3(0, 20.0, 0))
+        self._fire.rigidbody.set_velocity(Vector3(20, 40, 0))
 
-            EntityManager_2D.get_singleton().add_entity(_enemy)
+        EntityManager_2D.get_singleton().add_entity(self._fire)
 
 
     def update(self, delta_time):

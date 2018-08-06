@@ -6,14 +6,16 @@ from typing import *
 from Engine.Entity import *
 from Engine.SpriteBatch import *
 from Engine.CollisionManager import *
+from collections import OrderedDict
 
 _instance = None
 
 class EntityManager_2D:
     def __init__(self):
-        self._dynamic_entities: Dict[str, Entity_2D] = {}
-        self._entities: Dict[str, Entity_2D] = {}
-        self._remove_entity_list: List[Entity_2D] = []
+        self._dynamic_entities: Dict[str, Entity] = {}
+        self._entities: Dict[str, Entity] = {}
+        self._entities_ordered: OrderedDict[int, List[Entity]] = OrderedDict()
+        self._remove_entity_list: List[Entity] = []
 
         self._batches: Dict[str, SpriteBatch] = {}
         self._remove_batch_list: List[SpriteBatch] = []
@@ -28,44 +30,74 @@ class EntityManager_2D:
     def clear(self):
         self._dynamic_entities.clear()
         self._entities.clear()
+        self._entities_ordered.clear()
         self._batches.clear()
         self._remove_batch_list.clear()
         self._remove_batch_list.clear()
 
-    def add_entity_list(self, _ents: List[Entity_2D]):
+    def get_entity(self, name: str):
+        if name in self._entities.keys():
+            return self._entities[name]
+
+    def add_entity_list(self, _ents: List[Entity]):
         for e in _ents:
             self.add_entity(e)
 
-    def add_entity(self, _ent: Entity_2D):
+    def check_entity(self, _ent: Entity):
+        if _ent.name in self._entities:
+            return True
+        return False
+
+    def add_entity(self, _ent: Entity):
         # Add static collider if no rigidbody is present
         ColliderManager_2D.get_singleton().add(_ent)
 
+        # Add to list of all entities
         self._entities[_ent.name] = _ent
+
+        # Add to list of ordered entities
+        _depth: int = int(_ent.transform.get_position().z)
+
+        if _depth not in self._entities_ordered:
+            # Create empty slot
+            self._entities_ordered[_depth] = []
+            # Add entity to sorted list
+            self._entities_ordered[_depth].append(_ent)
+            # Sort Dictionary
+            self._entities_ordered = OrderedDict(sorted(self._entities_ordered.items(), key=lambda t: t[0]))
+        else:
+            # Add entity to sorted list
+            self._entities_ordered[_depth].append(_ent)
+
+        # Add to dynamic entities
         if _ent.rigidbody is not None:
             self._dynamic_entities[_ent.name] = _ent
 
     def add_batch(self, _batch: SpriteBatch):
         # Add static collider if no rigidbody is present
-        _ent: Entity_2D
+        _ent: Entity
         for _ent in _batch.get_entities():
             ColliderManager_2D.get_singleton().add(_ent)
 
         self._batches[_batch.name] = _batch
 
-    def remove_entity(self, _ent: Entity_2D):
-        self._remove_entity_list.append(_ent)
+    def remove_entity(self, _ent: Entity):
+        # ENTITY deletion
+        self._entities.pop(_ent.name, None)
+        self._entities_ordered[_ent.transform.get_position().z].remove(_ent)
+        if _ent.rigidbody is not None:
+            self._dynamic_entities.pop(_ent.name, None)
 
     def remove_batch(self, _batch: SpriteBatch):
-        self._remove_batch_list.append(_batch)
+        # BATCH deletion
+        self._batches.pop(_batch.name, None)
 
     def update(self, delta_time: float):
-        # ENTITY
-        e: Entity_2D
-        for e in self._remove_entity_list:
-            self._entities.pop(e.name, None)
-        self._remove_entity_list.clear()
-
-        for key, value in self._entities.items():
+        # ENTITY update
+        # print('~~~')
+        _t = pygame.time.get_ticks()
+        _ent_copy = self._entities.copy()
+        for key, value in _ent_copy.items():
             if value.enabled is True:
                 # General Update
                 value.update(delta_time)
@@ -75,20 +107,22 @@ class EntityManager_2D:
                         value,
                         self._dynamic_entities.values()
                     )
-                    pass
 
-        # BATCH
-        b: SpriteBatch
-        for b in self._remove_batch_list:
-            self._batches.pop(b.name, None)
-        self._remove_batch_list.clear()
+        # print('time for updating all ents:', pygame.time.get_ticks() - _t)
 
     def draw(self):
-        # Entity
+        # Batch Draw
+        for key, value in self._batches.items():
+            value.draw()
+
         for key, value in self._entities.items():
             if value.enabled is True:
                 value.draw()
 
-        # Batches
-        for key, value in self._batches.items():
-            value.draw()
+        # Entity Draw (draw from ordered entity list)
+        # for key, value in self._entities_ordered.items():
+        #     ent: Entity
+        #     for ent in value:
+        #         if ent.enabled is True:
+        #             ent.draw()
+

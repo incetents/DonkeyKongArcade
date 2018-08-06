@@ -15,10 +15,10 @@ from Engine.CollisionManager import *
 # Misc
 import Engine.Config
 
-class Ladder(Entity_2D):
+class Ladder(Entity):
     def __init__(self, entity_name: str, sprite_name: str, new_position: Vector3):
         # Base Constructor
-        Entity_2D.__init__(self, entity_name)
+        Entity.__init__(self, entity_name)
         self.sprite: Sprite = Engine.Storage.get(Engine.Storage.Type.SPRITE, sprite_name)
         # Default Transform
         self.transform.set_position(new_position)

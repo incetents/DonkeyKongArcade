@@ -73,7 +73,8 @@ class GameState:
 class GameState_Menu(GameState):
     def __init__(self):
         GameState.__init__(self)
-        self.test = Tile('dk', 'spr_dk_center', Vector3())
+        self.test = Tile('dk', 'spr_barrel_stack1', Vector3())
+        EntityManager_2D.get_singleton().add_entity(self.test)
         pass
 
     def enter(self):
@@ -122,21 +123,28 @@ class GameState_Game(GameState):
         # Special Entities
         self._floor_tiles = TileBatch('batch_tiles1', 'spr_floor1', Collision_Type.PLATFORM)
         # Ladders
-        # self._ladders: List[Entity_2D] = []
+        # self._ladders: List[Entity] = []
 
         # Entities
         self._mario: Mario = Mario('mario')
-        self._mario.transform.set_position(Vector3(50, 20, 0))
+        self._mario.transform.set_position(Vector3(50, 20, 2))
         self._mario.transform.set_flip_x(True)
 
         self._enemy1 = Enemy_Fire('enemy1', Vector3(120, 20, 0))
 
-        self._barrel_1 = Barrel('barrel1', Vector3(50, 172 + 5, 0))
+        self._barrel_1 = Barrel('barrel1', Vector3(80, 16, -2), Direction.LEFT)
 
         self._invis_box1 = InvisBlock('invis1', Vector3(-12, 92, 0), Vector3(8, 216, 1))
         self._invis_box2 = InvisBlock('invis2', Vector3(236, 92, 0), Vector3(8, 216, 1))
 
         self._oil1 = Oilbarrel('oil1', Vector3(24, 8, 0))
+
+        self._destroy_barrel_trig = InvisBlock('trig_destroy_barrel',
+                                               self._oil1.transform.get_position() + Vector3(-12, -8, 0),
+                                               Vector3(16, 16, 1)
+                                               )
+        self._destroy_barrel_trig.collision.type = Collision_Type.TRIGGER
+        self._destroy_barrel_trig.collision.id = Engine.Config.TRIGGER_ID_FIRE_BARREL
 
         self._stack_barrels = Tile('stack_o_barrels', 'spr_barrel_stack1', Vector3(0, 172, 0))
         self._stack_barrels.collision.offset = Vector2(10, 16)
@@ -148,11 +156,11 @@ class GameState_Game(GameState):
         # FLOORS
         ################
         # First Line
-        for i in range(14):
+        for i in range(12):
             self._floor_tiles.add_tile(Vector3(8 * i, 0, 0))
 
-        for i in range(14):
-            self._floor_tiles.add_tile(Vector3(8 * (i + 14), math.floor(i / 2), 0))
+        for i in range(16):
+            self._floor_tiles.add_tile(Vector3(8 * (i + 12), math.floor(i / 2), 0))
 
         # Backslash line 1
         for i in range(26):
@@ -183,18 +191,24 @@ class GameState_Game(GameState):
         # LADDERS
         ################
         self._ladders: List[Ladder] = []
-        self._ladders.append(Ladder('ladder' + str(1), 'spr_ladder_52', Vector3(64, 172, 0)))
-        self._ladders.append(Ladder('ladder' + str(2), 'spr_ladder_52', Vector3(80, 172, 0)))
+        self._ladders.append(Ladder('ladder' + str(len(self._ladders)), 'spr_ladder_52', Vector3(64, 172, 0)))
+        self._ladders.append(Ladder('ladder' + str(len(self._ladders)), 'spr_ladder_52', Vector3(80, 172, 0)))
 
-        # Extra Blocks#
+        self._ladders.append(Ladder('ladder' + str(len(self._ladders)), 'spr_ladder_24', Vector3(112, 9, 0)))
 
-        EntityManager_2D.get_singleton().add_entity(self._enemy1)
-        EntityManager_2D.get_singleton().add_entity(self._barrel_1)
+
+        pass
+
+    def enter(self):
+        # Add entities
+        # EntityManager_2D.get_singleton().add_entity(self._enemy1)
         EntityManager_2D.get_singleton().add_entity(self._invis_box1)
         EntityManager_2D.get_singleton().add_entity(self._invis_box2)
         EntityManager_2D.get_singleton().add_entity(self._oil1)
+        EntityManager_2D.get_singleton().add_entity(self._destroy_barrel_trig)
         EntityManager_2D.get_singleton().add_entity(self._stack_barrels)
         EntityManager_2D.get_singleton().add_entity(self._dk)
+        # EntityManager_2D.get_singleton().add_entity(self._barrel_1)
 
         EntityManager_2D.get_singleton().add_entity_list(self._ladders)
 
@@ -203,15 +217,15 @@ class GameState_Game(GameState):
         EntityManager_2D.get_singleton().add_entity(self._mario)
         pass
 
-    def enter(self):
-        pass
-
     def exit(self):
         pass
 
     def update(self, delta_time: float):
         # Base
+        #print('~~~')
+        #_t = pygame.time.get_ticks()
         super().update(delta_time)
+        #print('update time:', pygame.time.get_ticks() - _t)
 
         # Debug Mode
         if Engine.Input.get_key(pygame.K_n):
@@ -220,8 +234,9 @@ class GameState_Game(GameState):
             self._mario.debug = False
 
         # TEST
-        if Engine.Input.get_key(pygame.K_z):
-            self._oil1.spawn_fire()
+        if Engine.Input.get_key_pressed(pygame.K_z):
+            self._dk.spawn_barrel()
+            # self._oil1.spawn_fire()
 
         # Test
         if Engine.Input.get_key(pygame.K_q):
@@ -231,15 +246,17 @@ class GameState_Game(GameState):
         # ------------------------------------------
 
     def draw(self):
-
         # Base
+        # print('~~~')
+        # _t = pygame.time.get_ticks()
         super().draw()
+        # print('draw time:', pygame.time.get_ticks() - _t)
 
         # Chunk outlines
         _c = ColliderManager_2D.get_singleton()
         _c.draw_chunks()
 
-        pass
+        # ------------------------------------------
 
     def draw_ui(self, delta_time: float):
         # Data
@@ -263,4 +280,4 @@ class GameState_Game(GameState):
         )
 
         _text.draw()
-        pass
+        # ------------------------------------------
