@@ -8,6 +8,7 @@ from Engine.Vector import *
 from Engine.Collision import *
 from Engine.Entity import *
 from Engine.Vector import *
+from Engine.Rigidbody import *
 import Engine.Graphics
 from Engine.Collision import *
 
@@ -53,7 +54,7 @@ class ColliderManager_2D:
     def clear(self):
         self._chunks.clear()
 
-    def get_chunks_from_square_region_unsafe(self, pos: Vector2, size: Vector2):
+    def get_chunks_from_square_region_unsafe(self, pos: Vector2, size: Vector2) -> List[ColliderChunk]:
         _chunks: Set[ColliderChunk] = set()
         _chunks.add(self.get_chunk(pos + Vector2(-size.x * 0.5, -size.y * 0.5)))
         _chunks.add(self.get_chunk(pos + Vector2(+size.x * 0.5, -size.y * 0.5)))
@@ -61,7 +62,7 @@ class ColliderManager_2D:
         _chunks.add(self.get_chunk(pos + Vector2(-size.x * 0.5, +size.y * 0.5)))
         return list(_chunks)
 
-    def get_chunks_from_square_region_safe(self, pos: Vector2, size: Vector2):
+    def get_chunks_from_square_region_safe(self, pos: Vector2, size: Vector2) -> List[ColliderChunk]:
         _chunks: Set[ColliderChunk] = set()
         # Edges
         _left = pos.x - size.x * 0.5
@@ -92,17 +93,21 @@ class ColliderManager_2D:
 
         return list(_chunks)
 
-    def get_chunks_from_collider_aabb_2d(self, collider: Collider_AABB_2D):
+    def get_chunks_from_collider_aabb_2d(self, collider: Collider_AABB_2D) -> List[ColliderChunk]:
         if collider.size.x > CHUNK_SIZE or collider.size.y > CHUNK_SIZE:
             return self.get_chunks_from_square_region_safe(collider.get_position().get_vec2(), collider.size)
         else:
             return self.get_chunks_from_square_region_unsafe(collider.get_position().get_vec2(), collider.size)
 
-    def get_chunks_from_collider(self, collider):
-        if type(collider) is Collider_AABB_2D:
-            return self.get_chunks_from_collider_aabb_2d(collider)
-        else:
+    def get_chunks_from_entity_location(self, entity: Entity) -> List[ColliderChunk]:
+        _aabb = entity.get_component(Collider_AABB_2D)
+        if _aabb is not None:
+            return self.get_chunks_from_collider_aabb_2d(_aabb)
+
+        _circle = entity.get_component(Collider_Circle_2D)
+        if _circle is not None:
             print('process collision error 101')
+            return list(None)
 
     def get_chunk(self, world_pos: Vector2) -> ColliderChunk:
         _index_val = (world_pos / CHUNK_SIZE).__floor__()
@@ -113,8 +118,8 @@ class ColliderManager_2D:
             self._chunks[_index] = ColliderChunk(Vector3(_index_val.x, _index_val.y, 0) * CHUNK_SIZE)
         return self._chunks[_index]
 
-    def process_collision(self, _entity: Entity, _others: List[Entity] = []):
-        _chunks = self.get_chunks_from_collider(_entity.collision)
+    def process_collision(self, _entity: Entity, _others: List[Entity]):
+        _chunks: List[ColliderChunk] = self.get_chunks_from_entity_location(_entity)
 
         # Begin
         _entity.process_collision_start()
@@ -135,26 +140,30 @@ class ColliderManager_2D:
 
     def add(self, ent: Entity):
 
+        _rigid = ent.get_component(Rigidbody)
+
         # Static Collider
-        if ent.rigidbody is None:
+        if _rigid is None:
+            # Check Types
+            _aabb = ent.get_component(Collider_AABB_2D)
+            _circle = ent.get_component(Collider_Circle_2D)
             # Add Collider based on type
-            if type(ent.collision) is Collider_AABB_2D:
-                _col: Collider_AABB_2D = ent.collision
-                _chunks = self.get_chunks_from_collider_aabb_2d(_col)
+
+            if _aabb is not None:
+                _chunks = self.get_chunks_from_collider_aabb_2d(_aabb)
                 for i in _chunks:
                     i.add_entity(ent)
 
-            elif type(ent.collision) is Collider_Circle_2D:
-                _col: Collider_Circle_2D = ent.collision
+            elif _circle is not None:
                 _chunks = self.get_chunks_from_square_region_unsafe(
-                    _col.get_position().get_vec2(),
-                    Vector2(_col.radius * 2.0, _col.radius * 2.0)
+                    _circle.get_position().get_vec2(),
+                    Vector2(_circle.radius * 2.0, _circle.radius * 2.0)
                 )
                 for i in _chunks:
                     i.add_entity(ent)
 
             else:
-                print('unknown collider type attemped to be added:', ent.collision)
+                print('entity:', ent, ' has no known colliders to add and no rigidbody')
 
     def draw_chunks(self):
         for i in self._chunks.values():

@@ -62,8 +62,10 @@ def line_to_line_collision(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) -
     out_result = a1 + b * t
     return out_result, True
 
-class Collider:
+
+class Collider(Component):
     def __init__(self, position: Vector3):
+        super().__init__()
         self._position: Vector3 = position
         self.offset: Vector2 = Vector2()
         self.enabled: bool = True

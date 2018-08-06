@@ -29,10 +29,11 @@ class Mario(Entity):
         # State
         self._state: MarioState = MarioState_Idle(self)
         # Physics
-        self.rigidbody = Rigidbody(self.transform.get_position())
+        self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
+        # self.rigidbody = Rigidbody(self.transform.get_position())
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -Engine.Config.GRAV, 0))
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.type = Collision_Type.TRIGGER
         self.collision.offset = Vector2(0, 8)
         self._ray_left: Raycast_2D = None
@@ -168,7 +169,7 @@ class Mario(Entity):
         pass
 
     def trigger_enter(self, trigger: Collider):
-        if trigger.id is Engine.Config.TRIGGER_ID_DEATH:
+        if self.debug is False and trigger.id is Engine.Config.TRIGGER_ID_DEATH:
             self.set_state(MarioState_Enum.DEAD)
         print('ENTER id:', trigger.id)
         pass

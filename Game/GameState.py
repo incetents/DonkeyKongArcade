@@ -121,9 +121,11 @@ class GameState_Game(GameState):
         GameState.__init__(self)
 
         # Special Entities
-        self._floor_tiles = TileBatch('batch_tiles1', 'spr_floor1', Collision_Type.PLATFORM)
-        # Ladders
-        # self._ladders: List[Entity] = []
+        self._floor_tiles = TileBatch(
+            'batch_tiles1', 'floor1', Collision_Type.PLATFORM)
+
+        self._ladder_tiles = TileBatch(
+            'batch_tiles2', 'ladder1', Collision_Type.TRIGGER, Engine.Config.TRIGGER_ID_LADDER)
 
         # Entities
         self._mario: Mario = Mario('mario')
@@ -156,46 +158,75 @@ class GameState_Game(GameState):
         # FLOORS
         ################
         # First Line
-        for i in range(12):
-            self._floor_tiles.add_tile(Vector3(8 * i, 0, 0))
+        self._floor_tiles.add_tile(Vector3(0, 0, 0), 'spr_floor_red_14')
 
-        for i in range(16):
-            self._floor_tiles.add_tile(Vector3(8 * (i + 12), math.floor(i / 2), 0))
+        for i in range(7):
+            self._floor_tiles.add_tile(Vector3(112 + (i * 16), i + 1, 0), 'spr_floor_red_2')
 
         # Backslash line 1
-        for i in range(26):
-            self._floor_tiles.add_tile(Vector3(8 * i, 40 - math.floor(i / 2), 0))
+        for i in range(13):
+            self._floor_tiles.add_tile(Vector3(16 * i, 40 - i, 0), 'spr_floor_red_2')
 
         # Forwardslash line 1
-        for i in range(26):
-            self._floor_tiles.add_tile(Vector3(8 * i + 16, 60 + math.floor(i / 2), 0))
+        for i in range(13):
+            self._floor_tiles.add_tile(Vector3(16 * i + 16, 61 + i, 0), 'spr_floor_red_2')
 
         # Backslash line 2
-        for i in range(26):
-            self._floor_tiles.add_tile(Vector3(8 * i, 106 - math.floor(i / 2), 0))
+        for i in range(13):
+            self._floor_tiles.add_tile(Vector3(16 * i, 106 - i, 0), 'spr_floor_red_2')
 
         # Forwardslash line 2
-        for i in range(26):
-            self._floor_tiles.add_tile(Vector3(8 * i + 16, 126 + math.floor(i / 2), 0))
+        for i in range(13):
+            self._floor_tiles.add_tile(Vector3(16 * i + 16, 127 + i, 0), 'spr_floor_red_2')
 
         # Last Line
-        for i in range(18):
-            self._floor_tiles.add_tile(Vector3(8 * i, 164, 0))
-        for i in range(8):
-            self._floor_tiles.add_tile(Vector3(8 * (i + 18), 163 - math.floor(i / 2), 0))
+        self._floor_tiles.add_tile(Vector3(0, 164, 0), 'spr_floor_red_18')
+
+        for i in range(4):
+            self._floor_tiles.add_tile(Vector3(16 * i + 144, 163 - i, 0), 'spr_floor_red_2')
 
         # Pauline Line
-        for i in range(6):
-            self._floor_tiles.add_tile(Vector3(8 * i + (8 * 11), 192, 0))
+        self._floor_tiles.add_tile(Vector3(88, 192, 0), 'spr_floor_red_6')
 
         # LADDERS
         ################
-        self._ladders: List[Ladder] = []
-        self._ladders.append(Ladder('ladder' + str(len(self._ladders)), 'spr_ladder_52', Vector3(64, 172, 0)))
-        self._ladders.append(Ladder('ladder' + str(len(self._ladders)), 'spr_ladder_52', Vector3(80, 172, 0)))
 
-        self._ladders.append(Ladder('ladder' + str(len(self._ladders)), 'spr_ladder_24', Vector3(112, 9, 0)))
+        # DEBUG
+        self._ladder_tiles.add_tile(Vector3(112, 9, 0), 'spr_ladder_24')
 
+        # Ladder 1
+        self._ladder_tiles.add_tile(Vector3(80, 8, 0), 'spr_ladder_8')
+        self._ladder_tiles.add_tile(Vector3(80, 32, 0), 'spr_ladder_3')
+        # Ladder 2
+        self._ladder_tiles.add_tile(Vector3(184, 13, 0), 'spr_ladder_16')
+        # Ladder 3
+        self._ladder_tiles.add_tile(Vector3(96, 42, 0), 'spr_ladder_24')
+        # Ladder 4
+        self._ladder_tiles.add_tile(Vector3(32, 46, 0), 'spr_ladder_16')
+        # Ladder 5
+        self._ladder_tiles.add_tile(Vector3(64, 72, 0), 'spr_ladder_8')
+        self._ladder_tiles.add_tile(Vector3(64, 96, 0), 'spr_ladder_6')
+        # Ladder 6
+        self._ladder_tiles.add_tile(Vector3(112, 75, 0), 'spr_ladder_24')
+        # Ladder 7
+        self._ladder_tiles.add_tile(Vector3(184, 79, 0), 'spr_ladder_16')
+        # Ladder 8
+        self._ladder_tiles.add_tile(Vector3(168, 104, 0), 'spr_ladder_8')
+        self._ladder_tiles.add_tile(Vector3(168, 128, 0), 'spr_ladder_8')
+        # Ladder 9
+        self._ladder_tiles.add_tile(Vector3(72, 110, 0), 'spr_ladder_20')
+        # Ladder 10
+        self._ladder_tiles.add_tile(Vector3(32, 112, 0), 'spr_ladder_16')
+        # Ladder 11
+        self._ladder_tiles.add_tile(Vector3(88, 139, 0), 'spr_ladder_13')
+        self._ladder_tiles.add_tile(Vector3(88, 160, 0), 'spr_ladder_3')
+        # Ladder 12
+        self._ladder_tiles.add_tile(Vector3(184, 145, 0), 'spr_ladder_16')
+        # Ladder 13
+        self._ladder_tiles.add_tile(Vector3(128, 172, 0), 'spr_ladder_20')
+        # Ladder DK
+        self._ladder_tiles.add_tile(Vector3(64, 172, 0), 'spr_ladder_52')
+        self._ladder_tiles.add_tile(Vector3(80, 172, 0), 'spr_ladder_52')
 
         pass
 
@@ -210,9 +241,8 @@ class GameState_Game(GameState):
         EntityManager_2D.get_singleton().add_entity(self._dk)
         # EntityManager_2D.get_singleton().add_entity(self._barrel_1)
 
-        EntityManager_2D.get_singleton().add_entity_list(self._ladders)
-
         EntityManager_2D.get_singleton().add_batch(self._floor_tiles)
+        EntityManager_2D.get_singleton().add_batch(self._ladder_tiles)
 
         EntityManager_2D.get_singleton().add_entity(self._mario)
         pass

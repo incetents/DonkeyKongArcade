@@ -23,7 +23,7 @@ class Ladder(Entity):
         # Default Transform
         self.transform.set_position(new_position)
         # Collision
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.set_size_from_sprite(self.transform, self.sprite)
         self.collision.offset = self.sprite.get_scale_half()
         self.collision.type = Collision_Type.TRIGGER

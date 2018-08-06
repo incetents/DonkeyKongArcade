@@ -27,7 +27,7 @@ class InvisBlock(Entity):
         self.transform.set_position(_pos)
         self.transform.set_scale(_scale)
         # Physics
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.offset = Vector2(0, 16)
         self.collision.type = Collision_Type.SOLID
         self.collision.id = Engine.Config.TRIGGER_ID_WALL

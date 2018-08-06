@@ -5,6 +5,7 @@
 # can be moving left or right normally, go down ladders
 # or it can fall from its spawn position from donkey kong
 
+from __future__ import annotations
 from Engine.Entity import *
 from Engine.EntityManager import *
 from Engine.Sprite import *
@@ -22,20 +23,47 @@ from Engine.Collision import *
 import Engine.Collision
 import Engine.Config
 
+class BarrelKillZone(Entity):
+    def __init__(self, trigger_name: str, barrel: Barrel):
+        # Base
+        Entity.__init__(self, trigger_name)
+        self._barrel = barrel
+        self.transform.set_position(barrel.transform.get_position())
+        # Physics
+        self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
+        self.collision.size = Vector2(4, 4)
+        self.collision.type = Collision_Type.TRIGGER
+        self.collision.id = Engine.Config.TRIGGER_ID_DEATH
+
+    def update(self, delta_time):
+        self.transform.set_position(self._barrel.transform.get_position())
+        self.rigidbody.update(delta_time)
+        pass
+
+    def draw(self):
+        self.collision.draw(Vector3(0, 1, 0.5))
+
+    def trigger_enter(self, trigger: Collider):
+        if trigger.id is Engine.Config.TRIGGER_ID_FIRE_BARREL:
+            EntityManager_2D.get_singleton().remove_entity(self)
+        pass
+
+
 class Barrel(Entity):
     def __init__(self, entity_name: str, _pos: Vector3, _direction: Direction=Direction.RIGHT):
         # Base Constructor
         Entity.__init__(self, entity_name)
         self.transform.set_position(_pos)
         # Physics
-        self.rigidbody = Rigidbody(self.transform.get_position())
+        self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
         # self.rigidbody.enabled = False
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.offset = Vector2(0, 5)
         self.collision.type = Collision_Type.TRIGGER
-        self.collision.id = Engine.Config.TRIGGER_ID_DEATH
+        self.collision.id = Engine.Config.TRIGGER_ID_NONE
         self._ray_left: Raycast_2D = None
         self._ray_right: Raycast_2D = None
         # Animations

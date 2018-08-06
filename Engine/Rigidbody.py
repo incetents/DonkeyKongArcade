@@ -7,14 +7,16 @@ from Engine.Vector import *
 from typing import List
 import math
 from Engine.Collision import *
+from Engine.Component import *
 
 
 def clamp(_val, _min, _max):
     return max(_min, min(_max, _val))
 
 
-class Rigidbody:
+class Rigidbody(Component):
     def __init__(self, position_ref: Vector3):
+        super().__init__()
         self.enabled: bool = True
         self._position: Vector3 = position_ref
         self._velocity: Vector3 = Vector3()

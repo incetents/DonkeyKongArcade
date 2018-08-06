@@ -15,6 +15,7 @@ from Engine.Collision import *
 import Engine.Collision
 from Engine.Component import *
 
+
 class Entity:
     def __init__(self, ent_name: str):
         self.name: str = ent_name
@@ -24,11 +25,8 @@ class Entity:
 
         # Components
         self._components: Dict(type, Component) = {}
-
+        # Transform (always present in entities)
         self.transform: Transform = Transform()
-        self.rigidbody: Rigidbody = None
-        self.collision: Collider = None
-
         self.add_component(self.transform)
 
         # Add To Storage
@@ -46,6 +44,7 @@ class Entity:
             self._components[type(component)] = component
         else:
             print('attempting to add duplicate components', component, ' on entity', self)
+        return component
 
     def remove_component(self, component: Component):
         self._components.pop(type(component), None)
@@ -100,7 +99,6 @@ class Entity:
                 self.collider_exit(i)
 
     def process_collision_list(self, entities: List[Entity]):
-
         # Collision and rigidbody must be present
         if self.collision is None or self.rigidbody is None:
             return

@@ -39,8 +39,8 @@ class EntityManager_2D:
         if name in self._entities.keys():
             return self._entities[name]
 
-    def add_entity_list(self, _ents: List[Entity]):
-        for e in _ents:
+    def add_entity_list(self, _entities: List[Entity]):
+        for e in _entities:
             self.add_entity(e)
 
     def check_entity(self, _ent: Entity):
@@ -70,7 +70,7 @@ class EntityManager_2D:
             self._entities_ordered[_depth].append(_ent)
 
         # Add to dynamic entities
-        if _ent.rigidbody is not None:
+        if _ent.get_component(Rigidbody) is not None:
             self._dynamic_entities[_ent.name] = _ent
 
     def add_batch(self, _batch: SpriteBatch):
@@ -85,7 +85,7 @@ class EntityManager_2D:
         # ENTITY deletion
         self._entities.pop(_ent.name, None)
         self._entities_ordered[_ent.transform.get_position().z].remove(_ent)
-        if _ent.rigidbody is not None:
+        if _ent.get_component(Rigidbody) is not None:
             self._dynamic_entities.pop(_ent.name, None)
 
     def remove_batch(self, _batch: SpriteBatch):
@@ -102,7 +102,7 @@ class EntityManager_2D:
                 # General Update
                 value.update(delta_time)
                 # Update Collision with other dynamic entities
-                if value.rigidbody is not None:
+                if value.get_component(Rigidbody) is not None:
                     ColliderManager_2D.get_singleton().process_collision(
                         value,
                         self._dynamic_entities.values()
@@ -115,14 +115,16 @@ class EntityManager_2D:
         for key, value in self._batches.items():
             value.draw()
 
-        for key, value in self._entities.items():
-            if value.enabled is True:
-                value.draw()
+        # Unordered
+        #for key, value in self._entities.items():
+        #    if value.enabled is True:
+        #        value.draw()
 
+        # Ordered
         # Entity Draw (draw from ordered entity list)
-        # for key, value in self._entities_ordered.items():
-        #     ent: Entity
-        #     for ent in value:
-        #         if ent.enabled is True:
-        #             ent.draw()
+        for key, value in self._entities_ordered.items():
+            ent: Entity
+            for ent in value:
+                if ent.enabled is True:
+                    ent.draw()
 

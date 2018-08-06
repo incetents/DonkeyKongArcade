@@ -26,10 +26,10 @@ class Enemy_Fire(Entity):
         Entity.__init__(self, entity_name)
         self.transform.set_position(_position)
         # Physics
-        self.rigidbody = Rigidbody(self.transform.get_position())
+        self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_NONE # Engine.Config.TRIGGER_ID_DEATH
         # Animations

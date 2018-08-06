@@ -143,7 +143,11 @@ class Game:
         Sprite('spr_mario_death4', 'mario_death2', Anchor.BOT)
         Sprite('spr_mario_dead', 'mario_dead', Anchor.BOT)
 
-        Sprite('spr_floor1', 'floor1', Anchor.BOTLEFT)
+        Sprite('spr_floor_red_1', 'floor1', Anchor.BOTLEFT)
+        Sprite('spr_floor_red_2', 'floor1', Anchor.BOTLEFT).set_scale_x(2.0).set_uv_right(2.0)
+        Sprite('spr_floor_red_6', 'floor1', Anchor.BOTLEFT).set_scale_x(6.0).set_uv_right(6.0)
+        Sprite('spr_floor_red_14', 'floor1', Anchor.BOTLEFT).set_scale_x(14.0).set_uv_right(14.0)
+        Sprite('spr_floor_red_18', 'floor1', Anchor.BOTLEFT).set_scale_x(18.0).set_uv_right(18.0)
 
         Sprite('spr_ladder_52', 'ladder1', Anchor.BOTLEFT).set_scale_y(52.0 / 8.0).set_uv_top(52.0 / 8.0)
         Sprite('spr_ladder_24', 'ladder1', Anchor.BOTLEFT).set_scale_y(24.0 / 8.0).set_uv_top(24.0 / 8.0)

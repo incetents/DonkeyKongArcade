@@ -30,7 +30,7 @@ class DonkeyKong(Entity):
         self.transform.set_position(_pos)
 
         # Physics
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.offset = Vector2(0, 16)
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_DEATH
@@ -58,9 +58,12 @@ class DonkeyKong(Entity):
         return self
 
     def spawn_barrel(self, dropped: bool=False):
-        _barrel = Barrel('barrel' + str(len(self._barrels)), self.transform.get_position() + Vector3(20, 0, -2))
+        _barrel = Barrel('barrel' + str(pygame.time.get_ticks()), self.transform.get_position() + Vector3(20, 0, -2))
         # _barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(50, 30, -2), Direction.LEFT)
         EntityManager_2D.get_singleton().add_entity(_barrel)
+
+        _barrel_zone = BarrelKillZone('barrel_zone' + str(pygame.time.get_ticks()), _barrel)
+        EntityManager_2D.get_singleton().add_entity(_barrel_zone)
 
         self._barrels.append(_barrel)
         return self

@@ -24,13 +24,12 @@ class Tile(Entity):
     def __init__(self, entity_name: str, sprite_name: str, new_position: Vector3):
         # Base Constructor
         Entity.__init__(self, entity_name)
-        self.sprite = Engine.Storage.get(Engine.Storage.Type.SPRITE, sprite_name)
+        self.sprite: Sprite = self.add_component(Engine.Storage.get(Engine.Storage.Type.SPRITE, sprite_name))
         # Default Transform
         self.transform.set_position(new_position)
         # Collision
-        self.collision = Collider_AABB_2D(self.transform.get_position())
+        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.set_size_from_sprite(self.transform, self.sprite)
-        self.collision.offset = Vector2(4, 4)
 
     def update(self, delta_time):
         pass
@@ -41,15 +40,17 @@ class Tile(Entity):
 
 
 class TileBatch(SpriteBatch):
-    def __init__(self, batch_name: str, sprite_name: str, collision_type: Collision_Type, collision_id: int=0):
-        super().__init__(batch_name, sprite_name)
+    def __init__(self, batch_name: str, texture_name: str, collision_type: Collision_Type, collision_id: int=0):
+        super().__init__(batch_name, texture_name)
         self._collision_type: Collision_Type = collision_type
         self._collision_id: int = collision_id
 
-    def add_tile(self, _position: Vector3):
+    def add_tile(self, _position: Vector3, _sprite_name: str):
         # Create Tile
-        _tile = Tile('tile' + str(self.get_size()), self.get_sprite().get_name(), _position)
+        _tile = Tile('tile' + str(self.get_size()), _sprite_name, _position)
         _tile.collision.type = self._collision_type
         _tile.collision.id = self._collision_id
+
+        _tile.collision.offset = Vector2(_tile.sprite.get_scale().x / 2, _tile.sprite.get_scale().y / 2)
         # Add to batch
         self.add_entity(_tile)

@@ -9,6 +9,7 @@ from Engine.Vector import *
 from Engine.Transform import *
 from Engine.Graphics import *
 from Engine.Anchor import *
+from Engine.Component import *
 import Engine.Anchor
 import Engine.Storage
 from OpenGL.GL import *
@@ -16,8 +17,9 @@ from typing import List, Dict
 import math
 
 
-class Sprite:
+class Sprite(Component):
     def __init__(self, sprite_name: str, texture_name: str, _anchor: Anchor=Anchor.MID):
+        super().__init__()
         self._name: str = sprite_name
         self._texture: Texture = Engine.Storage.get(Engine.Storage.Type.TEXTURE, texture_name)
         if self._texture is None:
@@ -127,12 +129,14 @@ class Sprite:
                )
 
     def get_local_vertices(self) -> List[Vector2]:
-        if self._dirty:
-            self._calculate_local_vertices()
-            self._dirty = False
+        self._calculate_local_vertices()
         return self._local_vertices
 
-    def _calculate_local_vertices(self):
+    def _calculate_local_vertices(self) -> List[Vector2]:
+        if self._dirty is False:
+            return self._local_vertices
+        self._dirty = False
+
         _flipx = (-1.0 if self._flip[0] is True else 1.0)
         _flipy = (-1.0 if self._flip[1] is True else 1.0)
 
@@ -152,12 +156,40 @@ class Sprite:
             ((self._offset.x - _flipx) * self._tex_w_half * self._scale.x),
             ((self._offset.y + _flipy) * self._tex_h_half * self._scale.y)
         )
+        return self._local_vertices
+
+    def _draw_legacy(self, _model: Transform):
+        # Bottom Left
+        glTexCoord2f(self._uvs.x, self._uvs.z)
+        glVertex2f(
+            self._local_vertices[0].x * _model._scale_fixed.x + _model._position.x,
+            self._local_vertices[0].y * _model._scale_fixed.y + _model._position.y
+        )
+
+        # Bottom Right
+        glTexCoord2f(self._uvs.y, self._uvs.z)
+        glVertex2f(
+            self._local_vertices[1].x * _model._scale_fixed.x + _model._position.x,
+            self._local_vertices[1].y * _model._scale_fixed.y + _model._position.y
+        )
+
+        # Top Right
+        glTexCoord2f(self._uvs.y, self._uvs.w)
+        glVertex2f(
+            self._local_vertices[2].x * _model._scale_fixed.x + _model._position.x,
+            self._local_vertices[2].y * _model._scale_fixed.y + _model._position.y
+        )
+
+        # Top Left
+        glTexCoord2f(self._uvs.x, self._uvs.w)
+        glVertex2f(
+            self._local_vertices[3].x * _model._scale_fixed.x + _model._position.x,
+            self._local_vertices[3].y * _model._scale_fixed.y + _model._position.y
+        )
 
     def draw(self, _model: Transform):
         # Recalculate vertices if needed
-        if self._dirty is True:
-            self._calculate_local_vertices()
-            self._dirty = False
+        self._calculate_local_vertices()
 
         # Texture
         self._texture.bind()
@@ -166,38 +198,9 @@ class Sprite:
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBegin(GL_QUADS)
-        glColor4f(1,1,1,1)
+        glColor(1.0, 1.0, 1.0, 1.0)
 
-        _xscale = _model._scale.x * _model.get_flip_x() # * self._tex_w_half
-        _yscale = _model._scale.y * _model.get_flip_y() # * self._tex_h_half
-
-        # Bottom Left
-        glTexCoord2f(self._uvs.x, self._uvs.z)
-        glVertex2f(
-            self._local_vertices[0].x * _xscale + _model._position.x,
-            self._local_vertices[0].y * _yscale + _model._position.y
-        )
-
-        # Bottom Right
-        glTexCoord2f(self._uvs.y, self._uvs.z)
-        glVertex2f(
-            self._local_vertices[1].x * _xscale + _model._position.x,
-            self._local_vertices[1].y * _yscale + _model._position.y
-        )
-
-        # Top Right
-        glTexCoord2f(self._uvs.y, self._uvs.w)
-        glVertex2f(
-            self._local_vertices[2].x * _xscale + _model._position.x,
-            self._local_vertices[2].y * _yscale + _model._position.y
-        )
-
-        # Top Left
-        glTexCoord2f(self._uvs.x, self._uvs.w)
-        glVertex2f(
-            self._local_vertices[3].x * _xscale + _model._position.x,
-            self._local_vertices[3].y * _yscale + _model._position.y
-        )
+        self._draw_legacy(_model)
 
         glEnd()
 
