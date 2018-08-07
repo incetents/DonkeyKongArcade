@@ -26,7 +26,7 @@ Storage = {
     Type.ENTITY_3D: {}
 }
 
-
+# !!! Add also overrides if names are duplicates
 def add(_type: Type, _name: str, _data):
     global Storage
     Storage[_type][_name] = _data

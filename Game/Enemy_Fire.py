@@ -60,7 +60,7 @@ class Enemy_Fire(Entity):
         # Kill Condition
         # if self.transform.get_position().y < - 5.0:
         #     print('fart')
-        #     EntityManager_2D.get_singleton().remove_entity(self)
+        #     EntityManager.get_singleton().remove_entity(self)
 
     def draw(self):
         self.animations.draw(self.transform)

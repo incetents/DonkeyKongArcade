@@ -47,12 +47,12 @@ class Oilbarrel(Entity):
     def spawn_fire(self):
         # append time to created fire to make sure its unique
         if self._fire is not None:
-            EntityManager_2D.get_singleton().remove_entity(self._fire)
+            EntityManager.get_singleton().remove_entity(self._fire)
 
         self._fire = Enemy_Fire('new_fire', self.transform.get_position() + Vector3(0, 20.0, 0))
         self._fire.rigidbody.set_velocity(Vector3(20, 40, 0))
 
-        EntityManager_2D.get_singleton().add_entity(self._fire)
+        EntityManager.get_singleton().add_entity(self._fire)
 
 
     def update(self, delta_time):

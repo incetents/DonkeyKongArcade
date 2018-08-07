@@ -98,13 +98,14 @@ class Entity:
             else:
                 self.collider_exit(i)
 
+    # Assumes that entity has rigidbody
     def process_collision_list(self, entities: List[Entity]):
         # Collision and rigidbody must be present
-        if self.collision is None or self.rigidbody is None:
+        if self.collision is None:
             return
 
         # Both collision and rigidbody must be active
-        if self.collision.enabled is False or self.rigidbody.enabled is False:
+        if self.collision.enabled is False:
             return
 
         # Collision Simple

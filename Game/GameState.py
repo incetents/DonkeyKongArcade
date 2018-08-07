@@ -45,7 +45,7 @@ class GameState:
         # Reset Collision System
         ColliderManager_2D.get_singleton().clear()
         # Reset Current List of Entities
-        EntityManager_2D.get_singleton().clear()
+        EntityManager.get_singleton().clear()
         # Mario is global#
         self._mario: Mario = None
         pass
@@ -58,12 +58,12 @@ class GameState:
 
     def update(self, delta_time: float):
         # Update Entities
-        EntityManager_2D.get_singleton().update(delta_time)
+        EntityManager.get_singleton().update(delta_time)
         pass
 
     def draw(self):
         # Draw Entities
-        EntityManager_2D.get_singleton().draw()
+        EntityManager.get_singleton().draw()
         pass
 
     def draw_ui(self, delta_time: float):
@@ -74,7 +74,7 @@ class GameState_Menu(GameState):
     def __init__(self):
         GameState.__init__(self)
         self.test = Tile('dk', 'spr_barrel_stack1', Vector3())
-        EntityManager_2D.get_singleton().add_entity(self.test)
+        EntityManager.get_singleton().add_entity(self.test)
         pass
 
     def enter(self):
@@ -232,19 +232,19 @@ class GameState_Game(GameState):
 
     def enter(self):
         # Add entities
-        # EntityManager_2D.get_singleton().add_entity(self._enemy1)
-        EntityManager_2D.get_singleton().add_entity(self._invis_box1)
-        EntityManager_2D.get_singleton().add_entity(self._invis_box2)
-        EntityManager_2D.get_singleton().add_entity(self._oil1)
-        EntityManager_2D.get_singleton().add_entity(self._destroy_barrel_trig)
-        EntityManager_2D.get_singleton().add_entity(self._stack_barrels)
-        EntityManager_2D.get_singleton().add_entity(self._dk)
-        # EntityManager_2D.get_singleton().add_entity(self._barrel_1)
+        # EntityManager.get_singleton().add_entity(self._enemy1)
+        EntityManager.get_singleton().add_entity(self._invis_box1)
+        EntityManager.get_singleton().add_entity(self._invis_box2)
+        EntityManager.get_singleton().add_entity(self._oil1)
+        EntityManager.get_singleton().add_entity(self._destroy_barrel_trig)
+        EntityManager.get_singleton().add_entity(self._stack_barrels)
+        EntityManager.get_singleton().add_entity(self._dk)
+        # EntityManager.get_singleton().add_entity(self._barrel_1)
 
-        EntityManager_2D.get_singleton().add_batch(self._floor_tiles)
-        EntityManager_2D.get_singleton().add_batch(self._ladder_tiles)
+        EntityManager.get_singleton().add_batch(self._floor_tiles)
+        EntityManager.get_singleton().add_batch(self._ladder_tiles)
 
-        EntityManager_2D.get_singleton().add_entity(self._mario)
+        EntityManager.get_singleton().add_entity(self._mario)
         pass
 
     def exit(self):

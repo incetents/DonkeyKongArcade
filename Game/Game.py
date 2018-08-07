@@ -3,6 +3,7 @@
 
 # [Main Game Functionality Goes Here]
 
+# from __future__ import annotations
 import pygame
 
 # Textures
@@ -12,6 +13,7 @@ from Engine.Sprite import *
 # Math
 import math
 import Engine.Camera
+import Engine.Sprite
 from Engine.Anchor import *
 from Engine.Vector import *
 from Engine.Collision import *
@@ -39,8 +41,14 @@ from Game.GameState import *
 
 _instance = None
 
-class Game:
+
+class Game():
     def __init__(self):
+        # State
+        self._state = None
+        self.is_setup: bool = False
+
+    def setup(self):
         # State
         self._state = GameState()
         # Setup Functions
@@ -51,6 +59,7 @@ class Game:
         self.setup_meshes()
         # Initial State
         self.set_state(GameState_Game())
+        self.is_setup = True
 
     @staticmethod
     def get_singleton():
@@ -119,6 +128,7 @@ class Game:
         Texture('fire_blue2', 'assets/enemies/fire_blue2.png', FilterMode.POINT, WrapMode.CLAMP)
 
     def setup_sprites(self):
+
         # Load Sprites
         Sprite('spr_pixel_black', 'pixel_black')
         Sprite('spr_pixel_white', 'pixel_white')

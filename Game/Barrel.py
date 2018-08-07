@@ -46,7 +46,7 @@ class BarrelKillZone(Entity):
 
     def trigger_enter(self, trigger: Collider):
         if trigger.id is Engine.Config.TRIGGER_ID_FIRE_BARREL:
-            EntityManager_2D.get_singleton().remove_entity(self)
+            EntityManager.get_singleton().remove_entity(self)
         pass
 
 
@@ -142,5 +142,5 @@ class Barrel(Entity):
 
     def trigger_enter(self, trigger: Collider):
         if trigger.id is Engine.Config.TRIGGER_ID_FIRE_BARREL:
-            EntityManager_2D.get_singleton().remove_entity(self)
+            EntityManager.get_singleton().remove_entity(self)
         pass

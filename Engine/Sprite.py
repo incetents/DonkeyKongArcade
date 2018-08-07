@@ -3,6 +3,7 @@
 
 # 2D Sprites
 
+from __future__ import annotations
 from Engine.Texture import Texture
 from Engine.Graphics import Mesh
 from Engine.Vector import *
@@ -15,7 +16,7 @@ import Engine.Storage
 from OpenGL.GL import *
 from typing import List, Dict
 import math
-
+import threading
 
 class Sprite(Component):
     def __init__(self, sprite_name: str, texture_name: str, _anchor: Anchor=Anchor.MID):

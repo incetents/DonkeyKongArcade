@@ -171,11 +171,11 @@ class Mario(Entity):
     def trigger_enter(self, trigger: Collider):
         if self.debug is False and trigger.id is Engine.Config.TRIGGER_ID_DEATH:
             self.set_state(MarioState_Enum.DEAD)
-        print('ENTER id:', trigger.id)
+        # print('ENTER id:', trigger.id)
         pass
 
     def trigger_exit(self, trigger: Collider):
-        print('EXIT id:', trigger.id)
+        # print('EXIT id:', trigger.id)
         pass
 
 

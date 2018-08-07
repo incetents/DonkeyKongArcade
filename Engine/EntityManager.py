@@ -6,11 +6,14 @@ from typing import *
 from Engine.Entity import *
 from Engine.SpriteBatch import *
 from Engine.CollisionManager import *
+import Engine.CollisionManager
 from collections import OrderedDict
+import multiprocessing
 
 _instance = None
 
-class EntityManager_2D:
+
+class EntityManager:
     def __init__(self):
         self._dynamic_entities: Dict[str, Entity] = {}
         self._entities: Dict[str, Entity] = {}
@@ -24,7 +27,7 @@ class EntityManager_2D:
     def get_singleton():
         global _instance
         if _instance is None:
-            _instance = EntityManager_2D()
+            _instance = EntityManager()
         return _instance
 
     def clear(self):
@@ -72,6 +75,9 @@ class EntityManager_2D:
         # Add to dynamic entities
         if _ent.get_component(Rigidbody) is not None:
             self._dynamic_entities[_ent.name] = _ent
+            # Create thread for entity
+            # _thread = ProcessCollisionThread(_ent, self._dynamic_entities)
+            # _thread.start()
 
     def add_batch(self, _batch: SpriteBatch):
         # Add static collider if no rigidbody is present
@@ -95,7 +101,7 @@ class EntityManager_2D:
     def update(self, delta_time: float):
         # ENTITY update
         # print('~~~')
-        _t = pygame.time.get_ticks()
+        # _t = pygame.time.get_ticks()
         _ent_copy = self._entities.copy()
         for key, value in _ent_copy.items():
             if value.enabled is True:
@@ -107,7 +113,6 @@ class EntityManager_2D:
                         value,
                         self._dynamic_entities.values()
                     )
-
         # print('time for updating all ents:', pygame.time.get_ticks() - _t)
 
     def draw(self):
@@ -116,7 +121,7 @@ class EntityManager_2D:
             value.draw()
 
         # Unordered
-        #for key, value in self._entities.items():
+        # for key, value in self._entities.items():
         #    if value.enabled is True:
         #        value.draw()
 

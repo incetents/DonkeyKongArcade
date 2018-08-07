@@ -11,12 +11,25 @@ from Engine.Vector import *
 from Engine.Rigidbody import *
 import Engine.Graphics
 from Engine.Collision import *
+import multiprocessing
 
 CHUNK_SIZE = 32
 CHUNK_SIZE_VEC_HALF = Vector2(CHUNK_SIZE/2, CHUNK_SIZE/2)
 CHUNK_SIZE_VEC = Vector2(CHUNK_SIZE, CHUNK_SIZE)
 
 _instance = None
+
+class ProcessCollisionThread:
+    def __init__(self, entity: Entity, dynamic_entities_ref: Dict[str, Entity]):
+        self.running: bool = True
+        self._entity: Entity = entity
+        self._dynamic_entities_ref: Dict[str, Entity] = dynamic_entities_ref
+
+    def run(self):
+        ColliderManager_2D.get_singleton().process_collision(
+            self._entity,
+            list(self._dynamic_entities_ref.values())
+        )
 
 
 class ColliderChunk:
@@ -119,6 +132,10 @@ class ColliderManager_2D:
         return self._chunks[_index]
 
     def process_collision(self, _entity: Entity, _others: List[Entity]):
+        # Error Check
+        if _entity is None or _entity.enabled is False or _entity.get_component(Rigidbody) is None:
+            return
+
         _chunks: List[ColliderChunk] = self.get_chunks_from_entity_location(_entity)
 
         # Begin
