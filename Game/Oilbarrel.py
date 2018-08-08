@@ -32,9 +32,9 @@ class Oilbarrel(Entity):
         self.transform.set_position(_pos)
         # Physics
         self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
-        self.collision.offset = Vector2(0, 16)
+        self.collision.offset = Vector2(-6, 8)
         self.collision.type = Collision_Type.TRIGGER
-        self.collision.id = Engine.Config.TRIGGER_ID_DEATH
+        self.collision.id = Engine.Config.TRIGGER_ID_OIL_BARREL
         self._ray_left: Raycast_2D = None
         self._ray_right: Raycast_2D = None
         # Animations
@@ -42,20 +42,33 @@ class Oilbarrel(Entity):
         self.animations.set_speed(8.0)
 
         # Data
+        self._lit: bool = False
         self._fire: Enemy_Fire = None
+        self._flame_effect: bool = False
+        self._flame_effect_timer: Clock = Clock(2.0)
+
+    def check_lit(self) -> bool:
+        return self._lit
 
     def spawn_fire(self):
-        # append time to created fire to make sure its unique
-        if self._fire is not None:
-            EntityManager.get_singleton().remove_entity(self._fire)
-
-        self._fire = Enemy_Fire('new_fire', self.transform.get_position() + Vector3(0, 20.0, 0))
-        self._fire.rigidbody.set_velocity(Vector3(20, 40, 0))
-
-        EntityManager.get_singleton().add_entity(self._fire)
-
+        # Only one fire allowed at a time
+        if self._fire is None:
+            self._fire = Enemy_Fire('new_fire', self.transform.get_position() + Vector3(0, 20.0, -1))
+            self._fire.rigidbody.set_velocity(Vector3(20, 40, 0))
+            EntityManager.get_singleton().add_entity(self._fire)
+        # Flag
+        self._lit = True
+        # Change fire effect
+        self._flame_effect = True
+        self._flame_effect_timer.reset()
+        self.animations.set_sprite_sequence('anim_oil_barrel_burn')
 
     def update(self, delta_time):
+        # Set Animation
+        if self._flame_effect_timer.is_finished() and self._flame_effect:
+            self.animations.set_sprite_sequence('anim_oil_barrel_normal')
+            self._flame_effect = False
+
         self.animations.update(delta_time)
         _sprite = self.animations.get_current_frame()
 

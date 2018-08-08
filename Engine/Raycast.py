@@ -8,22 +8,45 @@ from Engine.Collision import *
 from Engine.CollisionManager import *
 from typing import *
 from Engine.Entity import *
+from Engine.EntityManager import *
 import Engine.Collision
 
-def Raypoint_2D(position: Vector2, ignore_id: int=0, ignore_trigger:bool = False) -> List[Entity]:
+
+def Raypoint_2D_Static(position: Vector2, search_id: int=-1, ignore_trigger:bool = False) -> List[Entity]:
     _result: List[Entity] = []
     _chunk = ColliderManager_2D.get_singleton().get_chunk(position)
     # inside the chunk get all entities that touch point
     _ents = _chunk.get_entities()
     for e in _ents:
-        # Ignore id
-        if e.collision.id is ignore_id:
+        # Ignore ids
+        if (search_id is not -1) and (e.collision.id is not search_id):
             continue
 
         # Ignore trigger if flag is true
         if e.collision.type is Collision_Type.TRIGGER and ignore_trigger:
             continue
 
+        # Append collision hit
+        if e.collision.check_if_point_inside(position):
+            _result.append(e)
+
+    return _result
+
+
+def Raypoint_2D_Dynamic(position: Vector2, search_id: int =-1, ignore_trigger: bool = False) -> List[Entity]:
+    _result: List[Entity] = []
+
+    _dynamics: List[Entity] = EntityManager.get_singleton()._dynamic_entities.values()
+    for e in _dynamics:
+        # Ignore ids
+        if (search_id is not -1) and (e.collision.id is not search_id):
+            continue
+
+        # Ignore trigger if flag is true
+        if e.collision.type is Collision_Type.TRIGGER and ignore_trigger:
+            continue
+
+        # Append collision hit
         if e.collision.check_if_point_inside(position):
             _result.append(e)
 

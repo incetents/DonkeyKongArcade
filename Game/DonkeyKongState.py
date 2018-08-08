@@ -67,6 +67,7 @@ class DK_State_Still(DK_State):
         #     self._dk.set_state(DK_State_Enum.TOSS_BARREL_NORMAL)
         pass
 
+
 class DK_State_Toss_Barrel_Normal(DK_State):
     def __init__(self, _dk):
         DK_State.__init__(self, _dk)

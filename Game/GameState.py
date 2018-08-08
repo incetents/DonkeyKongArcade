@@ -33,6 +33,7 @@ from Game.Barrel import *
 from Game.Oilbarrel import *
 from Game.InvisBlock import *
 from Game.DonkeyKong import *
+import Game.Barrel
 # Text
 from Engine.Text import *
 
@@ -121,7 +122,7 @@ class GameState_Game(GameState):
 
         # Special Entities
         self._floor_tiles = TileBatch(
-            'batch_tiles1', 'floor1', Collision_Type.PLATFORM)
+            'batch_tiles1', 'floor1', Collision_Type.PLATFORM, Engine.Config.TRIGGER_ID_FLOOR)
 
         self._ladder_tiles = TileBatch(
             'batch_tiles2', 'ladder1', Collision_Type.TRIGGER, Engine.Config.TRIGGER_ID_LADDER)
@@ -133,26 +134,29 @@ class GameState_Game(GameState):
 
         self._enemy1 = Enemy_Fire('enemy1', Vector3(120, 20, 0))
 
-        self._barrel_1 = Barrel('barrel1', Vector3(80, 16, -2), Direction.LEFT)
+        # self._barrel_1 = Barrel('barrel1', Vector3(80, 16, -2), Direction.LEFT)
 
         self._invis_box1 = InvisBlock('invis1', Vector3(-12, 92, 0), Vector3(8, 216, 1))
         self._invis_box2 = InvisBlock('invis2', Vector3(236, 92, 0), Vector3(8, 216, 1))
 
-        self._oil1 = Oilbarrel('oil1', Vector3(24, 8, 0))
+        self._oil = Oilbarrel('oil1', Vector3(24, 8, 0))
 
         self._destroy_barrel_trig = InvisBlock('trig_destroy_barrel',
-                                               self._oil1.transform.get_position() + Vector3(-12, -8, 0),
+                                               self._oil.transform.get_position() + Vector3(-12, -8, 0),
                                                Vector3(16, 16, 1)
                                                )
         self._destroy_barrel_trig.collision.type = Collision_Type.TRIGGER
-        self._destroy_barrel_trig.collision.id = Engine.Config.TRIGGER_ID_FIRE_BARREL
+        self._destroy_barrel_trig.collision.id = Engine.Config.TRIGGER_ID_BARREL_DESTROY
 
         self._stack_barrels = Tile('stack_o_barrels', 'spr_barrel_stack1', Vector3(0, 172, 0))
         self._stack_barrels.collision.offset = Vector2(10, 16)
         self._stack_barrels.collision.type = Collision_Type.TRIGGER
         self._stack_barrels.collision.id = Engine.Config.TRIGGER_ID_DEATH
 
-        self._dk = DonkeyKong('dk', Vector3(42, 172, 0))
+        self._dk = DonkeyKong('dk', Vector3(42, 172, -2))
+
+        # SPECIAL
+        Game.Barrel.oil_barrel_ref = self._oil
 
         # FLOORS
         ################
@@ -234,10 +238,10 @@ class GameState_Game(GameState):
         # EntityManager.get_singleton().add_entity(self._enemy1)
         EntityManager.get_singleton().add_entity(self._invis_box1)
         EntityManager.get_singleton().add_entity(self._invis_box2)
-        EntityManager.get_singleton().add_entity(self._oil1)
+        EntityManager.get_singleton().add_entity(self._oil)
         EntityManager.get_singleton().add_entity(self._destroy_barrel_trig)
         EntityManager.get_singleton().add_entity(self._stack_barrels)
-        # EntityManager.get_singleton().add_entity(self._dk)
+        EntityManager.get_singleton().add_entity(self._dk)
         # EntityManager.get_singleton().add_entity(self._barrel_1)
 
         EntityManager.get_singleton().add_batch(self._floor_tiles)

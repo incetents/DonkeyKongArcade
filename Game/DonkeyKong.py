@@ -21,6 +21,7 @@ import Engine.Config
 from Game.DonkeyKongState import *
 import Game.DonkeyKongState
 from Game.Barrel import *
+import Game.Barrel
 
 
 class DonkeyKong(Entity):
@@ -58,8 +59,17 @@ class DonkeyKong(Entity):
         return self
 
     def spawn_barrel(self, dropped: bool=False):
-        # _barrel = Barrel('barrel' + str(pygame.time.get_ticks()), self.transform.get_position() + Vector3(20, 0, -2))
-        _barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(50, 30, -2), Direction.LEFT)
+        # Regular Push
+        _barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
+                        self.transform.get_position() + Vector3(20, 0, +1), Barrel_State.RIGHT, False)
+
+        # Regular Drop
+        # _barrel: Barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
+        #                  self.transform.get_position() + Vector3(0, 0, +1), Barrel_State.MEGA_FALL, True)
+
+        # Spawn
+        # _barrel: Barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(90, 30, -1), Barrel_State.LEFT)
+
         EntityManager.get_singleton().add_entity(_barrel)
 
         _barrel_zone = BarrelKillZone('barrel_zone' + str(pygame.time.get_ticks()), _barrel)
@@ -72,8 +82,10 @@ class DonkeyKong(Entity):
         # self.animations.update(delta_time)
         _sprite = self.animations.get_current_frame()
 
+
         # Update State
         self._state.update(delta_time)
+        self.animations.set_frame(5)
 
         # Update Barrel list
         _copy_barrels = self._barrels.copy()

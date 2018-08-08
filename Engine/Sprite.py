@@ -260,6 +260,7 @@ class SpriteAnimation:
         self._current_sequence = self._sequences[sequence_name]
         # Reset index/time
         self._time_index = 0.0
+        self.update(0.0)
         return self
 
     def set_pause(self, _state: bool):

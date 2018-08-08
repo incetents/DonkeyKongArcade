@@ -172,7 +172,7 @@ class Mario(Entity):
             self.set_state(MarioState_Enum.DEAD)
 
         # Test
-        # _cols: List[Entity] = Engine.Raycast.Raypoint_2D(self.transform.get_position().get_vec2())
+        # _cols: List[Entity] = Engine.Raycast.Raypoint_2D_Static_Static(self.transform.get_position().get_vec2())
         # prin# t(len(_cols))
 
         pass
@@ -207,8 +207,16 @@ class Mario(Entity):
         pass
 
     def trigger_enter(self, trigger: Collider):
+        # Ignore future logic if dead
+        if not self.alive:
+            return
+
         # Death Trigger
-        if self._debug is False and trigger.id is Engine.Config.TRIGGER_ID_DEATH:
+        if not self._debug and \
+                (trigger.id is Engine.Config.TRIGGER_ID_DEATH or
+                 trigger.id is Engine.Config.TRIGGER_ID_OIL_BARREL or
+                 trigger.id is Engine.Config.TRIGGER_ID_FLAME
+                ):
             self.set_state(MarioState_Enum.DEAD)
 
         # Ladder Exception

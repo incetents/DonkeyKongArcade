@@ -114,8 +114,9 @@ class MarioState_Idle(MarioState):
         # Climb Up
         if self._mario.input_up and self._mario.touching_ground:
             # Raypoint at mario center
-            _ents: List[Entity] = Engine.Raycast.Raypoint_2D(
-                self._mario.collision.get_position().get_vec2()
+            _ents: List[Entity] = Engine.Raycast.Raypoint_2D_Static(
+                self._mario.collision.get_position().get_vec2(),
+                Engine.Config.TRIGGER_ID_LADDER
             )
             for e in _ents:
                 # Get ladder if exists
@@ -131,8 +132,9 @@ class MarioState_Idle(MarioState):
         # Climb Down
         elif self._mario.input_down and self._mario.touching_ground:
             # Raypoint below mario (16 units below)
-            _ents: List[Entity] = Engine.Raycast.Raypoint_2D(
-                self._mario.transform.get_position().get_vec2() + Vector2(0, -Engine.Config.TILE_SIZE - 2.0)
+            _ents: List[Entity] = Engine.Raycast.Raypoint_2D_Static(
+                self._mario.transform.get_position().get_vec2() + Vector2(0, -Engine.Config.TILE_SIZE - 2.0),
+                Engine.Config.TRIGGER_ID_LADDER
             )
             for e in _ents:
                 # Get ladder if exists
@@ -246,11 +248,11 @@ class MarioState_Climb(MarioState):
         self.can_exit_down: bool = True
 
         # Check for additional block
-        _ents: List[Entity] = Engine.Raycast.Raypoint_2D(Vector2(
+        _ents: List[Entity] = Engine.Raycast.Raypoint_2D_Static(Vector2(
             self._mario._ladder_ref.collision.get_position().x,
             self._mario._ladder_ref.collision.get_up() + Engine.Config.TILE_SIZE - 2.0
             ),
-            Engine.Config.TRIGGER_ID_MARIO
+            Engine.Config.TRIGGER_ID_FLOOR
         )
         for e in _ents:
             if e.collision.type is Collision_Type.PLATFORM:
@@ -259,11 +261,11 @@ class MarioState_Climb(MarioState):
                 break
 
         # If floating top portion of a ladder, add additional slack
-        _ents: List[Entity] = Engine.Raycast.Raypoint_2D(Vector2(
+        _ents: List[Entity] = Engine.Raycast.Raypoint_2D_Static(Vector2(
             self._mario._ladder_ref.collision.get_position().x,
             self._mario._ladder_ref.collision.get_down() - 2.0
         ),
-            Engine.Config.TRIGGER_ID_MARIO
+            Engine.Config.TRIGGER_ID_FLOOR
         )
         _nothing_below_ladder: bool = True
         for e in _ents:

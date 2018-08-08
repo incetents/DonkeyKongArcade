@@ -118,6 +118,9 @@ class Game:
         Texture('barrel_side1', 'assets/objects/barrel_side1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('barrel_side2', 'assets/objects/barrel_side2.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('barrel', 'assets/objects/barrel.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel_side1_blue', 'assets/objects/barrel_side1_blue.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel_side2_blue', 'assets/objects/barrel_side2_blue.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('barrel_blue', 'assets/objects/barrel_blue.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('barrel_vertical', 'assets/objects/barrel_vertical.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('barrel_stack', 'assets/objects/stacked_barrels.png', FilterMode.POINT, WrapMode.CLAMP)
 
@@ -191,6 +194,14 @@ class Game:
         Sprite('spr_barrel_2', 'barrel', Anchor.BOT).set_flip_x(True)
         Sprite('spr_barrel_3', 'barrel', Anchor.BOT).set_flip_x(True).set_flip_y(True)
         Sprite('spr_barrel_4', 'barrel', Anchor.BOT).set_flip_y(True)
+
+        Sprite('spr_barrel_side1_blue', 'barrel_side1_blue', Anchor.BOT)
+        Sprite('spr_barrel_side2_blue', 'barrel_side2_blue', Anchor.BOT)
+        Sprite('spr_barrel_1_blue', 'barrel_blue', Anchor.BOT)
+        Sprite('spr_barrel_2_blue', 'barrel_blue', Anchor.BOT).set_flip_x(True)
+        Sprite('spr_barrel_3_blue', 'barrel_blue', Anchor.BOT).set_flip_x(True).set_flip_y(True)
+        Sprite('spr_barrel_4_blue', 'barrel_blue', Anchor.BOT).set_flip_y(True)
+
         Sprite('spr_barrel_vertical', 'barrel_vertical')
         Sprite('spr_barrel_stack1', 'barrel_stack', Anchor.BOTLEFT)
 
@@ -240,10 +251,12 @@ class Game:
                        )
 
         SpriteSequence('anim_oil_barrel_empty',
+                       'spr_fire_barrel5',
+                       )
+        SpriteSequence('anim_oil_barrel_normal',
                        'spr_fire_barrel1',
                        'spr_fire_barrel2'
                        )
-
         SpriteSequence('anim_oil_barrel_burn',
                        'spr_fire_barrel3',
                        'spr_fire_barrel4',
@@ -254,6 +267,20 @@ class Game:
                        'spr_barrel_2',
                        'spr_barrel_3',
                        'spr_barrel_4'
+                       )
+        SpriteSequence('anim_barrel_fall',
+                       'spr_barrel_side1',
+                       'spr_barrel_side2'
+                       )
+        SpriteSequence('anim_barrel_roll_blue',
+                       'spr_barrel_1_blue',
+                       'spr_barrel_2_blue',
+                       'spr_barrel_3_blue',
+                       'spr_barrel_4_blue'
+                       )
+        SpriteSequence('anim_barrel_fall_blue',
+                       'spr_barrel_side1_blue',
+                       'spr_barrel_side2_blue'
                        )
 
         SpriteSequence('anim_enemy1',

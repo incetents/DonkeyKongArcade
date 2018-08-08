@@ -139,7 +139,18 @@ class ColliderManager_2D:
 
         # Dynamic Collision
         if _rigidbody.ignore_dynamic_colliders is False:
-            _megalist += _others
+            # Special cases to ignore dynamic collision
+            if _entity.collision.id is Engine.Config.TRIGGER_ID_DEATH or \
+                    _entity.collision.id is Engine.Config.TRIGGER_ID_FLAME:
+                pass
+            else:
+                for ent in _others:
+                    if _entity.collision.id is Engine.Config.TRIGGER_ID_BARREL and \
+                    ent.collision.id is Engine.Config.TRIGGER_ID_DEATH:
+                        pass
+                    else:
+                        _megalist.append(ent)
+            # _megalist += _others
 
         # Process all those entities
         # print('ent:', _entity.name, ' checking: ', len(_megalist))

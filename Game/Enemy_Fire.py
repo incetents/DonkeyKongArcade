@@ -31,7 +31,7 @@ class Enemy_Fire(Entity):
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
         self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.type = Collision_Type.TRIGGER
-        self.collision.id = Engine.Config.TRIGGER_ID_NONE # Engine.Config.TRIGGER_ID_DEATH
+        self.collision.id = Engine.Config.TRIGGER_ID_FLAME
         # Animations
         self.animations = SpriteAnimation('anim_enemy1')
         self.animations.set_speed(10.0)
