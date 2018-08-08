@@ -89,6 +89,7 @@ class EntityManager:
 
     def remove_entity(self, _ent: Entity):
         # ENTITY deletion
+        _ent.deleted = True
         self._entities.pop(_ent.name, None)
         self._entities_ordered[_ent.transform.get_position().z].remove(_ent)
         if _ent.get_component(Rigidbody) is not None:
@@ -108,7 +109,9 @@ class EntityManager:
                 # General Update
                 value.update(delta_time)
                 # Update Collision with other dynamic entities
-                if value.get_component(Rigidbody) is not None:
+                _rigid: Rigidbody = value.get_component(Rigidbody)
+                if _rigid is not None and _rigid.enabled:
+                    # print('mario rigid', self._dynamic_entities.values())
                     ColliderManager_2D.get_singleton().process_collision(
                         value,
                         self._dynamic_entities.values()

@@ -5,4 +5,5 @@
 
 class Component:
     def __init__(self):
+        self.entity_parent = None
         pass

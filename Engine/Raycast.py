@@ -10,12 +10,20 @@ from typing import *
 from Engine.Entity import *
 import Engine.Collision
 
-def Raypoint_2D(position: Vector2) -> List[Entity]:
+def Raypoint_2D(position: Vector2, ignore_id: int=0, ignore_trigger:bool = False) -> List[Entity]:
     _result: List[Entity] = []
     _chunk = ColliderManager_2D.get_singleton().get_chunk(position)
     # inside the chunk get all entities that touch point
     _ents = _chunk.get_entities()
     for e in _ents:
+        # Ignore id
+        if e.collision.id is ignore_id:
+            continue
+
+        # Ignore trigger if flag is true
+        if e.collision.type is Collision_Type.TRIGGER and ignore_trigger:
+            continue
+
         if e.collision.check_if_point_inside(position):
             _result.append(e)
 
@@ -52,7 +60,7 @@ class Raycast_2D:
             ents = i.get_entities()
             # check all entities
             for e in ents:
-                # Ignore potential
+                # Ignore trigger if flag is true
                 if e.collision.type is Collision_Type.TRIGGER and ignore_trigger:
                     continue
 

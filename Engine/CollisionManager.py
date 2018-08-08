@@ -19,19 +19,6 @@ CHUNK_SIZE_VEC = Vector2(CHUNK_SIZE, CHUNK_SIZE)
 
 _instance = None
 
-class ProcessCollisionThread:
-    def __init__(self, entity: Entity, dynamic_entities_ref: Dict[str, Entity]):
-        self.running: bool = True
-        self._entity: Entity = entity
-        self._dynamic_entities_ref: Dict[str, Entity] = dynamic_entities_ref
-
-    def run(self):
-        ColliderManager_2D.get_singleton().process_collision(
-            self._entity,
-            list(self._dynamic_entities_ref.values())
-        )
-
-
 class ColliderChunk:
     def __init__(self, _pos: Vector3):
         self.position: Vector3 = _pos
@@ -132,21 +119,27 @@ class ColliderManager_2D:
         return self._chunks[_index]
 
     def process_collision(self, _entity: Entity, _others: List[Entity]):
-        # Error Check
-        if _entity is None or _entity.enabled is False or _entity.get_component(Rigidbody) is None:
-            return
-
-        _chunks: List[ColliderChunk] = self.get_chunks_from_entity_location(_entity)
+        # Rigidbody Check
+        _rigidbody: Rigidbody = _entity.get_component(Rigidbody)
+        # already checked in entity manager
+        # if _rigidbody is None:
+        #     return
 
         # Begin
         _entity.process_collision_start()
 
         # Create list of all possible entities in region
         _megalist: List[Entity] = []
-        for c in _chunks:
-            _megalist += c.get_entities()
 
-        _megalist += _others
+        # Static Collision
+        if _rigidbody.ignore_static_colliders is False:
+            _chunks: List[ColliderChunk] = self.get_chunks_from_entity_location(_entity)
+            for c in _chunks:
+                _megalist += c.get_entities()
+
+        # Dynamic Collision
+        if _rigidbody.ignore_dynamic_colliders is False:
+            _megalist += _others
 
         # Process all those entities
         # print('ent:', _entity.name, ' checking: ', len(_megalist))

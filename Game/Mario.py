@@ -18,6 +18,7 @@ from Engine.Collision import *
 from Engine.CollisionManager import *
 from Engine.Raycast import *
 from Engine.Anchor import *
+from Game.Tile import *
 import Engine.Config
 
 DEAD_HEIGHT = -10
@@ -29,32 +30,50 @@ class Mario(Entity):
         # State
         self._state: MarioState = MarioState_Idle(self)
         # Physics
-        self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
+        self.rigidbody: Rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
         # self.rigidbody = Rigidbody(self.transform.get_position())
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -Engine.Config.GRAV, 0))
         self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.type = Collision_Type.TRIGGER
+        self.collision.id = Engine.Config.TRIGGER_ID_MARIO
         self.collision.offset = Vector2(0, 8)
         self._ray_left: Raycast_2D = None
         self._ray_right: Raycast_2D = None
         # Inputs
         self.input_left: bool = False
         self.input_right: bool = False
+        self.input_up: bool = False
+        self.input_down: bool = False
         self.input_jump: bool = False
         # Animations
         self.animations = SpriteAnimation('anim_mario_idle')
         self.animations.set_speed(8.0)
 
         # Mario Data
-        self.debug: bool = False
+        self.rigid_state_backup: bool = False
+        self._debug: bool = False
         self.debug_speed: float = 4
         self.alive: bool = True
         self.speed: float = 35
         self.jumpspeed: float = 50
+        self.climbspeed: float = 0.5
+        self.x_distance_to_ladder_for_climb: float = 4.0
         self.touching_ground: bool = False
+        self._ladder_ref: Tile = None
         self._bottom_left_anchor: Vector2 = Vector2()
         self._bottom_right_anchor: Vector2 = Vector2()
+
+    def set_debug(self, _state: bool):
+        # Ignore self change
+        if self._debug is _state:
+            return
+
+        self._debug = _state
+        if _state is True:
+            self.rigid_state_backup = self.rigidbody.enabled
+        else:
+            self.rigidbody.enabled = self.rigid_state_backup
 
     def set_state(self, _new_state: MarioState_Enum):
         if self._state is not None:
@@ -71,7 +90,8 @@ class Mario(Entity):
 
     def update(self, delta_time: float):
         # Debug Mode
-        if self.debug:
+        if self._debug:
+            self.rigidbody.enabled = False
             self.rigidbody.set_velocity(Vector3(0, 0, 0))
             self.rigidbody.set_gravity(Vector3(0, 0, 0))
             if Engine.Input.get_key(pygame.K_LEFT):
@@ -86,22 +106,41 @@ class Mario(Entity):
 
         # Update Input
         if self.alive is True:
+            # Horizontal Movement
             if Engine.Input.get_key(pygame.K_LEFT) and not Engine.Input.get_key(pygame.K_RIGHT):
                 self.input_left = True
                 self.input_right = False
-                self.transform.set_flip_x(False)
             elif Engine.Input.get_key(pygame.K_RIGHT) and not Engine.Input.get_key(pygame.K_LEFT):
                 self.input_left = False
                 self.input_right = True
-                self.transform.set_flip_x(True)
             else:
                 self.input_left = False
                 self.input_right = False
 
-            if Engine.Input.get_key(pygame.K_SPACE) or Engine.Input.get_key(pygame.K_UP):
+            # Vertical Movement
+            if Engine.Input.get_key(pygame.K_UP) and not Engine.Input.get_key(pygame.K_DOWN):
+                self.input_up = True
+                self.input_down = False
+            elif Engine.Input.get_key(pygame.K_DOWN) and not Engine.Input.get_key(pygame.K_UP):
+                self.input_up = False
+                self.input_down = True
+            else:
+                self.input_up = False
+                self.input_down = False
+
+            if Engine.Input.get_key(pygame.K_SPACE):
                 self.input_jump = True
             else:
                 self.input_jump = False
+
+        # No input
+        else:
+            self.input_left = False
+            self.input_right = False
+            self.input_up = False
+            self.input_down = False
+            self.input_jump = False
+
 
         # Update Animations
         self.animations.update(delta_time)
@@ -165,16 +204,32 @@ class Mario(Entity):
                 Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
 
     def trigger_stay(self, trigger: Collider):
-        # print('trigger id:', trigger.id)
         pass
 
     def trigger_enter(self, trigger: Collider):
-        if self.debug is False and trigger.id is Engine.Config.TRIGGER_ID_DEATH:
+        # Death Trigger
+        if self._debug is False and trigger.id is Engine.Config.TRIGGER_ID_DEATH:
             self.set_state(MarioState_Enum.DEAD)
+
+        # Ladder Exception
+        if self._debug is False and trigger.id is Engine.Config.TRIGGER_ID_BARREL and \
+                self._state.ID is MarioState_Enum.CLIMB:
+            self.set_state(MarioState_Enum.DEAD)
+
+        # Hold copy of ladder
+        # if trigger.id is Engine.Config.TRIGGER_ID_LADDER:
+        #     self.ladder_ref = trigger.entity_parent
+
         # print('ENTER id:', trigger.id)
         pass
 
     def trigger_exit(self, trigger: Collider):
+        # Lose copy of ladder
+        # if trigger.id is Engine.Config.TRIGGER_ID_LADDER and \
+        #         self.ladder_ref is trigger.entity_parent and \
+        #         self._state.ID is not MarioState_Enum.CLIMB:
+        #     self.ladder_ref = None
+
         # print('EXIT id:', trigger.id)
         pass
 

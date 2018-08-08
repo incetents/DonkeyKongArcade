@@ -42,7 +42,7 @@ from Game.GameState import *
 _instance = None
 
 
-class Game():
+class Game:
     def __init__(self):
         # State
         self._state = None
@@ -106,6 +106,11 @@ class Game():
         Texture('mario_death1', 'assets/mario/mario_death1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('mario_death2', 'assets/mario/mario_death2.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('mario_dead', 'assets/mario/mario_dead.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('mario_climb1', 'assets/mario/mario_climb1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('mario_climb2', 'assets/mario/mario_climb2.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('mario_climb3', 'assets/mario/mario_climb3.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('mario_climb4', 'assets/mario/mario_climb4.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('mario_climb5', 'assets/mario/mario_climb5.png', FilterMode.POINT, WrapMode.CLAMP)
 
         Texture('floor1', 'assets/tiles/floor1.png', FilterMode.POINT, WrapMode.REPEAT)
         Texture('ladder1', 'assets/tiles/ladder1.png', FilterMode.POINT, WrapMode.REPEAT)
@@ -152,6 +157,11 @@ class Game():
         Sprite('spr_mario_death3', 'mario_death1', Anchor.BOT).set_flip_y(True)
         Sprite('spr_mario_death4', 'mario_death2', Anchor.BOT)
         Sprite('spr_mario_dead', 'mario_dead', Anchor.BOT)
+        Sprite('spr_mario_climb1', 'mario_climb1', Anchor.BOT)
+        Sprite('spr_mario_climb2', 'mario_climb2', Anchor.BOT)
+        Sprite('spr_mario_climb3', 'mario_climb3', Anchor.BOT)
+        Sprite('spr_mario_climb4', 'mario_climb4', Anchor.BOT)
+        Sprite('spr_mario_climb5', 'mario_climb5', Anchor.BOT)
 
         Sprite('spr_floor_red_1', 'floor1', Anchor.BOTLEFT)
         Sprite('spr_floor_red_2', 'floor1', Anchor.BOTLEFT).set_scale_x(2.0).set_uv_right(2.0)
@@ -164,12 +174,10 @@ class Game():
         Sprite('spr_ladder_20', 'ladder1', Anchor.BOTLEFT).set_scale_y(20.0 / 8.0).set_uv_top(20.0 / 8.0)
         Sprite('spr_ladder_16', 'ladder1', Anchor.BOTLEFT).set_scale_y(16.0 / 8.0).set_uv_top(16.0 / 8.0)
         Sprite('spr_ladder_13', 'ladder1', Anchor.BOTLEFT).set_scale_y(13.0 / 8.0).set_uv_top(13.0 / 8.0)
-
         Sprite('spr_ladder_8', 'ladder1', Anchor.BOTLEFT)
         Sprite('spr_ladder_6', 'ladder1', Anchor.BOTLEFT).set_scale_y(6.0 / 8.0).set_uv_top(6.0 / 8.0)
         Sprite('spr_ladder_4', 'ladder1', Anchor.BOTLEFT).set_scale_y(4.0 / 8.0).set_uv_top(4.0 / 8.0)
         Sprite('spr_ladder_3', 'ladder1', Anchor.BOTLEFT).set_scale_y(3.0 / 8.0).set_uv_top(3.0 / 8.0)
-        # Sprite('spr_ladder1_double', 'ladder1', Anchor.BOTLEFT)
 
         Sprite('spr_fire_barrel1', 'fire_barrel1', Anchor.BOT)
         Sprite('spr_fire_barrel2', 'fire_barrel2', Anchor.BOT)
@@ -214,6 +222,13 @@ class Game():
         SpriteSequence('anim_mario_dead',
                         'spr_mario_dead'
                         )
+        SpriteSequence('anim_mario_climb',
+                       'spr_mario_climb1',
+                       'spr_mario_climb2',
+                       'spr_mario_climb3',
+                       'spr_mario_climb4',
+                       'spr_mario_climb5'
+                       )
 
         SpriteSequence('anim_dk_frames',
                        'spr_dk_center',

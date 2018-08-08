@@ -8,6 +8,7 @@ from OpenGL.GL import *
 from typing import List
 from Engine.Component import *
 
+
 class Transform(Component):
     def __init__(self):
         super().__init__()
@@ -52,6 +53,18 @@ class Transform(Component):
         self._position.z = position.z
         self.dirty = True
         return self
+
+    def set_position_x(self, x: float):
+        self._position.x = x
+        self.dirty = True
+
+    def set_position_y(self, y: float):
+        self._position.y = y
+        self.dirty = True
+
+    def set_position_z(self, z: float):
+        self._position.z = z
+        self.dirty = True
 
     def set_rotation_vector(self, rotation_dir: Vector3):
         self._rotation_dir = rotation_dir

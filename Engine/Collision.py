@@ -26,10 +26,12 @@ class Collision_Type(Enum):
 # 1D Collision General Use
 #
 
+
 # Assumes p1 is smaller than p2 for both lines
 def collision_1D_unsafe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
     # Check intersection
     return line1_p2 >= line2_p1 and line2_p2 >= line1_p1
+
 
 # Assumes that lines could be backwards
 def collision_1D_safe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p2: float) -> bool:
@@ -40,6 +42,7 @@ def collision_1D_safe(line1_p1: float, line1_p2: float, line2_p1: float, line2_p
     _max_line2 = max(line2_p1, line2_p2)
     # Check intersection
     return collision_1D_unsafe(_min_line1, _max_line1, _min_line2, _max_line2)
+
 
 # Checks if two lines intersect and return the resulting point if they do
 def line_to_line_collision(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) -> Tuple[Vector2, bool]:
@@ -203,7 +206,6 @@ class Collider_AABB_2D(Collider):
             return collision_1D_unsafe(
                 self.get_down(), self.get_up(),
                 min(p1.y, p2.y), max(p1.y, p2.y))
-
 
         _b = p1.y - _m * p1.x # (y - mx = b)
         # Check for y values when x is at left or right of square
@@ -369,8 +371,6 @@ def _resolve2d_aabb_aabb(collider1: Collider_AABB_2D, collider2: Collider_AABB_2
     else:
         # Currently do nothing
         pass
-
-
 
 
 def _resolve2d_circle_circle(a1: Collider_Circle_2D, a2: Collider_Circle_2D, rigid1: Rigidbody, rigid2: Rigidbody):

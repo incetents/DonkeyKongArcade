@@ -42,6 +42,7 @@ class Entity:
         # cannot be base class
         if type(component) is not Component:
             self._components[type(component)] = component
+            component.entity_parent = self
         else:
             print('attempting to add duplicate components', component, ' on entity', self)
         return component
@@ -100,11 +101,11 @@ class Entity:
 
     # Assumes that entity has rigidbody
     def process_collision_list(self, entities: List[Entity]):
-        # Collision and rigidbody must be present
+        # Collision must be present
         if self.collision is None:
             return
 
-        # Both collision and rigidbody must be active
+        # Both collision must be active
         if self.collision.enabled is False:
             return
 

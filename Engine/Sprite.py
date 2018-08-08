@@ -233,6 +233,7 @@ class SpriteAnimation:
         self._current_sequence: SpriteSequence = None
         self._current_sprite: Sprite = None
         self._speed: float = 1.0
+        self._pause: bool = False
         self._time_index: float = 0.0
         self._flips: List[bool] = [False, False]
         for i in sequence_names:
@@ -261,6 +262,9 @@ class SpriteAnimation:
         self._time_index = 0.0
         return self
 
+    def set_pause(self, _state: bool):
+        self._pause = _state
+
     def set_frame(self, _index: int):
         self._time_index = _index
         self.update(0.0)
@@ -283,7 +287,8 @@ class SpriteAnimation:
 
     def update(self, delta_time):
         # Increment Time
-        self._time_index = (self._time_index + delta_time * self._speed * self._current_sequence.speed) % len(self._current_sequence)
+        _increment = 0.0 if self._pause is True else (delta_time * self._speed * self._current_sequence.speed)
+        self._time_index = (self._time_index + _increment) % len(self._current_sequence)
         # Fix Negative
         if self._time_index < 0:
             self._time_index += len(self._current_sequence)

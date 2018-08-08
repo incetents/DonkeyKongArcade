@@ -18,9 +18,12 @@ class Rigidbody(Component):
     def __init__(self, position_ref: Vector3):
         super().__init__()
         self.enabled: bool = True
+        self.ignore_static_colliders: bool = False
+        self.ignore_dynamic_colliders: bool = False
         self._position: Vector3 = position_ref
         self._velocity: Vector3 = Vector3()
         self._gravity: Vector3 = Vector3()
+        self._gravity_toggle: bool = True
 
         self._terminal_velocity: Vector3 = Vector3()
         self._terminal_velocity_switch: List[bool] = [False, False, False]
@@ -47,6 +50,9 @@ class Rigidbody(Component):
 
     def set_gravity(self, _gravity: Vector3):
         self._gravity = _gravity
+
+    def set_gravity_state(self, _state: bool):
+        self._gravity_toggle = _state
 
     def set_terminal_velocity_x(self, _val: float):
         self._terminal_velocity.x = _val
@@ -75,7 +81,10 @@ class Rigidbody(Component):
         if self.enabled is False:
             return
 
-        self._velocity += (self._gravity * delta_time)
+        # Increase Velocity from gravity
+        if self._gravity_toggle is True:
+            self._velocity += (self._gravity * delta_time)
+
         # Terminal Velocity Fix
         for i in range(3):
             if self._terminal_velocity_switch[i]:

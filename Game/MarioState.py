@@ -9,6 +9,10 @@ from Engine.Rigidbody import *
 from Engine.Vector import *
 from Engine.Clock import *
 from enum import Enum
+from Engine.Collision import *
+from Engine.Raycast import *
+from Game.Tile import *
+import Engine.Raycast
 
 class MarioState_Enum(Enum):
     ERR = 0,
@@ -60,6 +64,7 @@ class MarioState_Dead(MarioState):
 
     def enter(self):
         self._mario.set_animation('anim_mario_dying')
+        self._mario.animations.set_pause(False)
         self._mario.rigidbody.enabled = False
         self._mario.alive = False
         pass
@@ -80,7 +85,10 @@ class MarioState_Idle(MarioState):
         pass
 
     def enter(self):
+        self._mario.rigidbody.set_gravity_state(True)
+        self._mario.rigidbody.ignore_static_colliders = False
         self._mario.set_animation('anim_mario_idle')
+        self._mario.animations.set_pause(False)
         pass
 
     def exit(self):
@@ -90,13 +98,68 @@ class MarioState_Idle(MarioState):
         # No movement
         self._mario.rigidbody.set_vel_x(0)
 
+        # Update Flip
+        if self._mario.input_left:
+            self._mario.transform.set_flip_x(False)
+        elif self._mario.input_right:
+            self._mario.transform.set_flip_x(True)
+
         # Movement Change
         if self._mario.input_left or self._mario.input_right:
             self._mario.set_state(MarioState_Enum.WALK)
 
-        elif self._mario.input_jump and self._mario.touching_ground is True:
+        elif self._mario.input_jump and self._mario.touching_ground:
             self._mario.set_state(MarioState_Enum.JUMP)
-        #
+
+        # Climb Up
+        if self._mario.input_up and self._mario.touching_ground:
+            # Raypoint at mario center
+            _ents: List[Entity] = Engine.Raycast.Raypoint_2D(
+                self._mario.collision.get_position().get_vec2()
+            )
+            for e in _ents:
+                # Get ladder if exists
+                _ladder_collision: Collider_AABB_2D = e.get_component(Collider_AABB_2D)
+                if _ladder_collision is not None and _ladder_collision.id is Engine.Config.TRIGGER_ID_LADDER:
+                    # Set Mario Position
+                    self._mario.transform.set_position_x(_ladder_collision.get_position().x)
+                    # Set ladder ref
+                    self._mario._ladder_ref = e
+                    # Set State
+                    self._mario.set_state(MarioState_Enum.CLIMB)
+
+        # Climb Down
+        elif self._mario.input_down and self._mario.touching_ground:
+            # Raypoint below mario (16 units below)
+            _ents: List[Entity] = Engine.Raycast.Raypoint_2D(
+                self._mario.transform.get_position().get_vec2() + Vector2(0, -Engine.Config.TILE_SIZE - 2.0)
+            )
+            for e in _ents:
+                # Get ladder if exists
+                _ladder_collision: Collider_AABB_2D = e.get_component(Collider_AABB_2D)
+                if _ladder_collision is not None and _ladder_collision.id is Engine.Config.TRIGGER_ID_LADDER:
+
+                    # if close enough to ladder ( 2 checks )
+                    _collide1 = _ladder_collision.check_if_point_inside(
+                        self._mario.transform.get_position().get_vec2() + Vector2(0, -2)
+                    )
+                    _collide2 = _ladder_collision.check_if_point_inside(
+                        self._mario.transform.get_position().get_vec2() + Vector2(0, -(2 + Engine.Config.TILE_SIZE))
+                    )
+
+                    # if collide with either point, teleport to top of ladder and set to climb state
+                    if _collide1 or _collide2:
+                        # Set position
+                        self._mario.transform.set_position_x(_ladder_collision.get_position().x)
+                        if _collide1:
+                            self._mario.transform.set_position_y(_ladder_collision.get_up())
+                        elif _collide2:
+                            self._mario.transform.set_position_y(_ladder_collision.get_up() + Engine.Config.TILE_SIZE - 2)
+                        # Set ladder ref
+                        self._mario._ladder_ref = e
+                        # Set State
+                        self._mario.set_state(MarioState_Enum.CLIMB)
+
         pass
 
 
@@ -106,13 +169,22 @@ class MarioState_Walk(MarioState):
         pass
 
     def enter(self):
+        self._mario.rigidbody.set_gravity_state(True)
+        self._mario.rigidbody.ignore_static_colliders = False
         self._mario.set_animation('anim_mario_walk')
+        self._mario.animations.set_pause(False)
         pass
 
     def exit(self):
         pass
 
     def update(self):
+        # Update Flip
+        if self._mario.input_left:
+            self._mario.transform.set_flip_x(False)
+        elif self._mario.input_right:
+            self._mario.transform.set_flip_x(True)
+
         # Movement
         if self._mario.input_left:
             self._mario.rigidbody.set_vel_x(-self._mario.speed)
@@ -126,6 +198,9 @@ class MarioState_Walk(MarioState):
 
         elif self._mario.input_jump and self._mario.touching_ground is True:
             self._mario.set_state(MarioState_Enum.JUMP)
+
+        # Climb
+
         pass
 
 
@@ -135,8 +210,10 @@ class MarioState_Jump(MarioState):
         pass
 
     def enter(self):
+        self._mario.rigidbody.set_gravity_state(True)
+        self._mario.rigidbody.ignore_static_colliders = False
         self._mario.set_animation('anim_mario_jump')
-
+        self._mario.animations.set_pause(False)
         self._mario.rigidbody.set_vel_y(self._mario.jumpspeed)
         self._mario.rigidbody.increase_position(Vector3(0, 1, 0))
         pass
@@ -163,13 +240,83 @@ class MarioState_Jump(MarioState):
 class MarioState_Climb(MarioState):
     def __init__(self, _mario):
         MarioState.__init__(self, _mario)
+        self.ladder_top_has_block: bool = False
+        self.ladder_bot: float = self._mario._ladder_ref.collision.get_down()
+        self.ladder_top: float = self._mario._ladder_ref.collision.get_up()
+        self.can_exit_down: bool = True
+
+        # Check for additional block
+        _ents: List[Entity] = Engine.Raycast.Raypoint_2D(Vector2(
+            self._mario._ladder_ref.collision.get_position().x,
+            self._mario._ladder_ref.collision.get_up() + Engine.Config.TILE_SIZE - 2.0
+            ),
+            Engine.Config.TRIGGER_ID_MARIO
+        )
+        for e in _ents:
+            if e.collision.type is Collision_Type.PLATFORM:
+                self.ladder_top_has_block: bool = True
+                self.ladder_top += Engine.Config.TILE_SIZE
+                break
+
+        # If floating top portion of a ladder, add additional slack
+        _ents: List[Entity] = Engine.Raycast.Raypoint_2D(Vector2(
+            self._mario._ladder_ref.collision.get_position().x,
+            self._mario._ladder_ref.collision.get_down() - 2.0
+        ),
+            Engine.Config.TRIGGER_ID_MARIO
+        )
+        _nothing_below_ladder: bool = True
+        for e in _ents:
+            if e.collision.type is Collision_Type.PLATFORM:
+                _nothing_below_ladder = False
+                break
+        if _nothing_below_ladder:
+            self.can_exit_down = False
+            self.ladder_bot -= Engine.Config.TILE_SIZE
         pass
 
     def enter(self):
+        self._mario.rigidbody.set_gravity_state(False)
+        self._mario.rigidbody.ignore_static_colliders = True
+        self._mario.rigidbody.set_velocity(Vector3())
+        self._mario.set_animation('anim_mario_climb')
+        self._mario.animations.set_pause(True)
         pass
 
     def exit(self):
         pass
 
     def update(self):
+        # Movement
+        if self._mario.input_up:
+            self._mario.transform.increase_position(Vector3(0, +self._mario.climbspeed, 0))
+            # if reached top of ladder, go to idle
+            if self._mario.transform.get_position().y > self.ladder_top:
+                self._mario.set_state(MarioState_Enum.IDLE)
+
+        elif self._mario.input_down:
+            self._mario.transform.increase_position(Vector3(0, -self._mario.climbspeed, 0))
+            # if touching ground, go to idle
+            if self.can_exit_down:
+                if self._mario.transform.get_position().y < self.ladder_bot:
+                    self._mario.set_state(MarioState_Enum.IDLE)
+            else:
+                _y_fix: float = max(self._mario.transform.get_position().y, self.ladder_bot)
+                self._mario.transform.set_position_y(_y_fix)
+
+        # Set Animation State based on y position
+        _frame = math.floor(self._mario.transform.get_position().y / 4.0) % 2
+        _dist_to_top: float = abs(self.ladder_top - self._mario.transform.get_position().y)
+
+        if _dist_to_top < 3.0:
+            _frame = 4
+        elif _dist_to_top < 5.0:
+            _frame = 0
+        elif _dist_to_top < 7.0:
+            _frame = 3
+        elif _dist_to_top < 9.0:
+            _frame = 2
+
+        self._mario.animations.set_frame(_frame)
+
         pass

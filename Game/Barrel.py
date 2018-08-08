@@ -23,6 +23,7 @@ from Engine.Collision import *
 import Engine.Collision
 import Engine.Config
 
+
 class BarrelKillZone(Entity):
     def __init__(self, trigger_name: str, barrel: Barrel):
         # Base
@@ -37,17 +38,15 @@ class BarrelKillZone(Entity):
         self.collision.id = Engine.Config.TRIGGER_ID_DEATH
 
     def update(self, delta_time):
-        self.transform.set_position(self._barrel.transform.get_position())
-        self.rigidbody.update(delta_time)
+        if self._barrel.deleted:
+            EntityManager.get_singleton().remove_entity(self)
+        else:
+            self.transform.set_position(self._barrel.transform.get_position())
+            self.rigidbody.update(delta_time)
         pass
 
     def draw(self):
         self.collision.draw(Vector3(0, 1, 0.5))
-
-    def trigger_enter(self, trigger: Collider):
-        if trigger.id is Engine.Config.TRIGGER_ID_FIRE_BARREL:
-            EntityManager.get_singleton().remove_entity(self)
-        pass
 
 
 class Barrel(Entity):
@@ -63,7 +62,7 @@ class Barrel(Entity):
         self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.offset = Vector2(0, 5)
         self.collision.type = Collision_Type.TRIGGER
-        self.collision.id = Engine.Config.TRIGGER_ID_NONE
+        self.collision.id = Engine.Config.TRIGGER_ID_BARREL
         self._ray_left: Raycast_2D = None
         self._ray_right: Raycast_2D = None
         # Animations

@@ -28,7 +28,6 @@ import pygame
 from Game.MarioState import *
 from Game.Mario import *
 from Game.Tile import *
-from Game.Ladder import *
 from Game.Enemy_Fire import *
 from Game.Barrel import *
 from Game.Oilbarrel import *
@@ -219,7 +218,7 @@ class GameState_Game(GameState):
         self._ladder_tiles.add_tile(Vector3(32, 112, 0), 'spr_ladder_16')
         # Ladder 11
         self._ladder_tiles.add_tile(Vector3(88, 139, 0), 'spr_ladder_13')
-        self._ladder_tiles.add_tile(Vector3(88, 160, 0), 'spr_ladder_3')
+        self._ladder_tiles.add_tile(Vector3(88, 160, 0), 'spr_ladder_4')
         # Ladder 12
         self._ladder_tiles.add_tile(Vector3(184, 145, 0), 'spr_ladder_16')
         # Ladder 13
@@ -238,7 +237,7 @@ class GameState_Game(GameState):
         EntityManager.get_singleton().add_entity(self._oil1)
         EntityManager.get_singleton().add_entity(self._destroy_barrel_trig)
         EntityManager.get_singleton().add_entity(self._stack_barrels)
-        EntityManager.get_singleton().add_entity(self._dk)
+        # EntityManager.get_singleton().add_entity(self._dk)
         # EntityManager.get_singleton().add_entity(self._barrel_1)
 
         EntityManager.get_singleton().add_batch(self._floor_tiles)
@@ -259,9 +258,9 @@ class GameState_Game(GameState):
 
         # Debug Mode
         if Engine.Input.get_key(pygame.K_n):
-            self._mario.debug = True
+            self._mario.set_debug(True)
         if Engine.Input.get_key(pygame.K_m):
-            self._mario.debug = False
+            self._mario.set_debug(False)
 
         # TEST
         if Engine.Input.get_key_pressed(pygame.K_z):
@@ -271,6 +270,9 @@ class GameState_Game(GameState):
         # Test
         if Engine.Input.get_key(pygame.K_q):
             self._mario.set_state(MarioState_Enum.DEAD)
+
+        if Engine.Input.get_key(pygame.K_x):
+            self._mario.set_state(MarioState_Enum.CLIMB)
 
 
         # ------------------------------------------
