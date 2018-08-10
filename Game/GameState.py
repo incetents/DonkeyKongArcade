@@ -120,6 +120,9 @@ class GameState_Game(GameState):
     def __init__(self):
         GameState.__init__(self)
 
+        # Audio
+        self._level_music: Song = Engine.Storage.get(Engine.Storage.Type.SONG, 'music_25m')
+
         # Special Entities
         self._floor_tiles = TileBatch(
             'batch_tiles1', 'floor1', Collision_Type.PLATFORM, Engine.Config.TRIGGER_ID_FLOOR)
@@ -157,6 +160,7 @@ class GameState_Game(GameState):
 
         # SPECIAL
         Game.Barrel.oil_barrel_ref = self._oil
+        Game.Barrel.mario_ref = self._mario
 
         # FLOORS
         ################
@@ -234,6 +238,9 @@ class GameState_Game(GameState):
         pass
 
     def enter(self):
+        # Game Audio
+        AudioPlayer.stop_all_audio()
+        AudioPlayer.get_singleton().set_song('music_25m', -1).play_song()
         # Add entities
         # EntityManager.get_singleton().add_entity(self._enemy1)
         EntityManager.get_singleton().add_entity(self._invis_box1)
@@ -269,7 +276,7 @@ class GameState_Game(GameState):
         # TEST
         if Engine.Input.get_key_pressed(pygame.K_z):
             self._dk.spawn_barrel()
-            # self._oil1.spawn_fire()
+            # self._oil.spawn_fire()
 
         # Test
         if Engine.Input.get_key(pygame.K_q):

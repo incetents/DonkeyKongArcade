@@ -29,7 +29,8 @@ class Enemy_Fire(Entity):
         self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -100, 0))
-        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
+        self.rigidbody.ignore_dynamic_colliders = True
+        self.collision: Collider_AABB_2D = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_FLAME
         # Animations
@@ -40,13 +41,14 @@ class Enemy_Fire(Entity):
         self.speed: float = 5
 
     def update(self, delta_time):
-        import Game.Game
 
         self.animations.update(delta_time)
         _sprite = self.animations.get_current_frame()
 
         # Update Physics
         self.collision.set_size_from_sprite(self.transform, _sprite)
+        self.collision.size = self.collision.size.mult(Vector2(0.75, 0.5))
+        self.collision.offset = Vector2(0, -4)
         self.rigidbody.update(delta_time)
 
         # Simple AI (Move Towards Mario)

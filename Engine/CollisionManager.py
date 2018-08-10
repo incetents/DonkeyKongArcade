@@ -121,9 +121,10 @@ class ColliderManager_2D:
     def process_collision(self, _entity: Entity, _others: List[Entity]):
         # Rigidbody Check
         _rigidbody: Rigidbody = _entity.get_component(Rigidbody)
-        # already checked in entity manager
-        # if _rigidbody is None:
-        #     return
+
+        # Do nothing if ignoring both colliders
+        if _rigidbody.ignore_static_colliders and _rigidbody.ignore_dynamic_colliders:
+            return
 
         # Begin
         _entity.process_collision_start()
@@ -132,23 +133,19 @@ class ColliderManager_2D:
         _megalist: List[Entity] = []
 
         # Static Collision
-        if _rigidbody.ignore_static_colliders is False:
+        if not _rigidbody.ignore_static_colliders:
             _chunks: List[ColliderChunk] = self.get_chunks_from_entity_location(_entity)
             for c in _chunks:
                 _megalist += c.get_entities()
 
         # Dynamic Collision
-        if _rigidbody.ignore_dynamic_colliders is False:
-            # Special cases to ignore dynamic collision
-            if _entity.collision.id is Engine.Config.TRIGGER_ID_DEATH or \
-                    _entity.collision.id is Engine.Config.TRIGGER_ID_FLAME:
-                pass
-            else:
-                for ent in _others:
-                    if _entity.collision.id is Engine.Config.TRIGGER_ID_BARREL and \
-                    ent.collision.id is Engine.Config.TRIGGER_ID_DEATH:
-                        pass
-                    else:
+        if not _rigidbody.ignore_dynamic_colliders:
+
+            for ent in _others:
+                if _entity.collision.id is Engine.Config.TRIGGER_ID_BARREL and \
+                ent.collision.id is Engine.Config.TRIGGER_ID_DEATH:
+                    pass
+                else:
                         _megalist.append(ent)
             # _megalist += _others
 
@@ -182,9 +179,6 @@ class ColliderManager_2D:
                 )
                 for i in _chunks:
                     i.add_entity(ent)
-
-            else:
-                print('entity:', ent, ' has no known colliders to add and no rigidbody')
 
     def draw_chunks(self):
         for i in self._chunks.values():

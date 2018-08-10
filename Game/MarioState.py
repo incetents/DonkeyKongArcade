@@ -13,6 +13,7 @@ from Engine.Collision import *
 from Engine.Raycast import *
 from Game.Tile import *
 import Engine.Raycast
+from random import randint
 
 class MarioState_Enum(Enum):
     ERR = 0,
@@ -168,6 +169,8 @@ class MarioState_Idle(MarioState):
 class MarioState_Walk(MarioState):
     def __init__(self, _mario):
         MarioState.__init__(self, _mario)
+        # Audio
+        self.walk_sfx_clock: Clock = Clock(0.18)
         pass
 
     def enter(self):
@@ -175,6 +178,7 @@ class MarioState_Walk(MarioState):
         self._mario.rigidbody.ignore_static_colliders = False
         self._mario.set_animation('anim_mario_walk')
         self._mario.animations.set_pause(False)
+        # self.walk_sfx_clock.finish()
         pass
 
     def exit(self):
@@ -201,7 +205,10 @@ class MarioState_Walk(MarioState):
         elif self._mario.input_jump and self._mario.touching_ground is True:
             self._mario.set_state(MarioState_Enum.JUMP)
 
-        # Climb
+        # Audio
+        if self.walk_sfx_clock.is_finished():
+            self._mario.get_random_walk_sfx().play()
+            self.walk_sfx_clock.reset()
 
         pass
 
@@ -218,6 +225,8 @@ class MarioState_Jump(MarioState):
         self._mario.animations.set_pause(False)
         self._mario.rigidbody.set_vel_y(self._mario.jumpspeed)
         self._mario.rigidbody.increase_position(Vector3(0, 1, 0))
+        # Audio
+        self._mario.sfx_jump.play()
         pass
 
     def exit(self):
@@ -246,6 +255,8 @@ class MarioState_Climb(MarioState):
         self.ladder_bot: float = self._mario._ladder_ref.collision.get_down()
         self.ladder_top: float = self._mario._ladder_ref.collision.get_up()
         self.can_exit_down: bool = True
+        # Audio
+        self.walk_sfx_clock: Clock = Clock(0.35)
 
         # Check for additional block
         _ents: List[Entity] = Engine.Raycast.Raypoint_2D_Static(Vector2(
@@ -289,6 +300,13 @@ class MarioState_Climb(MarioState):
         pass
 
     def update(self):
+        # Audio
+        if self._mario.input_down or self._mario.input_up:
+            # Audio
+            if self.walk_sfx_clock.is_finished():
+                self._mario.get_random_walk_sfx().play()
+                self.walk_sfx_clock.reset()
+
         # Movement
         if self._mario.input_up:
             self._mario.transform.increase_position(Vector3(0, +self._mario.climbspeed, 0))

@@ -36,6 +36,7 @@ from Game.Tile import *
 from typing import List
 from OpenGL.GL import *
 import Engine.Config
+from Engine.AudioPlayer import *
 
 from Game.GameState import *
 
@@ -52,7 +53,7 @@ class Game:
         # State
         self._state = GameState()
         # Setup Functions
-        self.setup_systems()
+        self.setup_audio()
         self.setup_textures()
         self.setup_sprites()
         self.setup_animations()
@@ -76,9 +77,20 @@ class Game:
     def get_state(self) -> GameState:
         return self._state
 
-    def setup_systems(self):
-        # Setup Core Systems
-        pass
+    def setup_audio(self):
+        # Load Audio (music)
+        Song('music_25m', 'audio/music_25m.wav')
+        Song('music_50m', 'audio/music_50m.mp3')
+        Song('music_75m', 'audio/music_75m.mp3')
+        Song('music_100m', 'audio/music_100m.mp3')
+        # Load Audio (sound effects)
+        SFX('sfx_jump', 'audio/sfx_jump.wav')
+        SFX('sfx_walk1', 'audio/sfx_walk1.wav')
+        SFX('sfx_walk2', 'audio/sfx_walk2.wav')
+        SFX('sfx_walk3', 'audio/sfx_walk3.wav')
+        SFX('sfx_walk4', 'audio/sfx_walk4.wav')
+        SFX('sfx_walk5', 'audio/sfx_walk5.wav')
+        SFX('sfx_barrel_score', 'audio/sfx_barrel_score.wav')
 
     def setup_textures(self):
         # Load Textures
@@ -89,6 +101,12 @@ class Game:
         Texture('pixel_red', 'assets/pixels/pixel_red.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_green', 'assets/pixels/pixel_green.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_blue', 'assets/pixels/pixel_blue.png', FilterMode.POINT, WrapMode.CLAMP)
+
+        Texture('score_100', 'assets/effects/score_100.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('score_200', 'assets/effects/score_200.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('score_300', 'assets/effects/score_300.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('score_500', 'assets/effects/score_500.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('score_800', 'assets/effects/score_800.png', FilterMode.POINT, WrapMode.CLAMP)
 
         Texture('dk_center', 'assets/dk/dk1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('dk_left', 'assets/dk/dk2.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -143,6 +161,12 @@ class Game:
         Sprite('spr_pixel_red', 'pixel_red')
         Sprite('spr_pixel_green', 'pixel_green')
         Sprite('spr_pixel_blue', 'pixel_blue')
+
+        Sprite('spr_score_100', 'score_100', Anchor.BOT)
+        Sprite('spr_score_200', 'score_200', Anchor.BOT)
+        Sprite('spr_score_300', 'score_300', Anchor.BOT)
+        Sprite('spr_score_500', 'score_500', Anchor.BOT)
+        Sprite('spr_score_800', 'score_800', Anchor.BOT)
 
         Sprite('spr_dk_center', 'dk_center', Anchor.BOT)
         Sprite('spr_dk_left', 'dk_left', Anchor.BOT)

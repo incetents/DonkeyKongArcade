@@ -13,7 +13,8 @@ class Type(Enum):
     SPRITE = 3
     SPRITE_SEQUENCE = 4
     Entity = 5,
-    ENTITY_3D = 6
+    SONG = 6,
+    SFX = 7
 
 
 # Main Storage
@@ -23,8 +24,10 @@ Storage = {
     Type.SPRITE: {},
     Type.SPRITE_SEQUENCE: {},
     Type.Entity: {},
-    Type.ENTITY_3D: {}
+    Type.SONG: {},
+    Type.SFX: {}
 }
+
 
 # !!! Add also overrides if names are duplicates
 def add(_type: Type, _name: str, _data):

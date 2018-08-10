@@ -36,7 +36,9 @@ class engine:
         return _instance
 
     def start(self):
-        # Graphics/Input Process
+        # Graphics/Audio/Input Process
+        pygame.mixer.pre_init(44100, 16, 2, 4096)  # frequency, size, channels, buffersize
+        pygame.mixer.init()
         pygame.init()
         pygame.display.set_caption('Donkey Kong Arcade [Python]')
         gameDisplay = pygame.display.set_mode((Engine.Config.SCREEN_WIDTH, Engine.Config.SCREEN_HEIGHT),

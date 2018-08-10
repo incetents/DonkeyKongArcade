@@ -31,4 +31,7 @@ class Clock:
         self._time_end = self._time_start + seconds * 1000.0
 
     def is_finished(self) -> bool:
-        return self._time_end < pygame.time.get_ticks()
+        return self._time_end <= pygame.time.get_ticks()
+
+    def finish(self):
+        self._time_end = pygame.time.get_ticks()

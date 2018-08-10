@@ -26,10 +26,38 @@ import Engine.Config
 from Game.Oilbarrel import *
 from enum import Enum
 from random import randint
+import Engine.Storage
 
 oil_barrel_ref: Oilbarrel = None
+mario_ref: Mario = None
 
-class BarrelKillZone(Entity):
+
+class BarrelScore(Entity):
+    def __init__(self, entity_name: str, _position: Vector3, _sprite_name: str):
+        # Base Constructor
+        Entity.__init__(self, entity_name)
+        self.transform.set_position(_position)
+        # Animations
+        self.animations = SpriteAnimation('anim_enemy1')
+        self.animations.set_speed(10.0)
+
+        # Sprite
+        self.sprite: Sprite = Engine.Storage.get(Engine.Storage.Type.SPRITE, _sprite_name)
+        # Data
+        self.time: Clock = Clock(1.0)
+
+    def update(self, delta_time):
+        if self.time.is_finished():
+            EntityManager.get_singleton().remove_entity(self)
+        pass
+
+    def draw(self):
+        if self.sprite is not None:
+            self.sprite.draw(self.transform)
+        pass
+
+
+class BarrelZone(Entity):
     def __init__(self, trigger_name: str, barrel: Barrel):
         # Base
         Entity.__init__(self, trigger_name)
@@ -37,10 +65,12 @@ class BarrelKillZone(Entity):
         self.transform.set_position(barrel.transform.get_position())
         # Physics
         self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
-        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
-        self.collision.size = Vector2(4, 4)
+        self.rigidbody.ignore_dynamic_colliders = True
+        self.collision: Collider_AABB_2D = self.add_component(Collider_AABB_2D(self.transform.get_position()))
+        self.collision.size = Vector2(4, 20)
+        self.collision.offset = Vector2(0, 10)
         self.collision.type = Collision_Type.TRIGGER
-        self.collision.id = Engine.Config.TRIGGER_ID_DEATH
+        self.collision.id = Engine.Config.TRIGGER_ID_BARREL_SPECIAL
 
     def update(self, delta_time):
         if self._barrel.deleted:
@@ -52,6 +82,11 @@ class BarrelKillZone(Entity):
 
     def draw(self):
         self.collision.draw(Vector3(0, 1, 0.5))
+        Debug.draw_line_2d(
+            self.collision.get_position().get_vec2() + Vector2(-8, -2),
+            self.collision.get_position().get_vec2() + Vector2(+8, -2),
+            Vector3(0.75,0.75,0)
+        )
 
 
 class Barrel_State(Enum):
@@ -73,6 +108,7 @@ class Barrel(Entity):
         self.rigidbody: Rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -120, 0))
+        self.rigidbody.ignore_dynamic_colliders = True
         # self.rigidbody.enabled = False
         self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.offset = Vector2(0, 5)
@@ -115,11 +151,6 @@ class Barrel(Entity):
                 self.animations.set_sprite_sequence('anim_barrel_roll')
 
     def check_use_ladder(self) -> Tile:
-
-        # !!!!!!!!!!!!!!!!
-        # If mario is above barrel, return None
-
-
         # Acquire Ladder Below Barrel
         _ents = Engine.Raycast.Raypoint_2D_Static(
             self.transform.get_position().get_vec2() + Vector2(0, -Engine.Config.TILE_SIZE - 2.0),
@@ -137,9 +168,13 @@ class Barrel(Entity):
         if abs(self.transform.get_position().x - _ladder_ref.transform.get_position().x) > 2.0:
             return None
 
-        # global oil_barrel_ref
-        # if not oil_barrel_ref.check_lit():
-        #     return _ladder_ref
+        global oil_barrel_ref
+        if not oil_barrel_ref.check_lit():
+            return _ladder_ref
+
+        # If mario is above barrel, never go done ladder
+        if mario_ref.transform.get_position().y > self.transform.get_position().y:
+            return None
 
         # Random variable on whether or not barrel should go down
         _difficulty_value = 2
@@ -149,21 +184,25 @@ class Barrel(Entity):
             return None
 
         # !!!!!!!!!!!!!!!!
-        # If Barrel.x - Mario.x < 8.0
-            # return _ladder_ref
+        _barrel_x: float = self.transform.get_position().x
+        _mario_x: float = mario_ref.transform.get_position().x
+        _mario_rigidbody: Rigidbody = mario_ref.get_component(Rigidbody)
 
-        # !!!!!!!!!!!!!!!!
-        # If Barrel.x < Mario.x and Mario.rigidbody.vel.x < 0
-            # return _ladder_ref
+        # If barrel is directly above Mario, go down
+        if abs(_barrel_x - _mario_x) < 5.0:
+            return _ladder_ref
 
-        # !!!!!!!!!!!!!!!!
-        # If Barrel.x > Mario.x and Mario.rigidbody.vel.x > 0
-            # return _ladder_ref
+        # Barrel is left of mario and he's moving left
+        if _barrel_x < _mario_x and _mario_rigidbody.get_velocity().x < 0:
+            return _ladder_ref
+
+        # Barrel is right of mario and he's moving left
+        if _barrel_x > _mario_x and _mario_rigidbody.get_velocity().x > 0:
+            return _ladder_ref
 
         # 75% chance to return without ladder
         if (_r1 & 0x18) is not 0:
             return None
-
         # 25% chance to return with ladder
         return _ladder_ref
 

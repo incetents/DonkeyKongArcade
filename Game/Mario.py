@@ -8,8 +8,11 @@ from Engine.Sprite import *
 import Engine.Input
 import Engine.Raycast
 import pygame
+import Engine.Storage
 from Game.MarioState import *
 import Game.MarioState
+from Game.Tile import *
+from Game.Barrel import *
 # Math
 from Engine.Vector import *
 # Physics
@@ -18,7 +21,8 @@ from Engine.Collision import *
 from Engine.CollisionManager import *
 from Engine.Raycast import *
 from Engine.Anchor import *
-from Game.Tile import *
+from Engine.AudioPlayer import *
+
 import Engine.Config
 
 DEAD_HEIGHT = -10
@@ -34,7 +38,7 @@ class Mario(Entity):
         # self.rigidbody = Rigidbody(self.transform.get_position())
         self.rigidbody.set_terminal_velocity_y(250)
         self.rigidbody.set_gravity(Vector3(0, -Engine.Config.GRAV, 0))
-        self.collision = self.add_component(Collider_AABB_2D(self.transform.get_position()))
+        self.collision: Collider_AABB_2D = self.add_component(Collider_AABB_2D(self.transform.get_position()))
         self.collision.type = Collision_Type.TRIGGER
         self.collision.id = Engine.Config.TRIGGER_ID_MARIO
         self.collision.offset = Vector2(0, 8)
@@ -58,11 +62,36 @@ class Mario(Entity):
         self.speed: float = 35
         self.jumpspeed: float = 50
         self.climbspeed: float = 0.5
-        self.x_distance_to_ladder_for_climb: float = 4.0
         self.touching_ground: bool = False
+        self.barrel_count: int = 0
+        self.barrel_combo: int = 0
+        self.barrel_score: int = 0
+        self.x_distance_to_ladder_for_climb: float = 4.0
         self._ladder_ref: Tile = None
         self._bottom_left_anchor: Vector2 = Vector2()
         self._bottom_right_anchor: Vector2 = Vector2()
+        # Audio
+        self.sfx_jump: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_jump')
+
+        self.sfx_walk1: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk1')
+        self.sfx_walk2: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk2')
+        self.sfx_walk3: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk3')
+        self.sfx_walk4: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk4')
+        self.sfx_walk5: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk5')
+
+        self.sfx_walks = [self.sfx_walk1, self.sfx_walk2, self.sfx_walk3, self.sfx_walk4, self.sfx_walk5]
+        self.sfx_walk_index: int = -1
+
+        self.sfx_barrel_score: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_barrel_score')
+
+
+    def get_random_walk_sfx(self):
+        _rand: int = randint(0, len(self.sfx_walks) - 1)
+        # Prevent same clip twice
+        if _rand is self.sfx_walk_index:
+            _rand = (_rand + 1) % (len(self.sfx_walks) - 1)
+        # Return
+        return self.sfx_walks[_rand]
 
     def set_debug(self, _state: bool):
         # Ignore self change
@@ -149,6 +178,7 @@ class Mario(Entity):
 
         # Update Physics
         self.collision.set_size_from_sprite(self.transform, _sprite)
+        self.collision.size.x *= 0.75
         self.rigidbody.set_gravity(Vector3(0, -Engine.Config.GRAV, 0))
         self.rigidbody.update(delta_time)
 
@@ -219,26 +249,52 @@ class Mario(Entity):
                 ):
             self.set_state(MarioState_Enum.DEAD)
 
+        # Special Barrel Trigger
+        if trigger.id is Engine.Config.TRIGGER_ID_BARREL_SPECIAL:
+            if self.transform.get_position().y > trigger.get_position().y - 2:
+                # Barrel Counter
+                self.barrel_count += 1
+                self.barrel_combo += 1
+                # Audio
+                self.sfx_barrel_score.play()
+            else:
+                self.set_state(MarioState_Enum.DEAD)
+
         # Ladder Exception
         if self._debug is False and trigger.id is Engine.Config.TRIGGER_ID_BARREL and \
                 self._state.ID is MarioState_Enum.CLIMB:
             self.set_state(MarioState_Enum.DEAD)
 
-        # Hold copy of ladder
-        # if trigger.id is Engine.Config.TRIGGER_ID_LADDER:
-        #     self.ladder_ref = trigger.entity_parent
-
-        # print('ENTER id:', trigger.id)
         pass
 
     def trigger_exit(self, trigger: Collider):
-        # Lose copy of ladder
-        # if trigger.id is Engine.Config.TRIGGER_ID_LADDER and \
-        #         self.ladder_ref is trigger.entity_parent and \
-        #         self._state.ID is not MarioState_Enum.CLIMB:
-        #     self.ladder_ref = None
+        # Special Barrel Trigger
+        if trigger.id is Engine.Config.TRIGGER_ID_BARREL_SPECIAL:
+            if self.transform.get_position().y > trigger.get_position().y - 2:
+                # Barrel Counter
+                self.barrel_count -= 1
+                # If reached 0, calculate score
+                if self.barrel_count is 0:
+                    # Get correct sprite
+                    spr_name: str = 'spr_score_100'
+                    self.barrel_score += 100
+                    if self.barrel_combo is 2:
+                        spr_name = 'spr_score_300'
+                        self.barrel_score += 200
+                    elif self.barrel_combo > 2:
+                        spr_name = 'spr_score_500'
+                        self.barrel_score += 400
 
-        # print('EXIT id:', trigger.id)
+                    # Spawn Effect
+                    _score = BarrelScore(
+                        'barrel_score' + str(pygame.time.get_ticks()),
+                        Vector3(self.transform.get_position().x, trigger.get_position().y, 2),
+                        spr_name
+                    )
+                    EntityManager.get_singleton().add_entity(_score)
+
+                    # Reset Combo
+                    self.barrel_combo = 0
         pass
 
 

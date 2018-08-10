@@ -72,8 +72,10 @@ class DonkeyKong(Entity):
 
         EntityManager.get_singleton().add_entity(_barrel)
 
-        _barrel_zone = BarrelKillZone('barrel_zone' + str(pygame.time.get_ticks()), _barrel)
+        # Create Kill Zone
+        _barrel_zone = BarrelZone('barrel_zone' + str(pygame.time.get_ticks()), _barrel)
         EntityManager.get_singleton().add_entity(_barrel_zone)
+
 
         self._barrels.append(_barrel)
         return self
