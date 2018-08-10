@@ -22,6 +22,7 @@ from Engine.CollisionManager import *
 from Engine.Raycast import *
 from Engine.Anchor import *
 from Engine.AudioPlayer import *
+from Game.GameData import *
 
 import Engine.Config
 
@@ -65,7 +66,6 @@ class Mario(Entity):
         self.touching_ground: bool = False
         self.barrel_count: int = 0
         self.barrel_combo: int = 0
-        self.barrel_score: int = 0
         self.x_distance_to_ladder_for_climb: float = 4.0
         self._ladder_ref: Tile = None
         self._bottom_left_anchor: Vector2 = Vector2()
@@ -277,13 +277,13 @@ class Mario(Entity):
                 if self.barrel_count is 0:
                     # Get correct sprite
                     spr_name: str = 'spr_score_100'
-                    self.barrel_score += 100
+                    GameData.get_singleton().add_score(100)
                     if self.barrel_combo is 2:
                         spr_name = 'spr_score_300'
-                        self.barrel_score += 200
+                        GameData.get_singleton().add_score(200)
                     elif self.barrel_combo > 2:
                         spr_name = 'spr_score_500'
-                        self.barrel_score += 400
+                        GameData.get_singleton().add_score(400)
 
                     # Spawn Effect
                     _score = BarrelScore(

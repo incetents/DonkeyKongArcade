@@ -31,6 +31,7 @@ from Engine.Graphics import *
 from Engine.Entity import *
 from Game.Mario import *
 from Game.Tile import *
+from Game.GameHud import *
 
 # Misc
 from typing import List
@@ -58,6 +59,8 @@ class Game:
         self.setup_sprites()
         self.setup_animations()
         self.setup_meshes()
+        # Setup Hud
+        GameHud.get_singleton().setup()
         # Initial State
         self.set_state(GameState_Game())
         self.is_setup = True
@@ -93,15 +96,21 @@ class Game:
         SFX('sfx_barrel_score', 'audio/sfx_barrel_score.wav')
 
     def setup_textures(self):
-        # Load Textures
+        # Font Texture
         Texture('font', 'assets/text/tilesheet.png', FilterMode.POINT, WrapMode.CLAMP)
 
+        # Special Stuff
         Texture('pixel_black', 'assets/pixels/pixel_black.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_white', 'assets/pixels/pixel_white.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_red', 'assets/pixels/pixel_red.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_green', 'assets/pixels/pixel_green.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('pixel_blue', 'assets/pixels/pixel_blue.png', FilterMode.POINT, WrapMode.CLAMP)
 
+        # Hud Stuff
+        Texture('mini_mario', 'assets/hud/mini_mario.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('bonus_counter', 'assets/hud/bonus_counter.png', FilterMode.POINT, WrapMode.CLAMP)
+
+        # Game Stuff
         Texture('score_100', 'assets/effects/score_100.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('score_200', 'assets/effects/score_200.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('score_300', 'assets/effects/score_300.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -162,6 +171,11 @@ class Game:
         Sprite('spr_pixel_green', 'pixel_green')
         Sprite('spr_pixel_blue', 'pixel_blue')
 
+        # Hud
+        Sprite('spr_mini_mario', 'mini_mario', Anchor.BOTLEFT)
+        Sprite('spr_bonus_counter', 'bonus_counter', Anchor.BOTLEFT)
+
+        # Game
         Sprite('spr_score_100', 'score_100', Anchor.BOT)
         Sprite('spr_score_200', 'score_200', Anchor.BOT)
         Sprite('spr_score_300', 'score_300', Anchor.BOT)
@@ -360,13 +374,18 @@ class Game:
         # State Draw
         self._state.draw()
 
+        # Draw Hud
+        GameHud.get_singleton().draw()
+
         Engine.Camera.pop()
+
+        # Flush it
         glFlush()
 
-    def draw_UI(self, delta_time):
+    def draw_debug(self, delta_time):
 
         # Draw UI
-        self._state.draw_ui(delta_time)
+        self._state.draw_debug(delta_time)
 
     def get_Mario(self) -> Mario:
         return self._state._mario

@@ -89,7 +89,7 @@ class engine:
 
             # Draw Game
             self.game.draw()
-            self.game.draw_UI(self.delta_time)
+            self.game.draw_debug(self.delta_time)
 
             # Update Buffer
             pygame.display.flip()

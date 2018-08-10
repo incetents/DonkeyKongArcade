@@ -28,6 +28,11 @@ class SpriteBatch:
     def set_texture(self, texture: Texture):
         self._texture = texture
 
+    def add_entities(self, entities: List[Entity]):
+        e: Entity
+        for e in entities:
+            self.add_entity(e)
+
     def add_entity(self, entity: Entity):
         # Make sure it has a sprite
         _spr = entity.get_component(Sprite)

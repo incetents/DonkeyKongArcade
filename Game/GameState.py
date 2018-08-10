@@ -66,7 +66,7 @@ class GameState:
         EntityManager.get_singleton().draw()
         pass
 
-    def draw_ui(self, delta_time: float):
+    def draw_debug(self, delta_time: float):
         pass
 
 
@@ -91,7 +91,7 @@ class GameState_Menu(GameState):
         super().draw()
         pass
 
-    def draw_ui(self, delta_time: float):
+    def draw_debug(self, delta_time: float):
         pass
 
 
@@ -112,7 +112,7 @@ class GameState_Load(GameState):
     def draw(self):
         pass
 
-    def draw_ui(self, delta_time: float):
+    def draw_debug(self, delta_time: float):
         pass
 
 
@@ -258,6 +258,7 @@ class GameState_Game(GameState):
         pass
 
     def exit(self):
+        AudioPlayer.stop_all_audio()
         pass
 
     def update(self, delta_time: float):
@@ -301,7 +302,7 @@ class GameState_Game(GameState):
 
         # ------------------------------------------
 
-    def draw_ui(self, delta_time: float):
+    def draw_debug(self, delta_time: float):
         # Data
         _fps: str = '0'
         if delta_time > 0.0:

@@ -2,20 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f13b12ea-de1c-41f8-9117-bd3b47df7c10" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/Engine/AudioPlayer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Game/GameData.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Clock.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Clock.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/CollisionManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/CollisionManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/AudioPlayer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/AudioPlayer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/Camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/Engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/Storage.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/Storage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/Barrel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/Barrel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/DonkeyKong.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/DonkeyKong.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/Enemy_Fire.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/Enemy_Fire.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/SpriteBatch.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/SpriteBatch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Game/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/Game.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Game/GameHud.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/GameHud.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Game/GameState.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/GameState.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Game/Mario.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/Mario.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game/MarioState.py" beforeDir="false" afterPath="$PROJECT_DIR$/Game/MarioState.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/effects/mario_counter.png" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +31,7 @@
                   <entry file="file://$PROJECT_DIR$/Engine/Graphics.py">
                     <provider selected="true" editor-type-id="text-editor">
                       <state relative-caret-position="120">
-                        <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+                        <caret line="16" selection-start-line="16" selection-end-line="16" />
                         <folding>
                           <element signature="e#78#99#0" expanded="true" />
                         </folding>
@@ -66,14 +63,47 @@
                     </provider>
                   </entry>
                 </file>
-                <file pinned="false" current-in-tab="true">
+                <file pinned="false" current-in-tab="false">
                   <entry file="file://$PROJECT_DIR$/Game/Mario.py">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="680">
-                        <caret line="258" column="44" selection-start-line="258" selection-start-column="44" selection-end-line="258" selection-end-column="44" />
+                      <state relative-caret-position="59">
+                        <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
                         <folding>
                           <element signature="e#79#106#0" expanded="true" />
-                          <marker date="1533866087811" expanded="true" signature="3230:3482" ph="..." />
+                          <marker date="1533868488075" expanded="true" signature="3223:3475" ph="..." />
+                        </folding>
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+                <file pinned="false" current-in-tab="true">
+                  <entry file="file://$PROJECT_DIR$/Game/GameData.py">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="180">
+                        <caret line="9" column="27" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
+                        <folding>
+                          <marker date="1533870476849" expanded="true" signature="111:116" ph="..." />
+                        </folding>
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+                <file pinned="false" current-in-tab="false">
+                  <entry file="file://$PROJECT_DIR$/Game/Tile.py">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="560">
+                        <caret line="41" column="23" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
+                      </state>
+                    </provider>
+                  </entry>
+                </file>
+                <file pinned="false" current-in-tab="false">
+                  <entry file="file://$PROJECT_DIR$/Engine/SpriteBatch.py">
+                    <provider selected="true" editor-type-id="text-editor">
+                      <state relative-caret-position="640">
+                        <caret line="35" column="41" lean-forward="true" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
+                        <folding>
+                          <marker date="1533869795927" expanded="true" signature="903:909" ph="..." />
                         </folding>
                       </state>
                     </provider>
@@ -95,11 +125,11 @@
                     </provider>
                   </entry>
                 </file>
-                <file pinned="false" current-in-tab="true">
+                <file pinned="false" current-in-tab="false">
                   <entry file="file://$PROJECT_DIR$/Game/MarioState.py">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="600">
-                        <caret line="258" column="47" selection-start-line="258" selection-start-column="47" selection-end-line="258" selection-end-column="47" />
+                      <state relative-caret-position="1620">
+                        <caret line="249" selection-start-line="249" selection-end-line="249" />
                         <folding>
                           <element signature="e#130#143#0" expanded="true" />
                         </folding>
@@ -111,16 +141,16 @@
                   <entry file="file://$PROJECT_DIR$/Engine/Clock.py">
                     <provider selected="true" editor-type-id="text-editor">
                       <state relative-caret-position="680">
-                        <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+                        <caret line="34" selection-start-line="34" selection-end-line="34" />
                       </state>
                     </provider>
                   </entry>
                 </file>
-                <file pinned="false" current-in-tab="false">
+                <file pinned="false" current-in-tab="true">
                   <entry file="file://$PROJECT_DIR$/Game/GameState.py">
                     <provider selected="true" editor-type-id="text-editor">
-                      <state relative-caret-position="-801">
-                        <caret line="236" lean-forward="true" selection-start-line="236" selection-end-line="236" />
+                      <state relative-caret-position="-821">
+                        <caret line="238" lean-forward="true" selection-start-line="238" selection-end-line="238" />
                         <folding>
                           <element signature="e#98#109#0" expanded="true" />
                         </folding>
@@ -148,47 +178,50 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="32" />
+          <entry key="py" value="41" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="32" />
+          <entry key="Python" value="41" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="2401" />
+          <entry key="py" value="4575" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="2401" />
+          <entry key="Python" value="4575" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.4933023">
+    <splitter split-orientation="horizontal" split-proportion="0.6225976">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Game/Game.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="235">
-                  <caret line="81" column="48" lean-forward="true" selection-start-line="81" selection-start-column="48" selection-end-line="81" selection-end-column="48" />
+                <state relative-caret-position="321">
+                  <caret line="109" column="27" selection-start-line="109" selection-start-column="17" selection-end-line="109" selection-end-column="27" />
+                  <folding>
+                    <element signature="e#134#147#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/Engine/AudioPlayer.py">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Game/GameHud.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="281">
-                  <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
+                <state relative-caret-position="361">
+                  <caret line="23" column="19" lean-forward="true" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
                   <folding>
-                    <element signature="e#82#116#0" expanded="true" />
-                    <marker date="1533867184276" expanded="true" signature="912:918" ph="..." />
+                    <element signature="e#80#107#0" expanded="true" />
+                    <marker date="1533870529173" expanded="true" signature="313:711" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -243,7 +276,7 @@
             <entry file="file://$PROJECT_DIR$/Game/DonkeyKong.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="461">
-                  <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
+                  <caret line="73" selection-start-line="73" selection-end-line="73" />
                   <folding>
                     <element signature="e#125#152#0" expanded="true" />
                   </folding>
@@ -258,8 +291,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Engine/Entity.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="100">
-                  <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+                <state relative-caret-position="140">
+                  <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
                   <folding>
                     <element signature="e#107#141#0" expanded="true" />
                   </folding>
@@ -365,11 +398,13 @@
       <find>set+an</find>
       <find>set_animation</find>
       <find>has no known</find>
+      <find>draw_ui</find>
     </findStrings>
     <replaceStrings>
       <replace>Entity</replace>
       <replace>EntityManager</replace>
       <replace>Raypoint_2D_Static</replace>
+      <replace>draw_debug</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -387,10 +422,8 @@
         <option value="$PROJECT_DIR$/Engine/Texture.py" />
         <option value="$PROJECT_DIR$/Engine/Text.py" />
         <option value="$PROJECT_DIR$/Engine/Graphics.py" />
-        <option value="$PROJECT_DIR$/Engine/Camera.py" />
         <option value="$PROJECT_DIR$/Engine/Input.py" />
         <option value="$PROJECT_DIR$/Game/InvisBlock.py" />
-        <option value="$PROJECT_DIR$/Engine/SpriteBatch.py" />
         <option value="$PROJECT_DIR$/Main.py" />
         <option value="$PROJECT_DIR$/Engine/Rigidbody.py" />
         <option value="$PROJECT_DIR$/Engine/Component.py" />
@@ -412,11 +445,15 @@
         <option value="$PROJECT_DIR$/Engine/Storage.py" />
         <option value="$PROJECT_DIR$/Engine/Engine.py" />
         <option value="$PROJECT_DIR$/Engine/Clock.py" />
-        <option value="$PROJECT_DIR$/Game/Mario.py" />
+        <option value="$PROJECT_DIR$/Game/MarioState.py" />
         <option value="$PROJECT_DIR$/Game/GameState.py" />
+        <option value="$PROJECT_DIR$/Game/Mario.py" />
         <option value="$PROJECT_DIR$/Engine/AudioPlayer.py" />
         <option value="$PROJECT_DIR$/Game/Game.py" />
-        <option value="$PROJECT_DIR$/Game/MarioState.py" />
+        <option value="$PROJECT_DIR$/Engine/Camera.py" />
+        <option value="$PROJECT_DIR$/Engine/SpriteBatch.py" />
+        <option value="$PROJECT_DIR$/Game/GameData.py" />
+        <option value="$PROJECT_DIR$/Game/GameHud.py" />
       </list>
     </option>
   </component>
@@ -586,13 +623,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Engine/Camera.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="37">
-          <caret line="10" column="40" lean-forward="true" selection-start-line="10" selection-start-column="40" selection-end-line="10" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Engine/Vector.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -629,13 +659,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Engine/SpriteBatch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Game/Ladder.py" />
     <entry file="file://$PROJECT_DIR$/Engine/Component.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -655,13 +678,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1440">
           <caret line="77" column="12" selection-start-line="77" selection-start-column="12" selection-end-line="77" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Game/Tile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="40" selection-start-line="40" selection-end-line="40" />
         </state>
       </provider>
     </entry>
@@ -794,7 +810,7 @@
     <entry file="file://$PROJECT_DIR$/Engine/Graphics.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
           <folding>
             <element signature="e#78#99#0" expanded="true" />
           </folding>
@@ -814,75 +830,123 @@
     <entry file="file://$PROJECT_DIR$/Engine/Clock.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="680">
-          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+          <caret line="34" selection-start-line="34" selection-end-line="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Game/DonkeyKong.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="461">
-          <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
+          <caret line="73" selection-start-line="73" selection-end-line="73" />
           <folding>
             <element signature="e#125#152#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Game/Mario.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="258" column="44" selection-start-line="258" selection-start-column="44" selection-end-line="258" selection-end-column="44" />
-          <folding>
-            <element signature="e#79#106#0" expanded="true" />
-            <marker date="1533866087811" expanded="true" signature="3230:3482" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Engine/AudioPlayer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="30" lean-forward="true" selection-start-line="30" selection-end-line="30" />
-          <folding>
-            <element signature="e#82#116#0" expanded="true" />
-            <marker date="1533867184276" expanded="true" signature="912:918" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Game/GameState.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-801">
-          <caret line="236" lean-forward="true" selection-start-line="236" selection-end-line="236" />
-          <folding>
-            <element signature="e#98#109#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Game/MarioState.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="258" column="47" selection-start-line="258" selection-start-column="47" selection-end-line="258" selection-end-column="47" />
+        <state relative-caret-position="1620">
+          <caret line="249" selection-start-line="249" selection-end-line="249" />
           <folding>
             <element signature="e#130#143#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Game/Game.py">
+    <entry file="file://$PROJECT_DIR$/Engine/AudioPlayer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="81" column="48" lean-forward="true" selection-start-line="81" selection-start-column="48" selection-end-line="81" selection-end-column="48" />
+        <state relative-caret-position="200">
+          <caret line="19" column="39" lean-forward="true" selection-start-line="19" selection-start-column="39" selection-end-line="19" selection-end-column="39" />
+          <folding>
+            <element signature="e#82#116#0" expanded="true" />
+            <marker date="1533868627453" expanded="true" signature="996:1002" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game/GameState.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-821">
+          <caret line="238" lean-forward="true" selection-start-line="238" selection-end-line="238" />
+          <folding>
+            <element signature="e#98#109#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Engine/Camera.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game/Mario.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="59">
+          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
+          <folding>
+            <element signature="e#79#106#0" expanded="true" />
+            <marker date="1533868488075" expanded="true" signature="3223:3475" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Engine/Entity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+        <state relative-caret-position="140">
+          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
           <folding>
             <element signature="e#107#141#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game/Tile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="41" column="23" selection-start-line="41" selection-start-column="23" selection-end-line="41" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game/Game.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="109" column="27" selection-start-line="109" selection-start-column="17" selection-end-line="109" selection-end-column="27" />
+          <folding>
+            <element signature="e#134#147#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Engine/SpriteBatch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="640">
+          <caret line="35" column="41" lean-forward="true" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
+          <folding>
+            <marker date="1533869795927" expanded="true" signature="903:909" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game/GameData.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="9" column="27" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
+          <folding>
+            <marker date="1533870476849" expanded="true" signature="111:116" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Game/GameHud.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="23" column="19" lean-forward="true" selection-start-line="23" selection-start-column="19" selection-end-line="23" selection-end-column="19" />
+          <folding>
+            <element signature="e#80#107#0" expanded="true" />
+            <marker date="1533870529173" expanded="true" signature="313:711" ph="..." />
           </folding>
         </state>
       </provider>

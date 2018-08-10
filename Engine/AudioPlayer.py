@@ -17,6 +17,8 @@ class AudioPlayer:
         self._active_song: Song = None
         self._repeat_count: int = 0
         self._sfx: Dict[str, SFX] = {}
+        self.enable_music: bool = False
+        self.enable_sfx: bool = False
 
     @staticmethod
     def get_singleton():
@@ -27,7 +29,7 @@ class AudioPlayer:
 
     @staticmethod
     def stop_all_audio():
-        pygame.mixer.stop()
+        pygame.mixer.music.stop()
 
     def set_song(self, song: str, repeat_count: int=0):
         self._active_song = Engine.Storage.get(Engine.Storage.Type.SONG, song)
@@ -39,18 +41,13 @@ class AudioPlayer:
         return self
 
     def play_song(self):
-        if self._active_song is not None:
+        if self._active_song is not None and self.enable_music:
             pygame.mixer.music.load(self._active_song.get_file_path())
             pygame.mixer.music.play(self._repeat_count)
         return self
 
-    def stop_song(self):
-        if self._active_song is not None:
-            pygame.mixer.music.stop()
-        return self
-
     def set_song_pause(self, _state: bool):
-        if self._active_song is not None:
+        if self._active_song is not None and self.enable_music:
             if _state:
                 pygame.mixer.music.pause()
             else:
@@ -87,8 +84,10 @@ class SFX:
             print('File does not exist', file_path)
 
     def play(self):
-        self._audio_file.play()
+        if AudioPlayer.get_singleton().enable_sfx:
+            self._audio_file.play()
 
     def stop(self):
-        self._audio_file.stop()
+        if AudioPlayer.get_singleton().enable_sfx:
+            self._audio_file.stop()
 
