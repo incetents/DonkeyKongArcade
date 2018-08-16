@@ -63,6 +63,10 @@ class SpriteBatch:
         glColor(1.0, 1.0, 1.0, 1.0)
 
         for i in range(len(self._sprites_ref)):
+            # Check enabled
+            if not self._entities[i].enabled:
+                continue
+
             # Get Model
             _model: Transform = self._entities[i].transform
             # Draw Sprite
@@ -70,6 +74,9 @@ class SpriteBatch:
             self._sprites_ref[i]._draw_legacy(_model)
 
         glEnd()
+
+    def draw_debug(self):
+        pass
 
     def __len__(self) -> int:
         return len(self._entities)

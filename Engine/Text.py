@@ -51,7 +51,7 @@ for i in font_char_list:
     _temp += 1.0
 
 
-class Text:
+class GameText:
     def __init__(self,
                  text: str,
                  position: Vector2,

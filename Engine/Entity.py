@@ -23,6 +23,9 @@ class Entity:
         self.deleted: bool = False
         self.enabled: bool = True
 
+        # Layer
+        self._layer: int = 0
+
         # Components
         self._components: Dict(type, Component) = {}
         # Transform (always present in entities)
@@ -32,10 +35,19 @@ class Entity:
         # Add To Storage
         Engine.Storage.add(Engine.Storage.Type.Entity, ent_name, self)
 
+    def set_layer(self, layer: int):
+        self._layer = layer
+
+    def get_layer(self) -> int:
+        return self._layer
+
     def update(self, delta_time):
         pass
 
     def draw(self):
+        pass
+
+    def draw_debug(self):
         pass
 
     def add_component(self, component: Component):

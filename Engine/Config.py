@@ -7,7 +7,7 @@ from Engine.Vector import *
 
 # Original Game (224/256) Scaled x3 = (672/768)
 SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 768
 
 CLEAR_COLOR = Vector4(0, 0, 0, 1)
 

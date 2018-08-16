@@ -19,6 +19,7 @@ CHUNK_SIZE_VEC = Vector2(CHUNK_SIZE, CHUNK_SIZE)
 
 _instance = None
 
+
 class ColliderChunk:
     def __init__(self, _pos: Vector3):
         self.position: Vector3 = _pos

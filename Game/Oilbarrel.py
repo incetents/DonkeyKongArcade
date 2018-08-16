@@ -42,6 +42,7 @@ class Oilbarrel(Entity):
         self.animations.set_speed(8.0)
 
         # Data
+        self.pause_logic: bool = False
         self._lit: bool = False
         self._fire: Enemy_Fire = None
         self._flame_effect: bool = False
@@ -63,7 +64,15 @@ class Oilbarrel(Entity):
         self._flame_effect_timer.reset()
         self.animations.set_sprite_sequence('anim_oil_barrel_burn')
 
+    def reset(self):
+        if self._fire is not None:
+            EntityManager.get_singleton().remove_entity(self._fire)
+        self.animations.set_sprite_sequence('anim_oil_barrel_empty')
+
     def update(self, delta_time):
+        if self.pause_logic:
+            return
+
         # Set Animation
         if self._flame_effect_timer.is_finished() and self._flame_effect:
             self.animations.set_sprite_sequence('anim_oil_barrel_normal')

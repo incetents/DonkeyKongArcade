@@ -14,6 +14,8 @@ from Engine.Raycast import *
 from Game.Tile import *
 import Engine.Raycast
 from random import randint
+from Engine.AudioPlayer import *
+from Game.GameData import *
 
 class MarioState_Enum(Enum):
     ERR = 0,
@@ -59,15 +61,23 @@ class MarioState:
 class MarioState_Dead(MarioState):
     def __init__(self, _mario):
         MarioState.__init__(self, _mario)
-        self._dead1_clock = Clock(1.2)
-        self._dead2_clock = Clock(3.0)
+        self._dead1_clock = Clock(2.0)
+        self._dead2_clock = Clock(4.0)
         pass
 
     def enter(self):
         self._mario.set_animation('anim_mario_dying')
         self._mario.animations.set_pause(False)
         self._mario.rigidbody.enabled = False
-        self._mario.alive = False
+        # Kill all barrels/fires
+        GameData.get_singleton().global_dk.kill_all_barrels()
+        GameData.get_singleton().global_oil.reset()
+        # Disable DK and oil
+        GameData.get_singleton().global_dk.pause_logic = True
+        GameData.get_singleton().global_oil.pause_logic = True
+        # Audio
+        AudioPlayer.get_singleton().stop_all_audio()
+        self._mario.sfx_dying.play()
         pass
 
     def exit(self):
@@ -77,6 +87,9 @@ class MarioState_Dead(MarioState):
         if self._dead1_clock.is_finished():
             self._mario.set_animation('anim_mario_dead')
         if self._dead2_clock.is_finished():
+            GameData.get_singleton().increase_lives(-1)
+            self._mario.alive = False
+
             pass
 
 

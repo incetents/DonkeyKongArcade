@@ -94,10 +94,12 @@ class Game:
         SFX('sfx_walk4', 'audio/sfx_walk4.wav')
         SFX('sfx_walk5', 'audio/sfx_walk5.wav')
         SFX('sfx_barrel_score', 'audio/sfx_barrel_score.wav')
+        SFX('sfx_death', 'audio/sfx_death.wav')
 
     def setup_textures(self):
         # Font Texture
         Texture('font', 'assets/text/tilesheet.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('numbers', 'assets/numbers/numbers.png', FilterMode.POINT, WrapMode.CLAMP)
 
         # Special Stuff
         Texture('pixel_black', 'assets/pixels/pixel_black.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -109,6 +111,10 @@ class Game:
         # Hud Stuff
         Texture('mini_mario', 'assets/hud/mini_mario.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('bonus_counter', 'assets/hud/bonus_counter.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('highscore1', 'assets/hud/highscore1.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('highscore2', 'assets/hud/highscore2.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('highscore3', 'assets/hud/highscore3.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('life_icon', 'assets/hud/life_icon.png', FilterMode.POINT, WrapMode.CLAMP)
 
         # Game Stuff
         Texture('score_100', 'assets/effects/score_100.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -163,7 +169,6 @@ class Game:
         Texture('fire_blue2', 'assets/enemies/fire_blue2.png', FilterMode.POINT, WrapMode.CLAMP)
 
     def setup_sprites(self):
-
         # Load Sprites
         Sprite('spr_pixel_black', 'pixel_black')
         Sprite('spr_pixel_white', 'pixel_white')
@@ -174,6 +179,10 @@ class Game:
         # Hud
         Sprite('spr_mini_mario', 'mini_mario', Anchor.BOTLEFT)
         Sprite('spr_bonus_counter', 'bonus_counter', Anchor.BOTLEFT)
+        Sprite('spr_highscore1', 'highscore1', Anchor.BOTLEFT)
+        Sprite('spr_highscore2', 'highscore2', Anchor.BOTLEFT)
+        Sprite('spr_highscore3', 'highscore3', Anchor.BOTLEFT)
+        Sprite('spr_life_icon', 'life_icon', Anchor.BOTLEFT)
 
         # Game
         Sprite('spr_score_100', 'score_100', Anchor.BOT)
@@ -328,23 +337,22 @@ class Game:
 
     def setup_meshes(self):
         # Load Meshes
-        _m1 = Mesh('quad_2d')
-
-        _v = (
-            Vector3(-0.5, -0.5, 0),
-            Vector3(+0.5, -0.5, 0),
-            Vector3(+0.5, +0.5, 0),
-            Vector3(-0.5, +0.5, 0)
-        )
-        _uv = (
-            Vector2(0, 0),
-            Vector2(1, 0),
-            Vector2(1, 1),
-            Vector2(0, 1)
-        )
-
-        _m1.set_vertices(_v)
-        _m1.set_uvs(_uv)
+        # _m1 = Mesh('quad_2d')
+        # _v = (
+        #     Vector3(-0.5, -0.5, 0),
+        #     Vector3(+0.5, -0.5, 0),
+        #     Vector3(+0.5, +0.5, 0),
+        #     Vector3(-0.5, +0.5, 0)
+        # )
+        # _uv = (
+        #     Vector2(0, 0),
+        #     Vector2(1, 0),
+        #     Vector2(1, 1),
+        #     Vector2(0, 1)
+        # )
+        # _m1.set_vertices(_v)
+        # _m1.set_uvs(_uv)
+        pass
 
     def update(self, delta_time: float):
 
@@ -365,7 +373,15 @@ class Game:
         if Engine.Input.get_key(pygame.K_1):
             self.set_state(GameState_Menu())
         elif Engine.Input.get_key(pygame.K_2):
+            self.set_state(GameState_Intro())
+        elif Engine.Input.get_key(pygame.K_3):
             self.set_state(GameState_Game())
+
+        # Check if mario dead for level reset
+        if type(self._state) is GameState_Game:
+            _mario: Mario = self._state._mario
+            if not _mario.alive:
+                self.set_state(GameState_Game())
 
 
     def draw(self):

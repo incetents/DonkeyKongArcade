@@ -72,18 +72,15 @@ class Mario(Entity):
         self._bottom_right_anchor: Vector2 = Vector2()
         # Audio
         self.sfx_jump: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_jump')
-
         self.sfx_walk1: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk1')
         self.sfx_walk2: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk2')
         self.sfx_walk3: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk3')
         self.sfx_walk4: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk4')
         self.sfx_walk5: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_walk5')
-
         self.sfx_walks = [self.sfx_walk1, self.sfx_walk2, self.sfx_walk3, self.sfx_walk4, self.sfx_walk5]
         self.sfx_walk_index: int = -1
-
         self.sfx_barrel_score: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_barrel_score')
-
+        self.sfx_dying: SFX = Engine.Storage.get(Engine.Storage.Type.SFX, 'sfx_death')
 
     def get_random_walk_sfx(self):
         _rand: int = randint(0, len(self.sfx_walks) - 1)
@@ -117,6 +114,9 @@ class Mario(Entity):
     def set_animation(self, _sequence: str):
         self.animations.set_sprite_sequence(_sequence)
 
+    def check_dying(self):
+        return self._state.ID is MarioState_Enum.DEAD
+
     def update(self, delta_time: float):
         # Debug Mode
         if self._debug:
@@ -134,7 +134,7 @@ class Mario(Entity):
             return
 
         # Update Input
-        if self.alive is True:
+        if self._state.ID is not MarioState_Enum.DEAD:
             # Horizontal Movement
             if Engine.Input.get_key(pygame.K_LEFT) and not Engine.Input.get_key(pygame.K_RIGHT):
                 self.input_left = True
@@ -210,10 +210,12 @@ class Mario(Entity):
     def draw(self):
         # Base Draw
         self.animations.draw(self.transform)
+
+    def draw_debug(self):
         self.collision.draw(Vector3(0, 0, 1))
 
         # Draw Raycast Stuff
-        Debug.draw_circle_2d( self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
+        Debug.draw_circle_2d(self._bottom_left_anchor, 1.0, Vector3(0, 1, 0))
         Debug.draw_circle_2d(self._bottom_right_anchor, 1.0, Vector3(0, 1, 0))
 
         if self._ray_left is not None and self._ray_right is not None:
@@ -229,17 +231,15 @@ class Mario(Entity):
             )
 
             if self._ray_left.hit_flag is not False:
-                Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0,1,0))
+                Debug.draw_circle_2d(self._ray_left.hit_point, 2.0, Vector3(0, 1, 0))
             if self._ray_right.hit_flag is not False:
-                Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0,1,0))
+                Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0, 1, 0))
+
 
     def trigger_stay(self, trigger: Collider):
         pass
 
     def trigger_enter(self, trigger: Collider):
-        # Ignore future logic if dead
-        if not self.alive:
-            return
 
         # Death Trigger
         if not self._debug and \

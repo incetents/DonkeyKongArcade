@@ -41,6 +41,7 @@ class DonkeyKong(Entity):
         self.animations.set_speed(4.0)
 
         # Data
+        self.pause_logic: bool = True
         self._barrels: List[Barrel] = []
         self._state: DK_State = DK_State_Still(self)
 
@@ -58,17 +59,28 @@ class DonkeyKong(Entity):
         self.animations.set_frame(_index)
         return self
 
-    def spawn_barrel(self, dropped: bool=False):
+    def kill_all_barrels(self):
+        for b in self._barrels:
+            EntityManager.get_singleton().remove_entity(b)
+        self._barrels.clear()
+
+    def spawn_barrel(self, dropped: bool = False):
+
+        _barrel: Barrel = None
+
         # Regular Push
-        _barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
-                        self.transform.get_position() + Vector3(20, 0, +1), Barrel_State.RIGHT, False)
+        if not dropped:
+            _barrel: Barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
+                self.transform.get_position() + Vector3(20, 0, +1), Barrel_State.RIGHT, False)
 
         # Regular Drop
-        # _barrel: Barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
-        #                  self.transform.get_position() + Vector3(0, 0, +1), Barrel_State.MEGA_FALL, True)
+        else:
+            _barrel: Barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
+                self.transform.get_position() + Vector3(0, 0, +1), Barrel_State.MEGA_FALL, True)
 
-        # Spawn
-        # _barrel: Barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(90, 30, -1), Barrel_State.LEFT)
+        # Spawn Debug
+        # _barrel: Barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(90, 30, 0), Barrel_State.LEFT)
+        # _barrel.set_layer(-1)
 
         EntityManager.get_singleton().add_entity(_barrel)
 
@@ -76,18 +88,15 @@ class DonkeyKong(Entity):
         _barrel_zone = BarrelZone('barrel_zone' + str(pygame.time.get_ticks()), _barrel)
         EntityManager.get_singleton().add_entity(_barrel_zone)
 
-
         self._barrels.append(_barrel)
         return self
 
     def update(self, delta_time):
-        # self.animations.update(delta_time)
-        _sprite = self.animations.get_current_frame()
-
+        if self.pause_logic:
+            return
 
         # Update State
         self._state.update(delta_time)
-        self.animations.set_frame(5)
 
         # Update Barrel list
         _copy_barrels = self._barrels.copy()

@@ -63,8 +63,8 @@ class DK_State_Still(DK_State):
 
     def update(self, delta_time: float):
         # print(self.timer.get_remaining_time())
-        # if self.timer.is_finished():
-        #     self._dk.set_state(DK_State_Enum.TOSS_BARREL_NORMAL)
+        if self.timer.is_finished():
+            self._dk.set_state(DK_State_Enum.TOSS_BARREL_NORMAL)
         pass
 
 

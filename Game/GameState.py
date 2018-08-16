@@ -34,6 +34,7 @@ from Game.Oilbarrel import *
 from Game.InvisBlock import *
 from Game.DonkeyKong import *
 import Game.Barrel
+from Game.GameHud import *
 # Text
 from Engine.Text import *
 
@@ -73,7 +74,32 @@ class GameState:
 class GameState_Menu(GameState):
     def __init__(self):
         GameState.__init__(self)
-        self.test = Tile('dk', 'spr_barrel_stack1', Vector3())
+        self.test = Tile('test', 'spr_barrel_stack1', Vector3())
+        EntityManager.get_singleton().add_entity(self.test)
+        pass
+
+    def enter(self):
+        pass
+
+    def exit(self):
+        pass
+
+    def update(self, delta_time: float):
+        super().update(delta_time)
+        pass
+
+    def draw(self):
+        super().draw()
+        pass
+
+    def draw_debug(self, delta_time: float):
+        pass
+
+
+class GameState_Intro(GameState):
+    def __init__(self):
+        GameState.__init__(self)
+        self.test = Tile('test', 'spr_ladder_52', Vector3())
         EntityManager.get_singleton().add_entity(self.test)
         pass
 
@@ -132,7 +158,8 @@ class GameState_Game(GameState):
 
         # Entities
         self._mario: Mario = Mario('mario')
-        self._mario.transform.set_position(Vector3(50, 20, 2))
+        self._mario.transform.set_position(Vector3(50, 20, 0))
+        self._mario.set_layer(2)
         self._mario.transform.set_flip_x(True)
 
         self._enemy1 = Enemy_Fire('enemy1', Vector3(120, 20, 0))
@@ -156,9 +183,14 @@ class GameState_Game(GameState):
         self._stack_barrels.collision.type = Collision_Type.TRIGGER
         self._stack_barrels.collision.id = Engine.Config.TRIGGER_ID_DEATH
 
-        self._dk = DonkeyKong('dk', Vector3(42, 172, -2))
+        self._dk = DonkeyKong('dk', Vector3(42, 172, 0))
+        self._dk.set_layer(-2)
 
         # SPECIAL
+        GameData.get_singleton().global_mario = self._mario
+        GameData.get_singleton().global_dk = self._dk
+        GameData.get_singleton().global_oil = self._oil
+
         Game.Barrel.oil_barrel_ref = self._oil
         Game.Barrel.mario_ref = self._mario
 
@@ -241,6 +273,8 @@ class GameState_Game(GameState):
         # Game Audio
         AudioPlayer.stop_all_audio()
         AudioPlayer.get_singleton().set_song('music_25m', -1).play_song()
+        # Game Hud
+        GameHud.get_singleton().update_lives()
         # Add entities
         # EntityManager.get_singleton().add_entity(self._enemy1)
         EntityManager.get_singleton().add_entity(self._invis_box1)
@@ -255,6 +289,9 @@ class GameState_Game(GameState):
         EntityManager.get_singleton().add_batch(self._ladder_tiles)
 
         EntityManager.get_singleton().add_entity(self._mario)
+
+        # Game Data
+        GameData.get_singleton().init_level_time()
         pass
 
     def exit(self):
@@ -262,6 +299,9 @@ class GameState_Game(GameState):
         pass
 
     def update(self, delta_time: float):
+        # Game Data
+        GameData.get_singleton().update_level_time()
+
         # Base
         #print('~~~')
         #_t = pygame.time.get_ticks()
@@ -280,12 +320,11 @@ class GameState_Game(GameState):
             # self._oil.spawn_fire()
 
         # Test
-        if Engine.Input.get_key(pygame.K_q):
+        if Engine.Input.get_key_pressed(pygame.K_q):
             self._mario.set_state(MarioState_Enum.DEAD)
 
-        if Engine.Input.get_key(pygame.K_x):
+        if Engine.Input.get_key_pressed(pygame.K_x):
             self._mario.set_state(MarioState_Enum.CLIMB)
-
 
         # ------------------------------------------
 
@@ -300,9 +339,14 @@ class GameState_Game(GameState):
         _c = ColliderManager_2D.get_singleton()
         _c.draw_chunks()
 
+        # Debug Art from Entities
+        EntityManager.get_singleton().draw_debug()
+
         # ------------------------------------------
 
+    # Non-camera space debug graphics
     def draw_debug(self, delta_time: float):
+
         # Data
         _fps: str = '0'
         if delta_time > 0.0:
@@ -312,12 +356,12 @@ class GameState_Game(GameState):
         _camerazoom = str(round(Engine.Camera.zoom * 100.0) / 100.0)
         _playerpos = str(round(self._mario.transform.get_position() * 10.0) / 10.0)
 
-        _text = Text(
+        _text = GameText(
             'FPS: ' + _fps + '\nCamera Pos: ' + _camerapos + '\nCameraZoom: ' + _camerazoom +
             '\nMario Pos: ' + _playerpos,
             Vector2(-Engine.Config.SCREEN_WIDTH / 2 + 5, +Engine.Config.SCREEN_HEIGHT / 2 - 30),
             38,
-            Vector4(0.9, 0.8, 0.88, 1),
+            Vector4(0.2, 0.9, 0.22, 1),
             TextAlignment.LEFT,
             48,
             0.5

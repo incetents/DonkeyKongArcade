@@ -52,6 +52,9 @@ class EntityManager:
         return False
 
     def add_entity(self, _ent: Entity):
+        if _ent is None:
+            return
+
         # Add static collider if no rigidbody is present
         ColliderManager_2D.get_singleton().add(_ent)
 
@@ -59,7 +62,7 @@ class EntityManager:
         self._entities[_ent.name] = _ent
 
         # Add to list of ordered entities
-        _depth: int = int(_ent.transform.get_position().z)
+        _depth: int = _ent.get_layer()
 
         if _depth not in self._entities_ordered:
             # Create empty slot
@@ -88,11 +91,17 @@ class EntityManager:
         self._batches[_batch.name] = _batch
 
     def remove_entity(self, _ent: Entity):
-        # ENTITY deletion
+        # ENTITY deletion flag
         _ent.deleted = True
-        self._entities.pop(_ent.name, None)
-        self._entities_ordered[_ent.transform.get_position().z].remove(_ent)
-        if _ent.get_component(Rigidbody) is not None:
+        # Check for entity existence and delete it from any of the following containers
+        if _ent in self._entities.values():
+            self._entities.pop(_ent.name, None)
+
+        _ordered_list: List[Entity] = self._entities_ordered[_ent.get_layer()]
+        if _ent in _ordered_list:
+            self._entities_ordered[_ent.get_layer()].remove(_ent)
+
+        if _ent.get_component(Rigidbody) is not None and _ent in self._dynamic_entities.values():
             self._dynamic_entities.pop(_ent.name, None)
 
     def remove_batch(self, _batch: SpriteBatch):
@@ -135,4 +144,13 @@ class EntityManager:
             for ent in value:
                 if ent.enabled is True:
                     ent.draw()
+
+    def draw_debug(self):
+        # Draw Debug of batches
+        for value in self._batches.values():
+            value.draw_debug()
+
+        # Draw Debug of entities
+        for value in self._entities.values():
+            value.draw_debug()
 

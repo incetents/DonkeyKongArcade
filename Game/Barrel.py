@@ -306,7 +306,6 @@ class Barrel(Entity):
                 self.fall_clock.reset()
                 self.rigidbody.set_vel_y(0)
 
-
     def draw(self):
         self.animations.draw(self.transform)
         self.collision.draw(Vector3(1, 0, 0))
@@ -351,5 +350,3 @@ class Barrel(Entity):
         # Destroy self if hit death trigger
         elif trigger.id is Engine.Config.TRIGGER_ID_BARREL_DESTROY:
             EntityManager.get_singleton().remove_entity(self)
-
-        pass
