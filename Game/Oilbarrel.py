@@ -87,9 +87,8 @@ class Oilbarrel(Entity):
 
     def draw(self):
         self.animations.draw(self.transform)
+
+    def draw_debug(self):
         self.collision.draw(Vector3(1, 0, 0))
-
-        _pos = self.transform.get_position().get_vec2()
-
-        Debug.draw_x_2d(_pos, 5.0, Vector3(1, 1, 0))
+        Debug.draw_x_2d(self.transform.get_position().get_vec2(), 5.0, Vector3(1, 1, 0))
 

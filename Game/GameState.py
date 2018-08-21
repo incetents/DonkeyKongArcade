@@ -35,6 +35,7 @@ from Game.InvisBlock import *
 from Game.DonkeyKong import *
 import Game.Barrel
 from Game.GameHud import *
+from Game.BonusTimer import *
 # Text
 from Engine.Text import *
 
@@ -121,9 +122,11 @@ class GameState_Intro(GameState):
         pass
 
 
-class GameState_Load(GameState):
+class GameState_Ready(GameState):
     def __init__(self):
         GameState.__init__(self)
+        self.test = Tile('test', 'spr_ladder_52', Vector3())
+        EntityManager.get_singleton().add_entity(self.test)
         pass
 
     def enter(self):
@@ -133,9 +136,11 @@ class GameState_Load(GameState):
         pass
 
     def update(self, delta_time: float):
+        super().update(delta_time)
         pass
 
     def draw(self):
+        super().draw()
         pass
 
     def draw_debug(self, delta_time: float):
@@ -162,9 +167,12 @@ class GameState_Game(GameState):
         self._mario.set_layer(2)
         self._mario.transform.set_flip_x(True)
 
-        self._enemy1 = Enemy_Fire('enemy1', Vector3(120, 20, 0))
+        # Bonus timer
+        self._bonus_time: BonusTime = BonusTime('bonus_timer')
 
+        # self._enemy1 = Enemy_Fire('enemy1', Vector3(120, 20, 0))
         # self._barrel_1 = Barrel('barrel1', Vector3(80, 16, -2), Direction.LEFT)
+
 
         self._invis_box1 = InvisBlock('invis1', Vector3(-12, 92, 0), Vector3(8, 216, 1))
         self._invis_box2 = InvisBlock('invis2', Vector3(236, 92, 0), Vector3(8, 216, 1))
@@ -276,14 +284,13 @@ class GameState_Game(GameState):
         # Game Hud
         GameHud.get_singleton().update_lives()
         # Add entities
-        # EntityManager.get_singleton().add_entity(self._enemy1)
         EntityManager.get_singleton().add_entity(self._invis_box1)
         EntityManager.get_singleton().add_entity(self._invis_box2)
         EntityManager.get_singleton().add_entity(self._oil)
         EntityManager.get_singleton().add_entity(self._destroy_barrel_trig)
         EntityManager.get_singleton().add_entity(self._stack_barrels)
         EntityManager.get_singleton().add_entity(self._dk)
-        # EntityManager.get_singleton().add_entity(self._barrel_1)
+        EntityManager.get_singleton().add_entity(self._bonus_time)
 
         EntityManager.get_singleton().add_batch(self._floor_tiles)
         EntityManager.get_singleton().add_batch(self._ladder_tiles)

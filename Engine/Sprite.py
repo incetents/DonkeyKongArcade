@@ -125,8 +125,8 @@ class Sprite(Component):
     def get_anchor(self, _anchor: Anchor, _model: Transform) -> Vector2:
         return _model.get_position().get_vec2() + \
                Vector2(
-                   _model.get_scale().y * self._tex_w_half * (self._offset.x + Engine.Anchor._AnchorValues[_anchor][0]),
-                   _model.get_scale().x * self._tex_h_half * (self._offset.y + Engine.Anchor._AnchorValues[_anchor][1])
+                   _model.get_scale().x * self._tex_w_half * (self._offset.x + Engine.Anchor._AnchorValues[_anchor][0]),
+                   _model.get_scale().y * self._tex_h_half * (self._offset.y + Engine.Anchor._AnchorValues[_anchor][1])
                )
 
     def get_local_vertices(self) -> List[Vector2]:

@@ -110,13 +110,13 @@ class GameHud:
         self._mario_icon_draw = _lives > 1
 
     def draw(self):
-        _data = GameData.get_singleton()
+        # _data = GameData.get_singleton()
 
         # Lives
         if self._mario_icon_draw:
             self._mario_icon_batch.draw()
         # Bonus
-        self._bonus_counter.draw()
+        # self._bonus_counter.draw()
 
         # Highscore text
         if pygame.time.get_ticks() % 1000 > 500:
@@ -132,12 +132,12 @@ class GameHud:
         self._highscore.draw()
 
         # Bonus timer
-        self._bonus_timer.update_number(GameData.get_singleton().get_bonus_time())
-        self._bonus_timer.draw()
+        # self._bonus_timer.update_number(GameData.get_singleton().get_bonus_time())
+        # self._bonus_timer.draw()
 
         # Life Icon + amount
         self._life_icon.draw()
-        self._life_amount.update_number(GameData.get_singleton().get_lives())
+        self._life_amount.update_number(GameData.get_singleton().get_level())
         self._life_amount.draw()
 
         # Score
@@ -149,10 +149,3 @@ class GameHud:
         self._player1_score.draw()
         self._player2_score.draw()
 
-        # self._player1_score = GameText(
-        #     '000000', Vector2(56, 240), 1, Vector4(1, 1, 1, 1),
-        #     TextAlignment.RIGHT, -1)
-#
-        # self._player1_score.draw()
-
-        pass

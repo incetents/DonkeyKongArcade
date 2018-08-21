@@ -17,8 +17,9 @@ from Engine.Collision import *
 from Engine.Clock import *
 from Engine.EntityManager import *
 import Engine.Config
-
 from Game.Mario import *
+from Game.TriggerZone import *
+
 
 class Enemy_Fire(Entity):
     def __init__(self, entity_name: str, _position: Vector3):
@@ -36,6 +37,14 @@ class Enemy_Fire(Entity):
         # Animations
         self.animations = SpriteAnimation('anim_enemy1')
         self.animations.set_speed(10.0)
+
+        # Create Trigger Zone on self
+        _trigger: TriggerZone = TriggerZone('trig_fire' + str(pygame.time.get_ticks()), self,
+                                            Engine.Config.TRIGGER_ID_SCORE_DEATH,
+                                            Vector2(4, 20), Vector2(0, 4)
+                                            )
+        EntityManager.get_singleton().add_entity(_trigger)
+
 
         # Data
         self.speed: float = 5
@@ -66,4 +75,6 @@ class Enemy_Fire(Entity):
 
     def draw(self):
         self.animations.draw(self.transform)
+
+    def draw_debug(self):
         self.collision.draw(Vector3(1, 0, 0))

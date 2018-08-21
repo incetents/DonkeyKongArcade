@@ -1,4 +1,3 @@
-
 # Emmanuel Lajeunesse ©2018 - Using PyGame and PyOpenGL
 
 # [Mario Character States] -> separated from Mario.py to help organize
@@ -17,13 +16,15 @@ from random import randint
 from Engine.AudioPlayer import *
 from Game.GameData import *
 
+
 class MarioState_Enum(Enum):
     ERR = 0,
     IDLE = 1,
     WALK = 2,
     JUMP = 3,
     DEAD = 4,
-    CLIMB = 5
+    CLIMB = 5,
+    HAMMER = 6
 
 
 def create_state(mario, new_state: MarioState_Enum):
@@ -37,6 +38,8 @@ def create_state(mario, new_state: MarioState_Enum):
         return MarioState_Dead(mario)
     elif new_state is MarioState_Enum.CLIMB:
         return MarioState_Climb(mario)
+    elif new_state is MarioState_Enum.HAMMER:
+        return MarioState_Hammer(mario)
 
     print('unknown mario state')
     return None
@@ -54,7 +57,7 @@ class MarioState:
     def exit(self):
         pass
 
-    def update(self):
+    def update(self, delta_time: float):
         pass
 
 
@@ -83,7 +86,7 @@ class MarioState_Dead(MarioState):
     def exit(self):
         pass
 
-    def update(self):
+    def update(self, delta_time: float):
         if self._dead1_clock.is_finished():
             self._mario.set_animation('anim_mario_dead')
         if self._dead2_clock.is_finished():
@@ -108,7 +111,7 @@ class MarioState_Idle(MarioState):
     def exit(self):
         pass
 
-    def update(self):
+    def update(self, delta_time: float):
         # No movement
         self._mario.rigidbody.set_vel_x(0)
 
@@ -170,7 +173,8 @@ class MarioState_Idle(MarioState):
                         if _collide1:
                             self._mario.transform.set_position_y(_ladder_collision.get_up())
                         elif _collide2:
-                            self._mario.transform.set_position_y(_ladder_collision.get_up() + Engine.Config.TILE_SIZE - 2)
+                            self._mario.transform.set_position_y(
+                                _ladder_collision.get_up() + Engine.Config.TILE_SIZE - 2)
                         # Set ladder ref
                         self._mario._ladder_ref = e
                         # Set State
@@ -197,7 +201,7 @@ class MarioState_Walk(MarioState):
     def exit(self):
         pass
 
-    def update(self):
+    def update(self, delta_time: float):
         # Update Flip
         if self._mario.input_left:
             self._mario.transform.set_flip_x(False)
@@ -245,7 +249,7 @@ class MarioState_Jump(MarioState):
     def exit(self):
         pass
 
-    def update(self):
+    def update(self, delta_time: float):
         # Movement
         if self._mario.input_left:
             self._mario.rigidbody.set_vel_x(-self._mario.speed)
@@ -258,6 +262,43 @@ class MarioState_Jump(MarioState):
 
         if self._mario.touching_ground is True:
             self._mario.set_state(MarioState_Enum.IDLE)
+        pass
+
+
+class MarioState_Hammer(MarioState):
+    def __init__(self, _mario):
+        MarioState.__init__(self, _mario)
+        self._mario.rigidbody.set_gravity_state(True)
+        self._mario.rigidbody.ignore_static_colliders = False
+        self._mario.set_animation('anim_mario_jump')
+        self._mario.animations.set_pause(False)
+
+    def enter(self):
+        pass
+
+    def exit(self):
+        pass
+
+    def update(self, delta_time: float):
+        # Update Flip
+        if self._mario.input_left:
+            self._mario.transform.set_flip_x(False)
+        elif self._mario.input_right:
+            self._mario.transform.set_flip_x(True)
+
+        # Movement
+        if self._mario.input_left:
+            self._mario.rigidbody.set_vel_x(-self._mario.speed)
+
+        elif self._mario.input_right:
+            self._mario.rigidbody.set_vel_x(+self._mario.speed)
+
+        # Stop Movement
+        if not self._mario.input_left and not self._mario.input_right:
+            self._mario.rigidbody.set_vel_x(0)
+
+        # elif self._mario.input_jump and self._mario.touching_ground is True:
+        #     self._mario.set_state(MarioState_Enum.JUMP)
         pass
 
 
@@ -275,7 +316,7 @@ class MarioState_Climb(MarioState):
         _ents: List[Entity] = Engine.Raycast.Raypoint_2D_Static(Vector2(
             self._mario._ladder_ref.collision.get_position().x,
             self._mario._ladder_ref.collision.get_up() + Engine.Config.TILE_SIZE - 2.0
-            ),
+        ),
             Engine.Config.TRIGGER_ID_FLOOR
         )
         for e in _ents:
@@ -312,7 +353,7 @@ class MarioState_Climb(MarioState):
     def exit(self):
         pass
 
-    def update(self):
+    def update(self, delta_time: float):
         # Audio
         if self._mario.input_down or self._mario.input_up:
             # Audio
@@ -322,13 +363,13 @@ class MarioState_Climb(MarioState):
 
         # Movement
         if self._mario.input_up:
-            self._mario.transform.increase_position(Vector3(0, +self._mario.climbspeed, 0))
+            self._mario.transform.increase_position(Vector3(0, +self._mario.climbspeed * delta_time, 0))
             # if reached top of ladder, go to idle
             if self._mario.transform.get_position().y > self.ladder_top:
                 self._mario.set_state(MarioState_Enum.IDLE)
 
         elif self._mario.input_down:
-            self._mario.transform.increase_position(Vector3(0, -self._mario.climbspeed, 0))
+            self._mario.transform.increase_position(Vector3(0, -self._mario.climbspeed * delta_time, 0))
             # if touching ground, go to idle
             if self.can_exit_down:
                 if self._mario.transform.get_position().y < self.ladder_bot:

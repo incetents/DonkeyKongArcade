@@ -36,8 +36,9 @@ class Tile(Entity):
 
     def draw(self):
         self.sprite.draw(self.transform)
-        self.collision.draw(Vector3(1,0,0))
 
+    def draw_debug(self):
+        self.collision.draw(Vector3(1, 0, 0))
 
 class TileBatch(SpriteBatch):
     def __init__(self, batch_name: str, texture_name: str, collision_type: Collision_Type, collision_id: int=0):

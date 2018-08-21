@@ -60,9 +60,9 @@ class Mario(Entity):
         self._debug: bool = False
         self.debug_speed: float = 4
         self.alive: bool = True
-        self.speed: float = 35
+        self.speed: float = 32
         self.jumpspeed: float = 50
-        self.climbspeed: float = 0.5
+        self.climbspeed: float = 26
         self.touching_ground: bool = False
         self.barrel_count: int = 0
         self.barrel_combo: int = 0
@@ -170,7 +170,6 @@ class Mario(Entity):
             self.input_down = False
             self.input_jump = False
 
-
         # Update Animations
         self.animations.update(delta_time)
         # self.set_sprite('spr_mario_jump')
@@ -182,8 +181,8 @@ class Mario(Entity):
         self.rigidbody.set_gravity(Vector3(0, -Engine.Config.GRAV, 0))
         self.rigidbody.update(delta_time)
 
-        self._bottom_left_anchor = _sprite.get_anchor(Anchor.BOTLEFT, self.transform) + Vector2(0, 0.2)
-        self._bottom_right_anchor = _sprite.get_anchor(Anchor.BOTRIGHT, self.transform) + Vector2(0, 0.2)
+        self._bottom_left_anchor = Vector2(self.collision.get_left(), self.collision.get_down()) + Vector2(0, 0.2)
+        self._bottom_right_anchor = Vector2(self.collision.get_right(), self.collision.get_down()) + Vector2(0, 0.2)
 
         # Update Raycast Data
         self._ray_left = Raycast_2D(self._bottom_left_anchor, Vector2(0, -1), 5, True)
@@ -195,7 +194,7 @@ class Mario(Entity):
             (self._ray_right.hit_distance < 0.4 and self._ray_right.hit_flag is True)
 
         # Update State
-        self._state.update()
+        self._state.update(delta_time)
 
         # Force dead state if below vertical area
         if self.transform.get_position().y < DEAD_HEIGHT and self._state.ID is not MarioState_Enum.DEAD:
@@ -235,22 +234,20 @@ class Mario(Entity):
             if self._ray_right.hit_flag is not False:
                 Debug.draw_circle_2d(self._ray_right.hit_point, 2.0, Vector3(0, 1, 0))
 
-
     def trigger_stay(self, trigger: Collider):
         pass
 
     def trigger_enter(self, trigger: Collider):
-
         # Death Trigger
         if not self._debug and \
                 (trigger.id is Engine.Config.TRIGGER_ID_DEATH or
-                 trigger.id is Engine.Config.TRIGGER_ID_OIL_BARREL or
-                 trigger.id is Engine.Config.TRIGGER_ID_FLAME
+                 trigger.id is Engine.Config.TRIGGER_ID_OIL_BARREL
                 ):
             self.set_state(MarioState_Enum.DEAD)
 
-        # Special Barrel Trigger
-        if trigger.id is Engine.Config.TRIGGER_ID_BARREL_SPECIAL:
+        # Special Barrel/Enemy Trigger
+        if trigger.id is Engine.Config.TRIGGER_ID_SCORE_DEATH and\
+            self._state.ID is not MarioState_Enum.CLIMB:
             if self.transform.get_position().y > trigger.get_position().y - 2:
                 # Barrel Counter
                 self.barrel_count += 1
@@ -265,11 +262,9 @@ class Mario(Entity):
                 self._state.ID is MarioState_Enum.CLIMB:
             self.set_state(MarioState_Enum.DEAD)
 
-        pass
-
     def trigger_exit(self, trigger: Collider):
         # Special Barrel Trigger
-        if trigger.id is Engine.Config.TRIGGER_ID_BARREL_SPECIAL:
+        if trigger.id is Engine.Config.TRIGGER_ID_SCORE_DEATH:
             if self.transform.get_position().y > trigger.get_position().y - 2:
                 # Barrel Counter
                 self.barrel_count -= 1
@@ -288,13 +283,13 @@ class Mario(Entity):
                     # Spawn Effect
                     _score = BarrelScore(
                         'barrel_score' + str(pygame.time.get_ticks()),
-                        Vector3(self.transform.get_position().x, trigger.get_position().y, 2),
+                        Vector3(self.transform.get_position().x, trigger.get_position().y + 10, 2),
                         spr_name
                     )
                     EntityManager.get_singleton().add_entity(_score)
 
                     # Reset Combo
                     self.barrel_combo = 0
-        pass
+
 
 

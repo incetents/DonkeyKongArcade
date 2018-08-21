@@ -7,6 +7,7 @@ from Game.DonkeyKong import *
 from Game.Oilbarrel import *
 
 _instance = None
+level_id_check: int = 0
 
 
 class GameData:
@@ -27,6 +28,9 @@ class GameData:
         self._level_start_time: int = 0
         self._level_seconds_passed: int = 0
 
+        global level_id_check
+        level_id_check = self._level
+
     @staticmethod
     def get_singleton():
         global _instance
@@ -38,8 +42,9 @@ class GameData:
         self._level_start_time = pygame.time.get_ticks()
 
     def update_level_time(self):
-        self._level_seconds_passed = math.floor((pygame.time.get_ticks() - self._level_start_time) / 1000)
-        self._bonus_time = max(0, 5000 + 1000 * (self._level - 1) - (100 * self._level_seconds_passed))
+        if not self.global_mario.check_dying():
+            self._level_seconds_passed = math.floor((pygame.time.get_ticks() - self._level_start_time) / 1000)
+        self._bonus_time = max(0, 5000 + min(4000, 1000 * (self._level - 1)) - (100 * self._level_seconds_passed))
 
     def add_score(self, _score: int):
         if self._player1_turn:
@@ -69,6 +74,9 @@ class GameData:
             return self._lives_player1
         else:
             return self._lives_player2
+
+    def get_level(self) -> int:
+        return self._level
 
     def increase_lives(self, amount: int):
         if self._player1_turn:

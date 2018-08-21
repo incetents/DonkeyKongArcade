@@ -145,8 +145,26 @@ class Game:
         Texture('mario_climb4', 'assets/mario/mario_climb4.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('mario_climb5', 'assets/mario/mario_climb5.png', FilterMode.POINT, WrapMode.CLAMP)
 
+        # Idle hammer
+        Texture('hammer_idle1_red', 'assets/mario_hammer/idle1_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_idle2_red', 'assets/mario_hammer/idle2_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_idle1_yellow', 'assets/mario_hammer/idle1_yellow.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_idle2_yellow', 'assets/mario_hammer/idle2_yellow.png', FilterMode.POINT, WrapMode.CLAMP)
+        # Walk with hammer
+        Texture('hammer_walk1_red', 'assets/mario_hammer/walk1_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk2_red', 'assets/mario_hammer/walk2_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk3_red', 'assets/mario_hammer/walk3_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk4_red', 'assets/mario_hammer/walk4_red.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk1_yellow', 'assets/mario_hammer/walk1_yellow.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk2_yellow', 'assets/mario_hammer/walk2_yellow.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk3_yellow', 'assets/mario_hammer/walk3_yellow.png', FilterMode.POINT, WrapMode.CLAMP)
+        Texture('hammer_walk4_yellow', 'assets/mario_hammer/walk4_yellow.png', FilterMode.POINT, WrapMode.CLAMP)
+
+
         Texture('floor1', 'assets/tiles/floor1.png', FilterMode.POINT, WrapMode.REPEAT)
         Texture('ladder1', 'assets/tiles/ladder1.png', FilterMode.POINT, WrapMode.REPEAT)
+
+        Texture('hammer', 'assets/objects/hammer.png', FilterMode.POINT, WrapMode.CLAMP)
 
         Texture('barrel_side1', 'assets/objects/barrel_side1.png', FilterMode.POINT, WrapMode.CLAMP)
         Texture('barrel_side2', 'assets/objects/barrel_side2.png', FilterMode.POINT, WrapMode.CLAMP)
@@ -198,6 +216,7 @@ class Game:
         Sprite('spr_dk_hold_barrel1', 'dk_hold1', Anchor.BOT)
         Sprite('spr_dk_hold_barrel2', 'dk_hold2', Anchor.BOT)
 
+        # Mario
         Sprite('spr_mario1', 'mario1', Anchor.BOT)
         Sprite('spr_mario2', 'mario2', Anchor.BOT)
         Sprite('spr_mario3', 'mario3', Anchor.BOT)
@@ -212,6 +231,19 @@ class Game:
         Sprite('spr_mario_climb3', 'mario_climb3', Anchor.BOT)
         Sprite('spr_mario_climb4', 'mario_climb4', Anchor.BOT)
         Sprite('spr_mario_climb5', 'mario_climb5', Anchor.BOT)
+        # Mario Hammer
+        Sprite('spr_hammer_idle1_red', 'hammer_idle1_red', Anchor.BOT)
+        Sprite('spr_hammer_idle2_red', 'hammer_idle2_red', Anchor.BOT)
+        Sprite('spr_hammer_idle1_yellow', 'hammer_idle1_yellow', Anchor.BOT)
+        Sprite('spr_hammer_idle2_yellow', 'hammer_idle2_yellow', Anchor.BOT)
+        Sprite('spr_hammer_walk1_red', 'hammer_walk1_red', Anchor.BOT)
+        Sprite('spr_hammer_walk2_red', 'hammer_walk2_red', Anchor.BOT)
+        Sprite('spr_hammer_walk3_red', 'hammer_walk3_red', Anchor.BOT)
+        Sprite('spr_hammer_walk4_red', 'hammer_walk4_red', Anchor.BOT)
+        Sprite('spr_hammer_walk1_yellow', 'hammer_walk1_yellow', Anchor.BOT)
+        Sprite('spr_hammer_walk2_yellow', 'hammer_walk2_yellow', Anchor.BOT)
+        Sprite('spr_hammer_walk3_yellow', 'hammer_walk3_yellow', Anchor.BOT)
+        Sprite('spr_hammer_walk4_yellow', 'hammer_walk4_yellow', Anchor.BOT)
 
         Sprite('spr_floor_red_1', 'floor1', Anchor.BOTLEFT)
         Sprite('spr_floor_red_2', 'floor1', Anchor.BOTLEFT).set_scale_x(2.0).set_uv_right(2.0)
@@ -287,6 +319,29 @@ class Game:
                        'spr_mario_climb4',
                        'spr_mario_climb5'
                        )
+
+        SpriteSequence('anim_mario_hammer_idle_red',
+                       'spr_hammer_idle1_red',
+                       'spr_hammer_idle2_red'
+                       )
+        SpriteSequence('anim_mario_hammer_idle_yellow',
+                       'spr_hammer_idle1_yellow',
+                       'spr_hammer_idle2_yellow'
+                       )
+
+        # Sprite('spr_hammer_idle1_red', 'hammer_idle1_red', Anchor.BOT)
+        # Sprite('spr_hammer_idle2_red', 'hammer_idle2_red', Anchor.BOT)
+        # Sprite('spr_hammer_idle1_yellow', 'hammer_idle1_yellow', Anchor.BOT)
+        # Sprite('spr_hammer_idle2_yellow', 'hammer_idle2_yellow', Anchor.BOT)
+        # Sprite('spr_hammer_walk1_red', 'hammer_walk1_red', Anchor.BOT)
+        # Sprite('spr_hammer_walk2_red', 'hammer_walk2_red', Anchor.BOT)
+        # Sprite('spr_hammer_walk3_red', 'hammer_walk3_red', Anchor.BOT)
+        # Sprite('spr_hammer_walk4_red', 'hammer_walk4_red', Anchor.BOT)
+        # Sprite('spr_hammer_walk1_yellow', 'hammer_walk1_yellow', Anchor.BOT)
+        # Sprite('spr_hammer_walk2_yellow', 'hammer_walk2_yellow', Anchor.BOT)
+        # Sprite('spr_hammer_walk3_yellow', 'hammer_walk3_yellow', Anchor.BOT)
+        # Sprite('spr_hammer_walk4_yellow', 'hammer_walk4_yellow', Anchor.BOT)
+
 
         SpriteSequence('anim_dk_frames',
                        'spr_dk_center',
@@ -375,6 +430,8 @@ class Game:
         elif Engine.Input.get_key(pygame.K_2):
             self.set_state(GameState_Intro())
         elif Engine.Input.get_key(pygame.K_3):
+            self.set_state(GameState_Ready())
+        elif Engine.Input.get_key(pygame.K_4):
             self.set_state(GameState_Game())
 
         # Check if mario dead for level reset

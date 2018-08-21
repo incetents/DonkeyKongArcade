@@ -13,6 +13,7 @@ import pygame
 from Game.MarioState import *
 import Game.MarioState
 from Game.Direction import *
+from Game.TriggerZone import *
 # Math
 from Engine.Vector import *
 from Engine.Raycast import *
@@ -57,38 +58,6 @@ class BarrelScore(Entity):
         pass
 
 
-class BarrelZone(Entity):
-    def __init__(self, trigger_name: str, barrel: Barrel):
-        # Base
-        Entity.__init__(self, trigger_name)
-        self._barrel = barrel
-        self.transform.set_position(barrel.transform.get_position())
-        # Physics
-        self.rigidbody = self.add_component(Rigidbody(self.transform.get_position()))
-        self.rigidbody.ignore_dynamic_colliders = True
-        self.collision: Collider_AABB_2D = self.add_component(Collider_AABB_2D(self.transform.get_position()))
-        self.collision.size = Vector2(4, 20)
-        self.collision.offset = Vector2(0, 10)
-        self.collision.type = Collision_Type.TRIGGER
-        self.collision.id = Engine.Config.TRIGGER_ID_BARREL_SPECIAL
-
-    def update(self, delta_time):
-        if self._barrel.deleted:
-            EntityManager.get_singleton().remove_entity(self)
-        else:
-            self.transform.set_position(self._barrel.transform.get_position())
-            self.rigidbody.update(delta_time)
-        pass
-
-    def draw(self):
-        self.collision.draw(Vector3(0, 1, 0.5))
-        Debug.draw_line_2d(
-            self.collision.get_position().get_vec2() + Vector2(-8, -2),
-            self.collision.get_position().get_vec2() + Vector2(+8, -2),
-            Vector3(0.75,0.75,0)
-        )
-
-
 class Barrel_State(Enum):
     LEFT = 1,
     RIGHT = 2,
@@ -119,6 +88,13 @@ class Barrel(Entity):
         # Animations
         self.animations = SpriteAnimation('anim_barrel_roll')
         self.animations.set_speed(8.0)
+
+        # Create Trigger Zone on self
+        _trigger = TriggerZone('trig_barrel' + str(pygame.time.get_ticks()), self,
+                               Engine.Config.TRIGGER_ID_SCORE_DEATH,
+                               Vector2(4, 20), Vector2(0, 10)
+                               )
+        EntityManager.get_singleton().add_entity(_trigger)
 
         # Data
         self._blue_mode: bool = _blue
@@ -308,6 +284,8 @@ class Barrel(Entity):
 
     def draw(self):
         self.animations.draw(self.transform)
+
+    def draw_debug(self):
         self.collision.draw(Vector3(1, 0, 0))
 
         Debug.draw_x_2d(

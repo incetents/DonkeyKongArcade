@@ -41,7 +41,8 @@ class DonkeyKong(Entity):
         self.animations.set_speed(4.0)
 
         # Data
-        self.pause_logic: bool = True
+        self.pause_logic: bool = False
+        self._barrel_count: int = 0
         self._barrels: List[Barrel] = []
         self._state: DK_State = DK_State_Still(self)
 
@@ -59,34 +60,34 @@ class DonkeyKong(Entity):
         self.animations.set_frame(_index)
         return self
 
+    def get_total_barrel_count(self):
+        return self._barrel_count
+
     def kill_all_barrels(self):
         for b in self._barrels:
             EntityManager.get_singleton().remove_entity(b)
         self._barrels.clear()
 
-    def spawn_barrel(self, dropped: bool = False):
-
+    def spawn_barrel(self, _state: Barrel_State = Barrel_State.RIGHT, _blue: bool = False):
+        self._barrel_count += 1
         _barrel: Barrel = None
 
         # Regular Push
-        if not dropped:
+        if _state is Barrel_State.RIGHT:
             _barrel: Barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
-                self.transform.get_position() + Vector3(20, 0, +1), Barrel_State.RIGHT, False)
+                                     self.transform.get_position() + Vector3(20, 0, 0), Barrel_State.RIGHT, _blue)
 
         # Regular Drop
         else:
             _barrel: Barrel = Barrel('barrel' + str(pygame.time.get_ticks()),
-                self.transform.get_position() + Vector3(0, 0, +1), Barrel_State.MEGA_FALL, True)
+                                     self.transform.get_position() + Vector3(0, 0, 0), _state, _blue)
 
         # Spawn Debug
         # _barrel: Barrel = Barrel('barrel' + str(len(self._barrels)), Vector3(90, 30, 0), Barrel_State.LEFT)
-        # _barrel.set_layer(-1)
 
+        # Fix layer
+        _barrel.set_layer(-1)
         EntityManager.get_singleton().add_entity(_barrel)
-
-        # Create Kill Zone
-        _barrel_zone = BarrelZone('barrel_zone' + str(pygame.time.get_ticks()), _barrel)
-        EntityManager.get_singleton().add_entity(_barrel_zone)
 
         self._barrels.append(_barrel)
         return self
@@ -106,6 +107,8 @@ class DonkeyKong(Entity):
 
     def draw(self):
         self.animations.draw(self.transform)
+
+    def draw_debug(self):
         self.collision.draw(Vector3(1, 0, 0))
 
 # SpriteSequence('anim_dk_frames',
